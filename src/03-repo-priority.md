@@ -1,0 +1,28 @@
+---
+id: 03-repo-priority
+description: Which hub repos to read and search first for each task context
+apply: always
+---
+
+# Repo analysis priority
+
+The hub holds many checkouts, but a task almost always lives in one of them. Resolve the
+context first (from the chat, the mentioned module/URL, or the MCP server in use), then read
+and search the repos **in the listed order**. Repos that are not listed are **out of scope**
+unless the user names them.
+
+| Task context | Analyze in this order |
+|--------------|-----------------------|
+| Public apps-store modules | `tools` > `system` |
+| faotools.com public site / support / `faotools_env` deploy | `support` > `faotools_env` > `system` > `tools` |
+| life.odootools.com | `life` > `system` > `tools` |
+| MCP module (`ai_mcp_server`) | `odoo-apps-addons` |
+
+## Rules
+
+- Stop as soon as the listed repos answer the question — do not keep widening the search.
+- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`, and even less `life`.
+- `odoo` and `enterprise` are **read-only reference in every context**: read them for core API / view truth, never edit (see `02-repo-boundaries`).
+- `others` is read-only reference too, and only relevant when a third-party addon is actually part of the task.
+- If the context is genuinely ambiguous, ask which product/repo is meant instead of grepping the whole hub.
+- This rule is about **where to look**; permission to write still follows `02-repo-boundaries`.

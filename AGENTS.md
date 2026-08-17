@@ -36,7 +36,7 @@ git -C /home/feelwhy/Odoo/tools rev-parse --abbrev-ref HEAD
 cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 ```
 
-`env-serie.sh` / `env-up` switch tools, odoo, enterprise, support, others, system, odoo-apps-addons, OpenUpgrade, febado*, … — **skips** `life` and `faotools_env`. Missing branch → fallback `LATEST_SERIE` (19.0). **Never assume tools is 19.0.**
+`env-serie.sh` / `env-up` switch tools, odoo, enterprise, support, others, system, odoo-apps-addons, OpenUpgrade, febado*, … — **skips** `life` and `faotools_env`. Missing branch → fallback `LATEST_SERIE` (19.0). **Never assume tools is 19.0.** For a “change version to \<serie\>” request use the explicit repo list in `01-hub-serie` (`env-serie.sh` moves `support` too and aborts on `febado`).
 
 ## Test / run (Docker only)
 
@@ -64,7 +64,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 
 ## 01-hub-serie
 
-_Hub serie discipline — shared checkout branch is intentional_
+_Hub serie discipline — shared checkout branch, switch-branch and pull-changes commands_
 
 # Hub serie discipline
 
@@ -74,10 +74,76 @@ The flat hub uses **one working tree per repo**. Checking out another serie chan
 
 1. Before `env-serie.sh`, `git checkout`, or `env-up` that switches branches: `git status -sb` on affected repos; respect `ai_rules` never-discard-WIP.
 2. Do **not** assume `tools` / `odoo` are on 19.0 — read the branch or ask.
-3. Prefer `faotools_env/local/env-serie.sh <serie>` over hand-checking out a subset of repos (keeps the hub consistent).
-4. `life` and `faotools_env` are not serie-switched; do not “fix” them onto 17.0/18.0.
+3. Switch the hub **consistently** — move all serie repos together (see the change-version command below), never a random subset. `env-serie.sh <serie>` is the right tool only when you *want* its wider repo list (`support`, `OpenUpgrade`, `febado*`) touched too.
+4. `life`, `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**; do not “fix” them onto 17.0/18.0 (they may still carry ad-hoc feature branches the user created).
 5. After a serie switch, warn that running containers may still be on the previous image/DB until recreated with `env-up`.
 6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts for day-to-day work — serie = branch.
+
+## Command: “change version / switch branch to \<serie\>”
+
+“change version to 16.0”, “change branch to 16.0”, “switch branch to 18.0”, “switch to 19”,
+“let’s work on 17.0” are all the **same command** — version, serie and branch mean the same thing
+here. A bare major number means `\<major\>.0` (“switch to 19” → `19.0`).
+
+With no repo named it means: put the **serie-switched repos** on that branch:
+
+`tools`, `system`, `odoo`, `enterprise`, `others`, `odoo-apps-addons`
+
+- Branch name **is** the serie (`16.0`, `17.0`, …). Check out exactly those repos, falling back to
+ `LATEST_SERIE` when the serie branch does not exist:
+
+```bash
+for r in tools system odoo enterprise others odoo-apps-addons; do
+ p="/home/feelwhy/Odoo/$r"
+ git -C "$p" checkout 16.0 2>/dev/null \
+ || { git -C "$p" fetch -q origin 16.0 2>/dev/null; git -C "$p" checkout 16.0 2>/dev/null; } \
+ || git -C "$p" checkout 19.0
+done
+```
+
+- Do **not** use `env-serie.sh <serie>` for this command: it also switches `support` (which has old
+ serie branches, e.g. `15.0`, and must stay on its single version) and it **dies** on `febado`,
+ whose only branch is a feature branch — leaving the hub half-switched.
+- **Missing branch → latest serie** (`LATEST_SERIE`, currently `19.0`). Never create the branch,
+ never leave a repo detached. A remote-only serie branch is fine: plain `git checkout <serie>`
+ creates the local tracking branch, so fetch only if that fails.
+- **Report the resulting branch per repo** and call out every fallback explicitly: e.g. `odoo` /
+ `enterprise` have no `16.0`, so a “version 16.0” request leaves core on 19.0 — say so, because
+ 16.0 addons against 19.0 core will not load.
+- **If the user names repos** (“change tools to 16.0”, “only system on 18.0”), switch **only**
+ those and leave the rest of the hub alone.
+- Single-version repos (rule 4) are never included unless the user explicitly asks for them.
+- **Always pull after switching** (see next section) so the new branch is up to date, and report the
+ per-repo result of both steps.
+- Rules 1 and 5 still apply: check `git status -sb` first and stop on foreign WIP; afterwards
+ remind that containers keep the old image/DB until `env-up` recreates them.
+
+## Command: “pull changes”
+
+“pull changes”, “pull”, “update the repos” means: fast-forward each repo’s **current branch** from
+its upstream.
+
+- **No repo named → every hub checkout**, including the single-version ones (`support`, `life`,
+ `ai_rules`, `ai_rules_fao`, `faotools_env`) and `odoo` / `enterprise`. Pulling only updates a
+ read-only reference; it does not make it editable.
+- **Repo named** (“pull tools”) → only that repo. **Branch named** (“pull 18.0”, “pull tools 18.0”)
+ → switch that repo/the serie repos to the branch first, then pull it.
+
+```bash
+git -C "/home/feelwhy/Odoo/$r" pull --ff-only
+```
+
+- **`--ff-only`, always.** Never `merge`, `rebase`, `pull --rebase`, `reset --hard`, or force
+ anything to make a pull land.
+- **Skip and report, do not fix**, when a repo is dirty, detached, has no upstream, or has diverged
+ (local commits the remote does not have — e.g. `tools` sitting “ahead 1”). Ask the user what to do
+ with those; never stash or drop their commits (`ai_rules` never-discard-WIP).
+- `git fetch` first when the upstream ref may be stale, or when the branch was just created locally
+ from a remote serie branch.
+- **Report per repo**: updated (with commit count / new HEAD), already up to date, or skipped with
+ the reason.
+- After pulling repos that Docker bind-mounts, remind that running containers keep the old code
+ until restarted (`env-up`), and that a `-u <module>` upgrade may be needed for XML/asset changes.
 
 ## Intentional shared checkout
 
@@ -90,10 +156,58 @@ _Which hub repos are editable vs read-only reference_
 # Repository editing boundaries (faOtools hub)
 
 - By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `life/`, `system/`, `faotools_env/`, …).
+- Which repos to **read / search** for a given task context: see `03-repo-priority`.
 - Treat `odoo/`, `enterprise/`, and usually `others/` as **read-only reference**. If a fix seems to require editing core, implement an override in the custom module, or ask for explicit permission.
 - Do **not** change another workspace root unless the user explicitly names that repo/module or clearly requests editing outside the current target.
 - A general feature request (“change how X behaves”) does **not** grant permission to edit sibling repos — prefer inheritance, JS `patch`, view inheritance, or an override inside the owning module.
 - Preserve production / apps-store compatibility: model names, fields, XML IDs, config params, crons, mail templates, routes, and portal URLs stay stable unless the task changes them.
+
+## Commit / push scope (no repo named)
+
+“commit”, “commit A/B…”, “push” **without a named repo** covers **every non-read-only hub checkout**.
+Check them all and handle each one that has changes:
+
+`tools`, `system`, `support`, `life`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
+
+- This is the one case where **all** repos are inspected regardless of task context — it overrides the
+ narrow read scope of `03-repo-priority`.
+- **Never commit or push** `odoo`, `enterprise`, `others`. If they show changes, report them and ask —
+ do not commit, do not revert (`ai_rules` never-discard-WIP).
+- `git status -sb` per repo first; commit only paths belonging to this task. Foreign or unknown WIP →
+ stop and ask before committing anything anywhere.
+- One command may produce several commits (one per repo). **Report per repo**: repo, branch, short
+ SHA, and pushed-or-not — plus the repos that had nothing to commit.
+- Mode semantics (A / A1 / B / B1 / B2, tests, review) come from `ai_rules` `16-commit-workflow` and
+ apply to **each** repo in scope.
+- If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit
+ scope — it follows its own in-repo push / MR rules.
+
+## 03-repo-priority
+
+_Which hub repos to read and search first for each task context_
+
+# Repo analysis priority
+
+The hub holds many checkouts, but a task almost always lives in one of them. Resolve the
+context first (from the chat, the mentioned module/URL, or the MCP server in use), then read
+and search the repos **in the listed order**. Repos that are not listed are **out of scope**
+unless the user names them.
+
+| Task context | Analyze in this order |
+|--------------|-----------------------|
+| Public apps-store modules | `tools` > `system` |
+| faotools.com public site / support / `faotools_env` deploy | `support` > `faotools_env` > `system` > `tools` |
+| life.odootools.com | `life` > `system` > `tools` |
+| MCP module (`ai_mcp_server`) | `odoo-apps-addons` |
+
+## Rules
+
+- Stop as soon as the listed repos answer the question — do not keep widening the search.
+- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`, and even less `life`.
+- `odoo` and `enterprise` are **read-only reference in every context**: read them for core API / view truth, never edit (see `02-repo-boundaries`).
+- `others` is read-only reference too, and only relevant when a third-party addon is actually part of the task.
+- If the context is genuinely ambiguous, ask which product/repo is meant instead of grepping the whole hub.
+- This rule is about **where to look**; permission to write still follows `02-repo-boundaries`.
 
 ## 10-apps-store-packaging
 

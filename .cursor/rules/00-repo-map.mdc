@@ -33,7 +33,7 @@ git -C /home/feelwhy/Odoo/tools rev-parse --abbrev-ref HEAD
 cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 ```
 
-`env-serie.sh` / `env-up` switch tools, odoo, enterprise, support, others, system, odoo-apps-addons, OpenUpgrade, febado*, … — **skips** `life` and `faotools_env`. Missing branch → fallback `LATEST_SERIE` (19.0). **Never assume tools is 19.0.**
+`env-serie.sh` / `env-up` switch tools, odoo, enterprise, support, others, system, odoo-apps-addons, OpenUpgrade, febado*, … — **skips** `life` and `faotools_env`. Missing branch → fallback `LATEST_SERIE` (19.0). **Never assume tools is 19.0.** For a “change version to \<serie\>” request use the explicit repo list in `01-hub-serie` (`env-serie.sh` moves `support` too and aborts on `febado`).
 
 ## Test / run (Docker only)
 
