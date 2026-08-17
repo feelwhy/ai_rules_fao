@@ -1,0 +1,35 @@
+---
+description: Search views for new list/form actions (fields, group-by, archived filter)
+alwaysApply: false
+---
+
+# Search Views for New Models
+
+Whenever a new model gets a list/form action (or an existing action is missing one), add a dedicated `<search>` view and wire it via `search_view_id` on the `ir.actions.act_window`.
+
+## Search fields
+
+- Add `<field name="...">` entries for the model's key user-facing fields: the main identifying `Char`/`text` fields and the important `Many2one` relations (e.g. the fields shown in the list view). Many2one fields in a search already let users type free text and match via `name_search`, so no extra `filter_domain` is needed unless you must search a related sub-field (e.g. `('partner_id.email', 'ilike', self)`).
+- Prefer 3-6 search fields: enough to cover real lookups, not every field on the model.
+
+## Group By
+
+- Add a `<group>` block with one `<filter ... context="{'group_by': '<field>'}"/>` per Many2one/Selection field users would plausibly want to group by (status, category, owning record, assigned user, etc).
+- Name each filter `group_by_<field>` (or a short readable `name`) and give it a clear `string`.
+
+## Archived filter
+
+- If the model has an `active` field (the default unless explicitly non-archivable), always add:
+
+```xml
+<filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+```
+
+- Place it as its own line (optionally after a `<separator/>`) before the `group_by` block.
+
+## Wiring
+
+- Reference the search view from the action: `<field name="search_view_id" ref="<module>.<search_view_id>"/>`.
+- Follow existing XML ID and file-naming conventions (`<record id="..._view_search">`, `<field name="name"><model>.search</field>`).
+
+See `email_from_rule_views.xml` / `email_from_address_views.xml` in `odoo_email_from` for a concrete example (search by key relations, archived filter, group by the same relations).

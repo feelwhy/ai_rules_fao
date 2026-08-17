@@ -1,0 +1,13 @@
+---
+description: Live faOtools MCP usage for production truth on faotools.com
+alwaysApply: true
+---
+
+# Live faOtools MCP
+
+- The real live support database may be reachable through the enabled faOtools MCP server (`user-faotools`).
+- Use it when a task needs production truth that cannot be reliably inferred from code, such as current `ir.ui.view` contents, live website metadata, config parameters, cron state, or app/module records.
+- Prefer read-only MCP checks unless the user explicitly asks to update live data.
+- Before calling any MCP tool, inspect that tool's descriptor/schema and use the documented parameters.
+- Treat live data as production data: do not expose secrets, tokens, customer-private details, or raw sensitive payloads in chat.
+- If code and live behavior disagree, consider whether the module has not been upgraded, a view was customized in the database, or cached/generated content is stale.

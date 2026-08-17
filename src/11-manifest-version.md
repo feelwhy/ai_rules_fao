@@ -1,0 +1,12 @@
+---
+id: 11-manifest-version
+description: Never change tools module manifest version unless the user explicitly requests it
+apply: always
+---
+
+# Manifest Version
+
+- **Never** modify the `version` field in any `__manifest__.py` under `tools/`.
+- When editing manifests (dependencies, assets, data, metadata), leave `version` exactly as it is.
+- Bump `version` only when the user explicitly asks for a version increase or release bump.
+- If a task would normally imply a version change, do not bump automatically — ask the user first.

@@ -1,0 +1,38 @@
+---
+id: 20-local-docker
+description: faotools_env local Docker: env-up, env-serie, env-shell, ports, Mailpit
+apply: always
+---
+
+# Local Database Access
+
+- Local Odoo runs **only in Docker** via `faotools_env/local/` — never a host Python virtualenv or host `odoo-bin`.
+- Launch a target (restores + neutralizes on first run):
+
+```bash
+cd /home/feelwhy/Odoo/faotools_env
+./local/env-up.sh demo19          # community all-apps 19 → http://localhost:18190
+./local/env-up.sh demo19e         # enterprise all-apps 19 → http://localhost:18191
+./local/env-up.sh support         # faotools.com (neutralized) → http://localhost:18100
+```
+
+- Prefer Odoo ORM via the container shell:
+
+```bash
+./local/env-shell.sh demo19       # odoo shell
+./local/env-shell.sh demo19 psql  # SQL against the local Postgres (host port 15432)
+```
+
+- Several targets (and Febado) can run at once — each Odoo has its own HTTP port
+  (`support` 18100, `life` 18110, `demo19` 18190, …); shared Mailpit is on **18025**.
+  See `faotools_env/local/README.md`.
+- Keep images/DBs fresh: `./local/env-sync.sh` (or `./local/env-sync.sh --check`).
+- Never store local database credentials, tokens, or connection strings in repository files.
+- Details: `faotools_env/local/README.md`.
+
+
+## Serie + bind mounts
+
+- Custom addons bind from `/home/feelwhy/Odoo/<repo>`; tools serie = git branch.
+- `./local/env-serie.sh <serie>` before cross-serie work; `env-up` also ensures the target serie.
+- See `faotools_env/local/README.md` for full port matrix and sync behavior.

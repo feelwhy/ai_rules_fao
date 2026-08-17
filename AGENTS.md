@@ -1,0 +1,745 @@
+# ai_rules_fao
+
+Generated from `src/*.md` by `tools/sync_rules.py`. Do not edit by hand.
+
+## 00-repo-map
+
+_Flat hub repo map, serie resolution, and who owns which rules_
+
+# faOtools hub repo map
+
+## Hub root
+
+`/home/feelwhy/Odoo` — one checkout per repo (flat). No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
+
+## Workspace folders (typical faotools.code-workspace)
+
+| Folder | Role |
+|--------|------|
+| `ai_rules` | Universal Cursor rules (generated) |
+| `ai_rules_fao` | faOtools-specific rules (this repo) |
+| `faotools_env` | Local Docker toolkit + master/worker deploy |
+| `tools` | Apps-store modules (editable); **git branch = serie** |
+| `support` | faotools.com / helpdesk DB custom addons |
+| `life` | life.odootools.com (not switched by `env-serie`) |
+| `system` | System modules |
+| `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
+| `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
+
+## Active Odoo serie
+
+Serie is **not** in the path. It is the current git branch on bind-mounted repos:
+
+```bash
+git -C /home/feelwhy/Odoo/tools rev-parse --abbrev-ref HEAD
+# or switch:
+cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
+```
+
+`env-serie.sh` / `env-up` switch tools, odoo, enterprise, support, others, system, odoo-apps-addons, OpenUpgrade, febado*, … — **skips** `life` and `faotools_env`. Missing branch → fallback `LATEST_SERIE` (19.0). **Never assume tools is 19.0.**
+
+## Test / run (Docker only)
+
+| Intent | Command |
+|--------|---------|
+| community demo serie N | `faotools_env/local/env-up.sh demoN --test <module>` |
+| enterprise demo serie N | `… demoNe --test <module>` |
+| support / faotools.com | `… support` or `bash support/devops/run_tests.sh "<m>" 19 docker` |
+| life | `… life` |
+| shell / logs | `env-shell.sh <target>`; `docker compose -f local/run/<target>/compose.yml logs -f` |
+| switch hub serie | `faotools_env/local/env-serie.sh <serie>` |
+
+## Manifest version policy (hub)
+
+- **tools**: never bump `__manifest__.py` `version` unless the user asks (see `11-manifest-version`).
+- **faotools_env** `env_master`: bump when shipping a live upgrade.
+- **febado**: follow febado in-repo rules (not this repo).
+- **odoo-apps-addons**: follow its in-repo rules.
+
+## Who owns rules
+
+- Universal coding / process → `ai_rules`
+- Hub map, boundaries, packaging, local Docker, MCP, prepublishment → `ai_rules_fao`
+- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
+
+## 01-hub-serie
+
+_Hub serie discipline — shared checkout branch is intentional_
+
+# Hub serie discipline
+
+The flat hub uses **one working tree per repo**. Checking out another serie changes what every Cursor session and every bind-mounted Docker target sees.
+
+## Rules
+
+1. Before `env-serie.sh`, `git checkout`, or `env-up` that switches branches: `git status -sb` on affected repos; respect `ai_rules` never-discard-WIP.
+2. Do **not** assume `tools` / `odoo` are on 19.0 — read the branch or ask.
+3. Prefer `faotools_env/local/env-serie.sh <serie>` over hand-checking out a subset of repos (keeps the hub consistent).
+4. `life` and `faotools_env` are not serie-switched; do not “fix” them onto 17.0/18.0.
+5. After a serie switch, warn that running containers may still be on the previous image/DB until recreated with `env-up`.
+6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts for day-to-day work — serie = branch.
+
+## Intentional shared checkout
+
+If the user is browsing or testing on a branch, keep **this chat’s work on that same shared checkout** unless they ask for a side worktree. Parking work only in a disconnected worktree while the shared tree stays elsewhere breaks live Docker bind-mounts and SCM visibility.
+
+## 02-repo-boundaries
+
+_Which hub repos are editable vs read-only reference_
+
+# Repository editing boundaries (faOtools hub)
+
+- By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `life/`, `system/`, `faotools_env/`, …).
+- Treat `odoo/`, `enterprise/`, and usually `others/` as **read-only reference**. If a fix seems to require editing core, implement an override in the custom module, or ask for explicit permission.
+- Do **not** change another workspace root unless the user explicitly names that repo/module or clearly requests editing outside the current target.
+- A general feature request (“change how X behaves”) does **not** grant permission to edit sibling repos — prefer inheritance, JS `patch`, view inheritance, or an override inside the owning module.
+- Preserve production / apps-store compatibility: model names, fields, XML IDs, config params, crons, mail templates, routes, and portal URLs stay stable unless the task changes them.
+
+## 10-apps-store-packaging
+
+_Apps-store packaging, metadata, and installability expectations for tools modules_
+
+# Apps Store Metadata
+- Keep manifests valid Python dictionaries accepted by Odoo 19.
+- Preserve `name`, `summary`, `description`, `author`, `website`, `license`, `price`, `currency`, `images`, and `live_test_url` unless explicitly changing listing metadata.
+- Version format is `19.0.x.y.z`; never change `version` unless the user explicitly requests a bump (see `manifest-version` rule).
+
+# Module Independence
+- A top-level add-on must install with only its manifest dependencies and standard Odoo/Enterprise modules.
+- Shared product-family behavior belongs in an explicit base module dependency, not in implicit imports or undeclared XML references.
+- Do not make a module depend on a sibling app only to reuse a tiny helper; duplicate small app-local glue when that preserves product independence.
+
+# Static Description
+- Keep `static/description/index.html` and manifest `images` in sync.
+- Do not remove screenshots, icons, or marketing HTML during code-only tasks.
+- Generated/minified listing assets are packaging artifacts; edit source files when available.
+- For faOtools prepublishment copy (MCP `module.description` / features / perfect-for), follow `prepublishment-descriptions.mdc`.
+
+# Licensing
+- Preserve proprietary licensing text and `LICENSE` files.
+- Do not introduce third-party code or vendored libraries without confirming license compatibility.
+
+## 11-manifest-version
+
+_Never change tools module manifest version unless the user explicitly requests it_
+
+# Manifest Version
+
+- **Never** modify the `version` field in any `__manifest__.py` under `tools/`.
+- When editing manifests (dependencies, assets, data, metadata), leave `version` exactly as it is.
+- Bump `version` only when the user explicitly asks for a version increase or release bump.
+- If a task would normally imply a version change, do not bump automatically — ask the user first.
+
+## 12-boolean-settings
+
+_Store and read config_parameter boolean settings as real Python booleans_
+
+# Boolean Settings Convention
+
+- Every module setting is either `True` (turned on) or `False` (turned off, including "never selected"). No tri-state, no `None`-as-a-third-state handling.
+- Boolean settings backed by `ir.config_parameter` must be declared as plain `fields.Boolean(config_parameter="...")` with **no `default=True`**. An unset/never-saved parameter must read as `False`.
+- Read these parameters as real booleans with `safe_eval`, never by string-comparing to `"True"`/`"False"`:
+
+```python
+from odoo.tools.safe_eval import safe_eval
+
+icp = self.env["ir.config_parameter"].sudo()
+enabled = safe_eval(icp.get_param("my_module.some_flag", "False"))
+if enabled:
+    ...
+```
+
+- Forbidden patterns anywhere in `tools/` modules:
+  - `get_param(key) == "True"` / `!= "True"`
+  - `get_param(key) == "False"` / `!= "False"`
+  - `if param is None: return True` (or similar tri-state fallback for a boolean)
+  - `default=True` on a `fields.Boolean(config_parameter=...)`
+- This is the reference implementation for the pattern: `[knowsystem/models/knowsystem_article.py](knowsystem/models/knowsystem_article.py)` (`action_check_option`, ~L791-802).
+- Apply this convention consistently to every module in this workspace, not just the one currently being edited.
+
+## 13-search-views
+
+_Search views for new list/form actions (fields, group-by, archived filter)_
+
+# Search Views for New Models
+
+Whenever a new model gets a list/form action (or an existing action is missing one), add a dedicated `<search>` view and wire it via `search_view_id` on the `ir.actions.act_window`.
+
+## Search fields
+
+- Add `<field name="...">` entries for the model's key user-facing fields: the main identifying `Char`/`text` fields and the important `Many2one` relations (e.g. the fields shown in the list view). Many2one fields in a search already let users type free text and match via `name_search`, so no extra `filter_domain` is needed unless you must search a related sub-field (e.g. `('partner_id.email', 'ilike', self)`).
+- Prefer 3-6 search fields: enough to cover real lookups, not every field on the model.
+
+## Group By
+
+- Add a `<group>` block with one `<filter ... context="{'group_by': '<field>'}"/>` per Many2one/Selection field users would plausibly want to group by (status, category, owning record, assigned user, etc).
+- Name each filter `group_by_<field>` (or a short readable `name`) and give it a clear `string`.
+
+## Archived filter
+
+- If the model has an `active` field (the default unless explicitly non-archivable), always add:
+
+```xml
+<filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+```
+
+- Place it as its own line (optionally after a `<separator/>`) before the `group_by` block.
+
+## Wiring
+
+- Reference the search view from the action: `<field name="search_view_id" ref="<module>.<search_view_id>"/>`.
+- Follow existing XML ID and file-naming conventions (`<record id="..._view_search">`, `<field name="name"><model>.search</field>`).
+
+See `email_from_rule_views.xml` / `email_from_address_views.xml` in `odoo_email_from` for a concrete example (search by key relations, archived filter, group by the same relations).
+
+## 20-local-docker
+
+_faotools_env local Docker: env-up, env-serie, env-shell, ports, Mailpit_
+
+# Local Database Access
+
+- Local Odoo runs **only in Docker** via `faotools_env/local/` — never a host Python virtualenv or host `odoo-bin`.
+- Launch a target (restores + neutralizes on first run):
+
+```bash
+cd /home/feelwhy/Odoo/faotools_env
+./local/env-up.sh demo19          # community all-apps 19 → http://localhost:18190
+./local/env-up.sh demo19e         # enterprise all-apps 19 → http://localhost:18191
+./local/env-up.sh support         # faotools.com (neutralized) → http://localhost:18100
+```
+
+- Prefer Odoo ORM via the container shell:
+
+```bash
+./local/env-shell.sh demo19       # odoo shell
+./local/env-shell.sh demo19 psql  # SQL against the local Postgres (host port 15432)
+```
+
+- Several targets (and Febado) can run at once — each Odoo has its own HTTP port
+  (`support` 18100, `life` 18110, `demo19` 18190, …); shared Mailpit is on **18025**.
+  See `faotools_env/local/README.md`.
+- Keep images/DBs fresh: `./local/env-sync.sh` (or `./local/env-sync.sh --check`).
+- Never store local database credentials, tokens, or connection strings in repository files.
+- Details: `faotools_env/local/README.md`.
+
+
+## Serie + bind mounts
+
+- Custom addons bind from `/home/feelwhy/Odoo/<repo>`; tools serie = git branch.
+- `./local/env-serie.sh <serie>` before cross-serie work; `env-up` also ensures the target serie.
+- See `faotools_env/local/README.md` for full port matrix and sync behavior.
+
+## 21-faotools-mcp
+
+_Live faOtools MCP usage for production truth on faotools.com_
+
+# Live faOtools MCP
+
+- The real live support database may be reachable through the enabled faOtools MCP server (`user-faotools`).
+- Use it when a task needs production truth that cannot be reliably inferred from code, such as current `ir.ui.view` contents, live website metadata, config parameters, cron state, or app/module records.
+- Prefer read-only MCP checks unless the user explicitly asks to update live data.
+- Before calling any MCP tool, inspect that tool's descriptor/schema and use the documented parameters.
+- Treat live data as production data: do not expose secrets, tokens, customer-private details, or raw sensitive payloads in chat.
+- If code and live behavior disagree, consider whether the module has not been upgraded, a view was customized in the database, or cached/generated content is stale.
+
+## 30-prepublishment-descriptions
+
+_Rewrite/adapt faOtools apps-store module descriptions before publishment_
+
+# Prepublishment module descriptions (faOtools MCP)
+
+Canonical extended rule (same logic): `/home/feelwhy/Odoo/Odoo19/support/.cursor/rules/module-description-mcp-adaptation.mdc`.
+Screenshots: `prepublishment-screenshots.mdc`. Packaging metadata: `apps-store-packaging.mdc`.
+
+All edits go through the `user-faotools` MCP. Inspect each tool schema before calling; writes use `odoo_records_write` then `odoo_operations_confirm`.
+
+## Golden rule: edit the prepublishment, never the published description
+
+- Work ONLY on `module.description` records with `prepublish = True`.
+- The live record is referenced by `pre_publish_origin_id`. NEVER write to it.
+- If no prepublishment exists, run `action_make_prepublish` on the origin.
+- Child records (`module.feature`, `module.pic`, `module.extra.note`, `optional.app`, `module.conf`) must belong to the prepublishment (`description_id` -> prepublish record).
+
+## What you may change vs must not
+
+Editable (rephrase freely; keep facts truthful):
+- `module.feature.name`, `subheader`, `body` for every feature.
+- `module.description.summary` and `module.description.perfect_for`.
+- `module.description.summary_key_words` — **extend only**; never remove existing keywords.
+
+Hard do-not-touch:
+- `module.description.short_summary` — leave exactly as-is.
+- The **first** feature in `feature_ids` (overview block) has no title — never add `name`/`subheader`; only improve its `body`.
+- Never invent capabilities.
+
+## Goals
+
+- Sell the outcome: which customer pain each capability removes.
+- Modern, professional copy; AI/SEO-friendly keywords (extend, do not replace).
+- Research first: module source in `tools/` (correct branch from `version` + `tech_name`), release notes, and docs before rewriting.
+
+## Section structure and logical grouping
+
+Order features so the page reads top-to-bottom like a product story:
+
+1. **Overview (first feature, no title)** — 6-card key-benefits grid mapping the whole app at a glance. Use multiples of 3 for `col-lg-4` rows.
+2. **Native / suite-owned capabilities** — group related features (composer, sending safety, message actions, metadata) into named sections with plain-text `name` + `subheader`.
+3. **Bundled dependency apps (suite modules only)** — one dedicated section per dependency, titled with the **published product name** (e.g. "Lost Messages Routing", "Private Thread", "Odoo Email From"). Explain what the dependency delivers and how the suite extends or integrates it. Do **not** merge several dependencies into one section or dump a dependency list block.
+4. **Administration / configuration** — unified settings, allowed models, presets, manager workflows.
+5. **Bridge modules** (e.g. `email_suite_accounting`) — one focused section on the integration surface, not a repeat of the parent suite.
+
+Standalone modules skip step 3. Optional extensions must match real rows in `optional_app_ids`.
+
+## Styling: cloud_base / 1043 pattern
+
+Style reference: `module.description` **1031** (`cloud_base`) and **1043** on faOtools.
+
+- Bootstrap grid + FontAwesome only. No `<style>`, `<script>`, JS handlers, or custom CSS beyond approved inline card styles.
+- Brand green `#017e84`, card border `#e7f0ee`, radius `16px`, padding `20px`, white background, shadow `0 6px 24px rgba(0,0,0,0.06)`.
+- **Overview cards:** `row justify-content-center mx-0`, cols `col-lg-4 col-md-6 col-sm-12 mt8 mb16 d-flex`, inner `h-100 w-100` + green `<h4 style="color:#017e84;font-weight:700;">` with inline FA icon.
+- **Detail sections:** `row mx-0`, cols `col-lg-6 col-md-6 col-sm-12 mt8 mb16 d-flex`, same card shell, bullet lists with `<ul class="list-unstyled" style="padding-left:0;list-style:none;">` and `<i class="fa fa-check-square-o" style="color:#017e84;"> </i>`.
+- **Perfect For:** `row text-left mx-0`, `col-lg-4 col-md-6 col-sm-12 mt8 mb16 d-flex`, green `<h3 style="color:#017e84;font-weight:700;"><i class="fa ..."> </i> ...</h3>`.
+- Feature `name` / `subheader`: plain text (or existing optional-extension icon markup). Do not wrap in green spans.
+- Use `<b>` for visible bold in odoo.com content — not `<strong>` (store CSS ignores it).
+- Top-level `.row` in authored HTML must include `mx-0` to prevent mobile horizontal scroll.
+- Card grids: fill rows (multiples of column count) or add `justify-content-center`; equal height via `d-flex` + `h-100 w-100`; balance copy volume across sibling cards honestly.
+- Valid XML: close every tag; escape `&`, `<`, `>`; no named entities like `&mdash;` (422 errors). Hyperlink long URLs with short anchor text; use `text-break` when the literal URL must show.
+
+### Character set: ASCII-safe English source (apps.odoo.com)
+
+apps.odoo.com reads shipped `index.html` as latin-1, so non-ASCII source glyphs corrupt
+(e.g. `—` becomes `â`). faotools.com UTF-8 is fine. Keep English source ASCII-safe.
+
+**Scope: English source only** in `module.description` / `module.feature` / `module.pic` /
+`module.conf` / `module.extra.note` / `optional.app` fields that feed the odoo.com index.
+**Translations are exempt** (assumed faotools.com-only UTF-8); do not transliterate them.
+
+Allowed: printable ASCII `U+0020`-`U+007E`, newline/tab, XML entities
+`&amp;` `&lt;` `&gt;` `&quot;` `&apos;`, and numeric refs `&#NNN;` when a glyph is
+semantically required (e.g. `&#246;`). No named entities (`&mdash;`, `&nbsp;`, …).
+
+Write this, not that: ` - ` not `—`/`–`; `'` not `’`; `"` not `“`/`”`; `...` not `…`;
+`&gt;` (menus) / `-&gt;` (state flows) not `→`; `-` not `−`; `x` not `×`; `!=` not `≠`;
+plain space not NBSP; delete zero-width spaces; no Cyrillic keyboard-typo lookalikes.
+
+## Screenshots (summary)
+
+- Body copy is primary; screenshots are secondary evidence.
+- Default one inline screenshot per feature (`module.pic.features = True`); demote or detach (`feature_id = False`) weak shots — never delete pics or attachments.
+- Reuse existing `module.pic` from dependency modules when describing bundled apps; capture new shots only for genuinely new UI (see `prepublishment-screenshots.mdc`).
+
+## Source and verification
+
+- Module source: this `tools/` repo; branch from prepublishment `version` (e.g. `19.0` -> `19_suite` / matching branch).
+- After edits: run `action_prepare_description` or preview `/apppublish/<version>/<id>/`.
+- Verify mobile width (no horizontal overflow ~360px), screenshot inline selection, caption markup, and that summary + sections match actual code behavior.
+
+## 31-prepublishment-screenshots
+
+_Screenshot conventions for faOtools module store pages_
+
+Companion rule for copy/HTML structure: `prepublishment-descriptions.mdc`.
+
+# Screenshot Source: Real UI, Never Generated Images
+
+- Never use image-generation tools (e.g. `GenerateImage`) for app-store screenshots. They are not real UI and must not be uploaded as `module.pic`/`module.description` assets.
+- Capture screenshots from an actual running local Odoo instance showing the real views of the module being described.
+
+# Hard gate: demo environment BEFORE any capture
+
+**Do not run Selenium or hand off PNGs until the demo environment passes the checks below.**
+
+Order is mandatory:
+
+1. **Install stack** — docker compose screenshot DB + all apps the shots need (`contacts`, `crm`, `sale_management`, `account`, target module(s), Lost Messages app when routing shots are planned).
+2. **Enable every product toggle** — all suite + dependency settings ON (see *Demo data requirements*).
+3. **Seed rich demo data** — run `support/devops/seed_screenshot_env.py` (extend it when the shot plan needs more records). Minimal/empty seed is **not** acceptable for suite modules.
+4. **Verify assets & icons** — app switcher, systray, and field widgets must render real icons (see *Web assets & app icons*). **Block capture** if the home-menu shows the generic wireframe cube or repeated `default_icon_app.png` tiles.
+5. **Walk the shot plan** — manually or via a dry-run checklist: every planned PNG must have its target view open, populated, and the feature control visible *before* automating capture.
+6. **Only then capture** — Selenium/`capture_suite_screenshots.py`.
+
+If demo seeding or asset warmup is incomplete, **stop and fix seed/scripts first** — never ship “placeholder” screenshots and iterate later.
+
+# Capture Pipeline (local Odoo + headless Chrome)
+
+1. Create a throwaway Postgres DB (`screenshot_<suite>_<version>`), separate from any `support_*`/`test_*` DB.
+2. Install the target module(s) via the project's docker compose test image (`support/devops/docker-compose.screenshot.19.yml`), per the "Use docker compose always for tests" user rule — do not fall back to a bare host `odoo-bin` (host Python lacks Odoo's deps such as `passlib`).
+   - The compose `odoo` service entrypoint is already `bash -lc`; pass the shell command directly as the `command`/run argument, do NOT wrap it in another `bash -lc '...'` or it hangs reading stdin.
+3. Start Odoo from that same image/DB (`setup_screenshot_stack.sh up` or equivalent), picking a free host port (check with `ss -tlnp`).
+4. Complete the **demo gate** above (enable toggles → seed → verify icons → walk shot plan).
+5. Drive headless `google-chrome` via Selenium (`pip install selenium` in a local venv, e.g. `/tmp/screenshot-venv`) to log in and open each view/action, then `driver.save_screenshot(...)`.
+6. Run **QA reject checks** on every PNG before handoff (see below).
+7. Reference scripts: `support/devops/setup_screenshot_stack.sh`, `support/devops/seed_screenshot_env.py`, `support/devops/capture_suite_screenshots.py`, `support/devops/apply_screenshot_legends.py`.
+
+# Demo data requirements (rich consultant demo, not smoke test)
+
+The throwaway DB must look like a **prepared sales demo**, not a fresh install with one row per model.
+
+## Global demo persona
+
+- **Demo user:** `olivia.chen@example.com` / `demo` (**Olivia Chen**) — never `admin` in screenshots.
+- Grant every group needed for the shot plan: Settings, CRM/Sales/Project/Contacts apps, Discuss drafts, Email From manager, Lost Messages, message edit/delete, internal thread, citing, routing.
+- **Company:** “My Company” with logo if available; disable onboarding tours (`tour_enabled=False`).
+
+## Minimum narrative (Messaging Suite baseline)
+
+Seed a coherent story buyers recognize:
+
+| Entity | Purpose |
+|--------|---------|
+| **Jane Customer** (`jane@example.com`) | Primary contact — address, phone, avatar, $ invoiced, 1 CRM opportunity |
+| **CRM lead** “Website inquiry from Jane” | Composer/draft/routing targets on a second document type |
+| **CC partner** | Visible copy recipient in composer shots |
+| **Inbound email on Jane’s chatter** | Subject + plain-text body (no raw HTML tags visible); triggers action-menu shots |
+| **2–3 composer drafts** | Discuss → My Drafts list + draft picker in composer |
+| **4+ schedule presets** | Admin list + Send Later dialog |
+| **2+ Email From addresses** | Support + Sales on Mailpit server |
+| **1+ Email From rule** | e.g. sales orders → Sales address |
+| **1–2 lost messages** | Lost Messages app queue with From/Subject/body/attachments |
+| **1 posted customer invoice** | Accounting bridge wizard |
+| **Edited message + history** | “(edited)” marker for message_edit shots |
+
+Extend `seed_screenshot_env.py` when the approved shot plan needs more (cite wizard sources, forward thread, private messages, etc.). Document new seed steps in the script header.
+
+## Per-shot data rules
+
+- **List views:** at least **2–3 rows** with every visible column meaningfully filled (no empty Subject/Document/Recipients columns).
+- **Forms:** open a **specific record** from the story above — never a blank “New” form unless the shot sells creation UX.
+- **Modals/wizards:** the **trigger must be visible** — e.g. attachment reminder shows the **full composer behind** with body text mentioning “attached”; routing wizard shows the **lost message or chatter email** it applies to.
+- **Chatter shots:** must show **suite-specific UI** (action menu, extra details, quote composer, private checkbox) — a generic contact form with only standard Send message/Log note is **not** a suite screenshot.
+- **Settings shots:** every toggle ON that the product sells; sample text in regex/header fields; link buttons (Scheduled Send Options, Lost Messages) visible.
+
+Re-run seed after changing seed logic; `-u <module>` when JS/XML assets changed.
+
+# Web assets & app icons
+
+Broken icons make listings look unfinished. Treat asset loading as part of demo readiness.
+
+## Install & warmup
+
+- Include **`contacts`** (and every app whose icon appears in the shot) in `SCREENSHOT_MODULES` / stack install list.
+- After login, **warm up** before the first capture: open `/web`, `/odoo/contacts`, `/odoo/discuss` (or CRM/Sales as needed), wait for `.o_main_navbar`, run `document.fonts.ready`, open the **app switcher dropdown once** to force menu icon fetches.
+- Chrome: do **not** pass `--disable-gpu`; use `--font-render-hinting=medium` (see `capture_suite_screenshots.py`).
+
+## Verification (block capture if failed)
+
+Before the capture loop, confirm:
+
+- Home-menu button shows **`oi-apps`** (or app brand icon), not an empty/broken glyph.
+- App switcher dropdown lists **Contacts, CRM, Discuss, …** with **module icons**, not the generic multicolour wireframe cube for every app.
+- No screenshot shows `/web/static/img/default_icon_app.png` as the primary app tile when a real module icon exists.
+- Systray icons (Discuss, Activities, user avatar) render.
+
+Log network 404s on `web/static/lib/odoo_ui_icons/` or module icon assets and fix before capturing.
+
+# What every screenshot must illustrate
+
+Each `module.pic` sells **one capability** from the prepublishment’s `module.feature` rows. Before capture, write down:
+
+- **Feature ID** (faOtools `module.feature`) this PNG supports
+- **User action** visible in the frame (what did Olivia click to get here?)
+- **Proof data** (which seeded record/text proves the feature is active?)
+
+### Invalid shots (reject & re-seed/re-capture)
+
+- Generic Odoo chrome with **no suite widget, action, or setting** in frame
+- **Empty** list/form views or placeholder-only fields (“e.g. Sales Director” everywhere)
+- Modal **orphaned** from its trigger (e.g. attachment warning with no composer/body context)
+- **Wrong app icon** / wireframe cube in navbar when marketing a multi-app suite
+- Dependency feature shown **without** suite context when the listing sells the bundle (prefer unified Messaging Suite settings + in-context chatter/composer)
+
+### Framing
+
+- **Width: 1130px, strict.** Crop/resize raw capture to exactly 1130px wide before upload.
+- Keep **navbar + breadcrumbs** when they anchor the app/context; crop tight only when the dialog itself is self-explanatory **and** trigger context remains visible (stacked modals, composer behind confirm).
+- Prefer **one hero control** per shot; avoid clutter, debug tooltips, and unrelated admin menus.
+
+# Coverage requirements (suite / bundle modules)
+
+For **bundle products** (e.g. `email_suite`), screenshot coverage must match **every named feature section** on the prepublishment, not a handful of easy composer panels.
+
+Workflow:
+
+1. Read prepublishment `module.description.feature_ids` via faOtools MCP (`name`, `subheader`, `sequence`).
+2. Read existing `module.pic` rows and sibling published versions (same or better coverage).
+3. Build a **shot plan table** (feature → PNG → alt_name → seed prerequisites) and get alignment before capture.
+4. **Minimum:** at least **one strong screenshot per feature section**, plus native suite-only surfaces not covered by dependency duplicates.
+5. **Dependency reuse:** duplicate published dependency PNGs only when quality is good **and** `alt_name`/feature mapping still fits; otherwise **re-capture** in the suite demo DB with proper icons and data.
+6. Link each new `module.pic` to a `feature_id` when the feature section exists.
+
+Standalone modules (`odoo_email_from`, `email_suite_accounting`): cover each major settings/list/wizard surface described in their own prepublishments.
+
+# Chrome, menus and demo user
+
+- Log in as **Olivia Chen** (`olivia.chen@example.com` / `demo`).
+- Keep Odoo chrome visible unless the shot is intentionally detail-only **and** context is still obvious from `alt_name`.
+- Disable tours for the demo user.
+
+# Legends (caption overlay)
+
+**Capture clean UI PNGs by default** — never burn legends inside the Selenium capture loop.
+
+Apply legends when the screenshot sells a **non-obvious control** (CC/BCC tags, Route action, Send private checkbox). Skip when the titled dialog or settings block is self-explanatory.
+
+When legends are used, follow copy/style/pipeline rules in the sections below (unchanged intent):
+
+## Copy style
+
+- Outcome / action captions (*what happens*), not field labels or help-tooltips.
+- Center-align text in the bubble body; color `#017e84`, Ubuntu Italic 24px.
+- Match `module.pic.alt_name` intent when uploading.
+
+## Visual assets (`support/module_descriptor/static/AppsScreenshots/`)
+
+- Bubbles: `Legends/{corner}-{long|short}.png`; point at the **value** (tag/chip/button), not the whole row.
+- No highlight borders; no extra connector lines.
+
+## Pipeline
+
+1. Capture clean PNG (1130px) + `.boxes.json` sidecar where legends may apply.
+2. Run `apply_screenshot_legends.py` only when the legend meets all copy/anchor rules.
+3. Upload legended PNG when it genuinely helps; otherwise upload the clean capture.
+
+# Reusing dependency screenshots
+
+For dependency modules sold separately (`mail_manual_routing`, `internal_thread`, `message_citing`, `message_edit`, `odoo_email_from`):
+
+- Read their published `module.pic` rows via faOtools MCP.
+- **Duplicate** PNG bytes into new attachments on the suite prepublishment — never reparent existing dependency attachments.
+- Reuse `alt_name` intent when the same angle is still accurate.
+- **Re-capture** when dependency duplicates are low quality (broken icons, empty data, wrong framing) even if bytes exist on an older listing.
+
+# Version coverage (same or better than sibling releases)
+
+Compare adjacent published descriptions (e.g. 18.0 vs 19.0): match or exceed screenshot count, feature angles, and caption intent. Do not drop a published angle without reason.
+
+# QA checklist (every PNG before handoff)
+
+Reject and fix if any check fails:
+
+| Check | Pass criteria |
+|-------|----------------|
+| Icons | Real app/module icons in navbar/app menu; no wireframe cube grid |
+| Data | Seeded story visible; list ≥2 rows; no empty “hero” fields |
+| Feature | Suite-specific control/action/setting clearly visible |
+| Context | Modals/wizards show what triggered them |
+| User | Olivia Chen (not Administrator) |
+| Size | Exactly 1130px wide final PNG |
+| Caption | `alt_name` matches what a buyer actually sees |
+
+# Handoff for manual faOtools upload (default)
+
+After capture, crop/legend, and **QA pass**, move only final PNGs to:
+
+```
+~/Downloads/prepublishment-screenshots/
+  <module_technical_name>/
+    *.png
+  upload_manifest.json   # description_id, sequence, feature_id, alt_name
+```
+
+Agent steps: capture → QA → manifest → move finals → tell user the Downloads path. Manual faOtools upload is the default; MCP upload only when explicitly requested and bearer/PUT works.
+
+# Upload via MCP (optional)
+
+When the user explicitly asks for automated upload **and** MCP bearer/PUT is available, upload QA-passed PNGs via faOtools MCP (`odoo_attachments_upload_prepare` → PUT → `odoo_attachments_upload_commit`), then create `module.pic` with `description_id`, `attachment_id`, `alt_name`, `sequence`, `feature_id`.
+
+## 32-video-cover-design
+
+_Design faOtools YouTube video covers in house style_
+
+# faOtools video cover (YouTube thumbnail) design
+
+Reusable recipe for producing video covers in the faOtools house style, derived from
+the shipped covers for the **KPI Scorecard** and **Password Manager** demo videos.
+Every faOtools module demo cover shares the same skeleton; only the module-specific
+content (header keyword, dashboard mockup, themed props, legend) changes.
+
+**Canonical storage** (version-controlled, in the repo):
+
+`support/module_descriptor/static/Covers/`
+
+Save every finished cover here. Use descriptive snake_case names, e.g.
+`<module_or_topic>_video_cover.png`. When a cover maps to a known YouTube video,
+optionally note the video ID in the rule's quick-reference section (not in the
+filename unless the user asks).
+
+Existing reference covers in that folder:
+
+- `kpi_targets_video_cover.png` — KPI Scorecard (`2daDCn1_axI`)
+- `password_vault_video_cover.png` — Password Manager (`V-DWe7LzhW0`)
+- `cloud_storage_video_cover.png` — Cloud Storage Solutions (`LX3IWv0L6-U`)
+- `lost_messages_video_cover.png` — Lost Messages Routing (`K451Col9iEs`)
+- `joint_calendar_video_cover.png` — Joint Calendar (`lUy5unL2t6A`)
+
+Cursor chat may also stash working copies under
+`~/.cursor/projects/home-feelwhy-Odoo-Odoo17-support/assets/` during generation;
+**always copy the post-processed final PNG into `module_descriptor/static/Covers/`**
+before considering the task done.
+
+## When to use
+
+- User shares one or more YouTube links and asks for a cover/thumbnail.
+- User asks for "another cover / variant" for an existing faOtools video.
+- User asks to restyle an arbitrary image into the faOtools cover style.
+
+## Step 0 - Gather the source truth
+
+1. If a YouTube link is given, fetch the page and read the transcript/description to
+   learn: the **module name**, its **one-line value proposition**, the **main UI**
+   (dashboard, list, cards, side panel) and **themed objects** (keys, shields, targets,
+   charts, locks, etc.). The transcript intro paragraph is usually the best summary.
+2. Map the link to the module. Known so far:
+   - `2daDCn1_axI` -> KPI Scorecard
+   - `V-DWe7LzhW0` -> Password Manager
+   - `LX3IWv0L6-U` -> Cloud Storage Solutions
+   - `K451Col9iEs` -> Lost Messages Routing
+   - `lUy5unL2t6A` -> Joint Calendar
+3. Derive three text pieces (keep them short, benefit-driven, Title/UPPER case):
+   - **Header**: `ODOO` + 1-2 keyword lines (the product or its core promise).
+   - **Legend / tagline**: one sentence, 3 short lines, starts with "The tool to ..."
+     and ends with "... in Odoo" (this is the faOtools voice).
+   - **Mockup content**: 4-8 realistic labels/values for the dashboard cards.
+
+## Canvas & export specs
+
+- Aspect ratio 16:9, landscape. **Final export size: 2752 x 1536 px** (the size the
+  user standardizes on). Intermediate generation can be 1536x1024 / 1024x571, then
+  resized last.
+- Single flat PNG, no transparency needed in the final.
+
+## Layout zones (always the same)
+
+- **Top-left - Title block**: a semi-transparent dark rounded rectangle bleeding off
+  the left edge, holding 2 lines of big bold condensed uppercase text. Line 1 begins
+  with white `ODOO`; the product keyword(s) are in teal `#017e84`. Wraps to a second
+  line when long (e.g. `ODOO` / `PASSWORD` (white) ... `MANAGER`).
+- **Top-right - faOtools logo**: do NOT let the image model draw the wordmark (it
+  garbles the letterforms). Instead leave the top-right corner clean during generation
+  and **composite the real logo** afterward. Canonical transparent asset:
+  `module_descriptor/static/Covers/logo_faotools_apps.png` (gray `faOtools` with the
+  magenta ring `O`, plus right-aligned `apps` beneath). Paste it at ~0.22 x cover width,
+  ~70 px right / ~55 px top margins. The source brand wordmark is gray `~#96968e` with a
+  magenta `O` ring `~#9b3c82`; rebuild the asset from it if needed (black background
+  becomes transparent via per-pixel alpha = brightness).
+- **Center - 3D isometric app mockup** (the hero, see below).
+- **Bottom-right - Legend**: 3 lines of white, medium-weight, mixed-case sentence.
+- **NEVER** include an AI/Gemini sparkle (4-point diamond). If a source has one in a
+  corner, remove it (see post-processing).
+
+## Color palette (exact)
+
+- Title keyword teal: `#017e84` is the base brand teal. For the **header keyword** use a
+  slightly brighter teal, normalized to `~#10b0be` / `(16,176,190)` so both covers match
+  exactly (the image model drifts between covers; fix it in post-processing).
+- Background: a diagonal gradient, **magenta-purple at top-left -> dark blue-violet at
+  top-right -> dark teal-green at bottom-right**, deep purple at bottom-left:
+  - top-left  ~ `#5a2559` / `#633363`
+  - top-right ~ `#27294e`
+  - bottom-left ~ `#341747`
+  - bottom-right ~ `#166c6d`
+- Accent cyan for circuit lines / glows: ~ `#2bd4d4`.
+- faOtools `O` accent: magenta/pink ~ `#d63384`.
+- Legend & `ODOO` text: white `#ffffff`.
+
+## Typography
+
+- Header: heavy bold, condensed, uppercase sans-serif (Montserrat ExtraBold / Gotham
+  Bold feel). Tight leading, two lines max.
+- Legend: clean medium-weight sans, mixed case, comfortable leading.
+
+## The 3D isometric mockup (hero)
+
+- A tablet/screen floating in perspective, tilted to face from the lower-left, with a
+  soft glowing edge and drop shadow, sitting just right of center.
+- It shows a believable Odoo app screen for the module:
+  - left vertical **sidebar** with a logo and a few **colored category chips**
+    (purple / teal / green / orange gradients),
+  - central **grid of cards** (each: icon, title, a couple of values/stars/progress),
+  - a right-hand **detail panel** ("Selected ... info" with fields/labels).
+- Use module-appropriate icons and the brand teal for highlights.
+
+## Decorative elements (subtle, dark, low-contrast)
+
+- Thin cyan circuit/connector lines and small nodes around the edges.
+- A few floating **3D shields with a teal checkmark** (trust/security motif).
+- A handful of **themed 3D props** scattered around the mockup that signal the topic
+  (e.g. keys/locks for Password Manager; targets, charts, gauges for KPI Scorecard).
+- Faint dotted connectors and tiny geometric accents. Keep all of this dim so the
+  title, mockup, and legend stay dominant.
+
+## Generation workflow
+
+1. Prefer `GenerateImage` with the closest existing cover from
+   `module_descriptor/static/Covers/` passed as a `reference_image_paths` entry,
+   instructing it to keep the style/layout and swap only the header, mockup content,
+   themed props, and legend.
+2. Post-process (see below), then save the final PNG to
+   `module_descriptor/static/Covers/<module_or_topic>_video_cover.png`.
+
+## Post-processing (deterministic, do with Pillow)
+
+These pixel steps make results exact and on-brand. Always verify by cropping/zooming.
+
+1. **Remove any Gemini sparkle** (4-point diamond), usually bottom-right near the
+   legend. It can overlap a letter; mask it out and keep the letter's bright pixels,
+   filling the rest with the local background color. Zoom in to confirm no remnant.
+2. **Normalize/brighten the header keyword teal**: detect teal pixels in the title band
+   only (top-left, roughly `y < 0.24*H` and `x < 0.50*W`, where `g > r+25 and b > r+15
+   and g > 100`) and remap to the bright header teal, preserving shading:
+   `t = min(1, g/178)`, `out = (16*t, 176*t, 190*t)`, blended by how teal each pixel is
+   so anti-aliased edges stay smooth. Restricting to the band avoids recoloring the
+   tablet's teal UI.
+3. **Composite the real logo** top-right (see logo bullet above). Do this on the
+   2752x1536 canvas so the downscaled logo stays crisp.
+4. **Resize to 2752 x 1536** with Lanczos (do the resize before the logo paste).
+
+## Content guidelines for headers & legends
+
+- Header keyword should be the product or its strongest benefit, not a feature dump.
+- Legend formula: `The tool to <verb phrase> <object> in Odoo`. Keep ~8-12 words.
+- When asked for an alternative cover for the same video, keep the exact style but
+  change the header keyword, the legend wording, and the mockup labels so it reads as a
+  distinct design (not a duplicate).
+
+## Quick reference - per-video content used
+
+- **KPI Scorecard** (`2daDCn1_axI`): periods, KPI targets, measurements/variables,
+  constants, formulas, scorecard with actual-vs-target colors, categories. Props:
+  target/bullseye, charts, gauges, trophy.
+  - Cover `kpi_targets_video_cover.png`: header **ODOO KPI TARGETS**; legend
+    *"The tool to set targets, measure results, and reach your goals in Odoo"*.
+- **Password Manager** (`V-DWe7LzhW0`): bundles/vaults, password cards with strength
+  stars, access rights, encryption, portal sharing, duplicate detection. Props: keys,
+  padlocks, shields.
+  - Cover `password_vault_video_cover.png`: header **ODOO PASSWORD VAULT**; legend
+    *"The tool to encrypt, share, and control team passwords in Odoo"*.
+- **Cloud Storage Solutions** (`LX3IWv0L6-U`): organize attachments, folder-tree single
+  view, auto folder rules, sync Odoo with Google Drive / OneDrive / SharePoint /
+  Nextcloud / ownCloud / Dropbox. Mockup: white file-manager UI (folder tree sidebar +
+  "Cloud Clients" connected list, file/folder cards with type icons and "Synced" badges,
+  right "File Preview" panel). Props: 3D cloud, folders, sync arrows, provider badges,
+  shields. Note: keep the tablet UI BRIGHT/WHITE and the background magenta-purple ->
+  teal (the model tends to drift to a dark UI / navy bg for storage themes — correct it).
+  - Cover `cloud_storage_video_cover.png`: header **ODOO CLOUD STORAGE**; legend
+    *"The tool to organize, sync, and manage document files in Odoo"*.
+- **Lost Messages Routing** (`K451Col9iEs`): detects emails that could not be
+  auto-attached ("lost"), routes/attaches them to the right document thread (single or
+  batch), allowed-models config, notifications, "Lost Messages Manager" group. Mockup:
+  white inbox/list UI (Lost Messages + Configuration sidebar, message rows with
+  checkbox/date/subject/author and red "lost" badges, "Route Manual" action, right
+  "Route Message" panel with Model + Object selectors and a teal "Attach message"
+  button). Props: envelopes (one with a red alert badge), routing-arrow signpost,
+  magnifier, shields.
+  - Cover `lost_messages_video_cover.png`: header **ODOO LOST MESSAGES**; legend
+    *"The tool to catch and route lost email messages in Odoo"*.
+- **Joint Calendar** (`lUy5unL2t6A`): merges different Odoo document events
+  (opportunities, meetings, activities, sale/purchase orders, tasks, time offs, MOs)
+  into one or several configurable "super calendars" via rules; color-coded by model,
+  month/week/day/year views, access rights, optional Gantt add-on. Mockup: white Odoo
+  Events month-view UI (calendars sidebar + Configuration: Calendars/Rules, color-coded
+  event chips across a month grid, right mini-calendar + per-model color legend +
+  attendees filter). Props: 3D calendar with check, alarm clock/bell, colorful event
+  map-pins, stacked calendar sheets, shields.
+  - Cover `joint_calendar_video_cover.png`: header **ODOO JOINT CALENDAR**; legend
+    *"The tool to merge all document events into shared calendars in Odoo"*.
