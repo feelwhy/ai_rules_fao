@@ -35,4 +35,7 @@ cd /home/feelwhy/Odoo/faotools_env
 
 - Custom addons bind from `/home/feelwhy/Odoo/<repo>`; tools serie = git branch.
 - `./local/env-serie.sh <serie>` before cross-serie work; `env-up` also ensures the target serie.
+- **Same target again** (already running, or last launched in this chat): only
+  `./local/env-up.sh <target> --restart`. No serie switch, prepare, sync, or
+  other edits — see `ai_rules` `30-command-vocabulary`.
 - See `faotools_env/local/README.md` for full port matrix and sync behavior.
