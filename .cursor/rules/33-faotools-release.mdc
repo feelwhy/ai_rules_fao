@@ -33,8 +33,8 @@ Short, factual, no hype (“significantly”, “seamlessly”, “powerful”).
 
 ```html
 <ul style="list-style-type: none;">
-    <li class="mt8"><i class="fa fa-refresh text-info mr8"></i> The issue of X has been fixed.</li>
-    <li class="mt8"><i class="fa fa-plus text-success mr8"></i> The feature to Y has been added.</li>
+    <li class="mt8"><i class="fa fa-refresh text-info mr8"> </i> The issue of X has been fixed.</li>
+    <li class="mt8"><i class="fa fa-plus text-success mr8"> </i> The feature to Y has been added.</li>
 </ul>
 ```
 
@@ -42,6 +42,8 @@ Short, factual, no hype (“significantly”, “seamlessly”, “powerful”).
 - `fa fa-plus text-success` — new feature or optimization
 
 One `<li>` per change. Read recent `module.release` rows if unsure.
+
+**Never leave a FontAwesome `<i>` empty.** Write `<i class="fa ..."> </i>` (space inside the pair). Empty `<i></i>` is serialized by Odoo `xml_translate` to `<i/>`. HTML5 treats that as an unclosed start tag, so the changelog renders as a broken `+` / leftover `+` and the rest of the list is swallowed. Same for any other non-void icon/wrapper (`<span>`, `<b>`, `<em>`): never `></tag>` with no text, never self-close. Incident 2026-08-23: 94 translation releases shipped `<i class="fa fa-plus text-success mr8"></i>` and the public notes broke.
 
 ## Internal `notes` (mandatory)
 
