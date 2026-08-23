@@ -16,6 +16,7 @@ unless the user names them.
 | faotools.com public site / support / `faotools_env` deploy | `support` > `faotools_env` > `system` > `tools` |
 | life.odootools.com | `life` > `system` > `tools` |
 | MCP module (`ai_mcp_server`) | `odoo-apps-addons` |
+| faOtools app release | owning repo (`tools` or `odoo-apps-addons`) |
 
 ## Rules
 

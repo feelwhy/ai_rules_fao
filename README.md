@@ -31,5 +31,6 @@ python3 tools/sync_rules.py --check
 - Local Docker (`faotools_env/local/`)
 - Live faOtools MCP
 - Prepublishment descriptions/screenshots + video covers
+- App store releases (`module.release` on faotools.com)
 
 Support/tools keep only repo-specific rules in-tree; shared material is here or in `ai_rules`.

@@ -1,0 +1,88 @@
+---
+id: 33-faotools-release
+description: Prepare and publish a faOtools app release on faotools.com (module.release)
+apply: agent
+---
+
+# faOtools app release
+
+Command: “prepare a release”, “make a release”, “publish a release”.
+Live writes go through MCP `user-faotools` (faotools.com). Inspect each tool schema first.
+Mutations: `odoo_records_write` / `odoo_records_create` / `odoo_actions_run`, then `odoo_operations_confirm`.
+
+**Scope: `tools` and `odoo-apps-addons` only.** Resolve `tech_name` in those repos. Refuse `support`, `life`, `system`, `faotools_env`. Do not bump local `__manifest__.py` (`11-manifest-version`); Quick GitHub Update writes GitHub.
+
+The user’s “make a release” is the live-write gate. Ask only when the module/serie is ambiguous, the next `exact_version` already has a `module.release`, or the target is a prepublishment.
+
+## Resolve targets
+
+1. Module (`tech_name`) + Odoo serie(s) (`module.description.version`, e.g. `19.0`). Several series → one release each.
+2. Search published descriptions only:
+
+```
+[("tech_name", "=", "<tech_name>"), ("version", "=", "<serie>"), ("prepublish", "=", False)]
+```
+
+Never write the prepublishment (`prepublish=True`).
+3. Read that `module.description` (`exact_version`, `name`, `release_ids`) and the last few `module.release` rows for the same app (icons, note headings, tone).
+
+`module.description.exact_version` is the tail without the serie (`1.3.53`). Display name is `{version}.{exact_version}` (`19.0.1.3.53`). Bump **only the last number**: `19.0.1.3.53` → `19.0.1.3.54` (`exact_version` `1.3.54`).
+
+## Public `description` (changelog)
+
+Short, factual, no hype (“significantly”, “seamlessly”, “powerful”). Customer-safe: no exploit steps. Match existing HTML:
+
+```html
+<ul style="list-style-type: none;">
+    <li class="mt8"><i class="fa fa-refresh text-info mr8"></i> The issue of X has been fixed.</li>
+    <li class="mt8"><i class="fa fa-plus text-success mr8"></i> The feature to Y has been added.</li>
+</ul>
+```
+
+- `fa fa-refresh text-info` — bug or fix
+- `fa fa-plus text-success` — new feature or optimization
+
+One `<li>` per change. Read recent `module.release` rows if unsure.
+
+## Internal `notes` (mandatory)
+
+**Every new release must have Before / After notes.** A one-line summary is not enough. Include what broke or how it worked, what it does now, and every critical detail (security/ACL, API, upgrade/install, tests, serie-specific differences, commit SHA / PR). Read the code and the live `module.description` / last releases before writing — do not invent.
+
+```
+Before release
+-----------------------
+<actual previous behavior, including the hole or limitation>
+
+After release
+--------------------
+<what changed, checks added, tests, SHA / PR>
+```
+
+Public `description` stays short; put the important detail here. Do not put tokens or customer-private data in notes.
+
+## Sequence (each `module.description`)
+
+1. Write `exact_version` to the bumped tail. Stop if a `module.release` already exists for that `module_id` + `exact_version`.
+2. Create `module.release`: `module_id`, `exact_version` (new tail), `release_date` today, `description`, `notes`. Skip `1_to_check` / `2_checked` (those spawn check activities).
+3. Publish: write `state=3_published`.
+4. Get GitHub Commits: `odoo_actions_run` on **`module.description`** (`ids` = that description), `method_name=action_get_commits` (UI label “Get GitHub Commits”; the release action maps to `module_id.action_get_commits()`).
+5. Auto-link commits: search `github.commit` for that `module_id`, `ingore_commit=False`, preferably `in_release=False`. Pick rows that belong to this change (message, SHA, date after the previous release). Write `commit_ids` on the new `module.release`. If none match, say so — do not attach unrelated history.
+6. Quick GitHub Update: `odoo_actions_run` on **`module.description`**, `method_name=action_update_in_github_quick`.
+7. `odoo_record_url` for every new `module.release` and paste the links in the reply.
+8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). The release is not done while `/ru/` (and the other seven languages) still show English notes.
+
+Report per release: module, serie, old → new version, state, commit count, URL, and whether changelog translations landed.
+
+## Public changelog translations (19.0+)
+
+Pull `ai_rules` `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
+
+After the English row is `3_published`:
+
+1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`.
+2. Translate every new English sentence to `ru_RU`, `fr_FR`, `de_DE`, `es_ES`, `pt_PT`, `nl_NL`, `it_IT`, `ar_001` (glossary / do-not-translate). Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists.
+3. Apply the loader (`support.translations._apply_description` or `_reapply_for_description`). Never `odoo_records_write` / MCP translations without the YAML.
+4. If this 19.0 page also lists older-serie rows (`migration_release_ids`), those public descriptions must be in the same TM list and applied. Do not leave them English.
+5. Prove it: `ru_RU` `description` ≠ `en_US` on the new row, and `/<lang>/apps/...` shows the translated sentence.
+
+Skip this block when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish). Store HTML (`resulted_description`) stays `en_US`.

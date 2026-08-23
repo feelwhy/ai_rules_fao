@@ -11,3 +11,4 @@ alwaysApply: true
 - Before calling any MCP tool, inspect that tool's descriptor/schema and use the documented parameters.
 - Treat live data as production data: do not expose secrets, tokens, customer-private details, or raw sensitive payloads in chat.
 - If code and live behavior disagree, consider whether the module has not been upgraded, a view was customized in the database, or cached/generated content is stale.
+- App releases (`module.release`): follow `33-faotools-release`. Do not invent a parallel publish path.

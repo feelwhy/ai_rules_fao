@@ -57,5 +57,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 ## Who owns rules
 
 - Universal coding / process → `ai_rules`
-- Hub map, boundaries, packaging, local Docker, MCP, prepublishment → `ai_rules_fao`
-- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
+- Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
+- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
+- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on
+- App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first (`17-translations`).

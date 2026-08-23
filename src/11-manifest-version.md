@@ -10,3 +10,4 @@ apply: always
 - When editing manifests (dependencies, assets, data, metadata), leave `version` exactly as it is.
 - Bump `version` only when the user explicitly asks for a version increase or release bump.
 - If a task would normally imply a version change, do not bump automatically — ask the user first.
+- “Make / publish a release” bumps `module.description.exact_version` on faotools.com (`33-faotools-release`). Do not bump the local `__manifest__.py` unless the user also asks for that.

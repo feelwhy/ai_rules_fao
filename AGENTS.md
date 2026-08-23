@@ -59,8 +59,10 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 ## Who owns rules
 
 - Universal coding / process → `ai_rules`
-- Hub map, boundaries, packaging, local Docker, MCP, prepublishment → `ai_rules_fao`
-- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
+- Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
+- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
+- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on
+- App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first (`17-translations`).
 
 ## 01-hub-serie
 
@@ -199,6 +201,7 @@ unless the user names them.
 | faotools.com public site / support / `faotools_env` deploy | `support` > `faotools_env` > `system` > `tools` |
 | life.odootools.com | `life` > `system` > `tools` |
 | MCP module (`ai_mcp_server`) | `odoo-apps-addons` |
+| faOtools app release | owning repo (`tools` or `odoo-apps-addons`) |
 
 ## Rules
 
@@ -243,6 +246,7 @@ _Never change tools module manifest version unless the user explicitly requests 
 - When editing manifests (dependencies, assets, data, metadata), leave `version` exactly as it is.
 - Bump `version` only when the user explicitly asks for a version increase or release bump.
 - If a task would normally imply a version change, do not bump automatically — ask the user first.
+- “Make / publish a release” bumps `module.description.exact_version` on faotools.com (`33-faotools-release`). Do not bump the local `__manifest__.py` unless the user also asks for that.
 
 ## 12-boolean-settings
 
@@ -306,6 +310,54 @@ Whenever a new model gets a list/form action (or an existing action is missing o
 
 See `email_from_rule_views.xml` / `email_from_address_views.xml` in `odoo_email_from` for a concrete example (search by key relations, archived filter, group by the same relations).
 
+## 17-translations
+
+_Hub wiring for faOtools translations (support_translations TM, tools .po, no store leak)_
+
+# faOtools hub translations
+
+Companion to `ai_rules` `17-translations`. Read both when the task changes copy, i18n, or `module.description`.
+
+## Where files live
+
+| Surface | Repo / path |
+|---------|-------------|
+| Glossary, do-not-translate, TM, loader, validators | `support/support_translations/` |
+| App UI `.pot` / `.po` | `tools/<module>/i18n/` and `odoo-apps-addons/ai_mcp_server/i18n/` |
+| Website QWeb code templates | `support/*/i18n/` plus loader YAML for website-builder (COW) views |
+| Cursor rules | `ai_rules` `src/17-translations.md`, this file, `support/.cursor/rules/translations.mdc` |
+
+Do not add a parallel glossary in `tools/` or `life/`.
+
+## Loader vs `.po`
+
+- **`.po`**: exportable strings in Python / XML / JS (`_()`, `string=`, `_t()`).
+- **Loader** (`support.translations`): `module.description` and children (including public `module.release.description` on 19.0+ pages), `ticket.type`, `promo.action`, `ir.ui.view` arch terms on COW views. Term-level `update_field_translations`. Description children are unstable across publish; releases are stable. Keys are `tech_name` + `version` + field + source-text hash; releases also key by `module_version` + `exact_version`.
+
+## Leak paths (must stay `en_US`)
+
+- `modules_website` `_prepare_description` (resulted / static / promo index)
+- `module.description.get_short_summary` when pushing a GitHub manifest (`with_context(lang="en_US")`)
+- Any cron that prepares store HTML
+- Support-owned `mail.template` (`lang=en_US`, empty `.po` terms). `check_mail_templates.py` enforces this.
+
+`short_summary` itself is website-translatable (`translate=True`, TM dump). Only the store/GitHub callers stay pinned.
+
+Regression: `modules_website` `test_en_us_store_leak` (includes the now-translated `short_summary`).
+
+## Bind future work
+
+- Editing a tools module that has `i18n/` → update `.po` (or regenerate from TM) in the same task.
+- Editing a faotools.com page or 19.0 description → update TM YAML, then loader.
+- Publishing a **19.0+** `module.release` → TM-first translate `description` (not `notes`) in the same task; `33-faotools-release` step 8. Older-serie rows shown on that 19.0 page are in scope too.
+- `action_apply_prepublishment` re-applies translations in code; do not skip the hook.
+- After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
+- Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language.
+
+## Out of scope until asked
+
+KnowSystem article bodies and `/docs` content stay English. Screenshot **files** stay English; `module.pic.name` and `alt_name` are translated. Country variants and the extended set are shipped (same list as `ai_rules` `17-translations`); production URL prefixes are Phase 11 activation. Seed from the root locale and analyze each string separately (translations may differ — not a copy, not an SEO-only event).
+
 ## 20-local-docker
 
 _faotools_env local Docker: env-up, env-serie, env-shell, ports, Mailpit_
@@ -358,6 +410,7 @@ _Live faOtools MCP usage for production truth on faotools.com_
 - Before calling any MCP tool, inspect that tool's descriptor/schema and use the documented parameters.
 - Treat live data as production data: do not expose secrets, tokens, customer-private details, or raw sensitive payloads in chat.
 - If code and live behavior disagree, consider whether the module has not been upgraded, a view was customized in the database, or cached/generated content is stale.
+- App releases (`module.release`): follow `33-faotools-release`. Do not invent a parallel publish path.
 
 ## 30-prepublishment-descriptions
 
@@ -386,6 +439,7 @@ Editable (rephrase freely; keep facts truthful):
 
 Hard do-not-touch:
 - `module.description.short_summary` — leave exactly as-is.
+- Prepublishments are **English-only**. Do not author translations on the draft; the `support_translations` loader re-applies them after publish.
 - The **first** feature in `feature_ids` (overview block) has no title — never add `name`/`subheader`; only improve its `body`.
 - Never invent capabilities.
 
@@ -860,3 +914,90 @@ These pixel steps make results exact and on-brand. Always verify by cropping/zoo
   map-pins, stacked calendar sheets, shields.
   - Cover `joint_calendar_video_cover.png`: header **ODOO JOINT CALENDAR**; legend
     *"The tool to merge all document events into shared calendars in Odoo"*.
+
+## 33-faotools-release
+
+_Prepare and publish a faOtools app release on faotools.com (module.release)_
+
+# faOtools app release
+
+Command: “prepare a release”, “make a release”, “publish a release”.
+Live writes go through MCP `user-faotools` (faotools.com). Inspect each tool schema first.
+Mutations: `odoo_records_write` / `odoo_records_create` / `odoo_actions_run`, then `odoo_operations_confirm`.
+
+**Scope: `tools` and `odoo-apps-addons` only.** Resolve `tech_name` in those repos. Refuse `support`, `life`, `system`, `faotools_env`. Do not bump local `__manifest__.py` (`11-manifest-version`); Quick GitHub Update writes GitHub.
+
+The user’s “make a release” is the live-write gate. Ask only when the module/serie is ambiguous, the next `exact_version` already has a `module.release`, or the target is a prepublishment.
+
+## Resolve targets
+
+1. Module (`tech_name`) + Odoo serie(s) (`module.description.version`, e.g. `19.0`). Several series → one release each.
+2. Search published descriptions only:
+
+```
+[("tech_name", "=", "<tech_name>"), ("version", "=", "<serie>"), ("prepublish", "=", False)]
+```
+
+Never write the prepublishment (`prepublish=True`).
+3. Read that `module.description` (`exact_version`, `name`, `release_ids`) and the last few `module.release` rows for the same app (icons, note headings, tone).
+
+`module.description.exact_version` is the tail without the serie (`1.3.53`). Display name is `{version}.{exact_version}` (`19.0.1.3.53`). Bump **only the last number**: `19.0.1.3.53` → `19.0.1.3.54` (`exact_version` `1.3.54`).
+
+## Public `description` (changelog)
+
+Short, factual, no hype (“significantly”, “seamlessly”, “powerful”). Customer-safe: no exploit steps. Match existing HTML:
+
+```html
+<ul style="list-style-type: none;">
+    <li class="mt8"><i class="fa fa-refresh text-info mr8"></i> The issue of X has been fixed.</li>
+    <li class="mt8"><i class="fa fa-plus text-success mr8"></i> The feature to Y has been added.</li>
+</ul>
+```
+
+- `fa fa-refresh text-info` — bug or fix
+- `fa fa-plus text-success` — new feature or optimization
+
+One `<li>` per change. Read recent `module.release` rows if unsure.
+
+## Internal `notes` (mandatory)
+
+**Every new release must have Before / After notes.** A one-line summary is not enough. Include what broke or how it worked, what it does now, and every critical detail (security/ACL, API, upgrade/install, tests, serie-specific differences, commit SHA / PR). Read the code and the live `module.description` / last releases before writing — do not invent.
+
+```
+Before release
+-----------------------
+<actual previous behavior, including the hole or limitation>
+
+After release
+--------------------
+<what changed, checks added, tests, SHA / PR>
+```
+
+Public `description` stays short; put the important detail here. Do not put tokens or customer-private data in notes.
+
+## Sequence (each `module.description`)
+
+1. Write `exact_version` to the bumped tail. Stop if a `module.release` already exists for that `module_id` + `exact_version`.
+2. Create `module.release`: `module_id`, `exact_version` (new tail), `release_date` today, `description`, `notes`. Skip `1_to_check` / `2_checked` (those spawn check activities).
+3. Publish: write `state=3_published`.
+4. Get GitHub Commits: `odoo_actions_run` on **`module.description`** (`ids` = that description), `method_name=action_get_commits` (UI label “Get GitHub Commits”; the release action maps to `module_id.action_get_commits()`).
+5. Auto-link commits: search `github.commit` for that `module_id`, `ingore_commit=False`, preferably `in_release=False`. Pick rows that belong to this change (message, SHA, date after the previous release). Write `commit_ids` on the new `module.release`. If none match, say so — do not attach unrelated history.
+6. Quick GitHub Update: `odoo_actions_run` on **`module.description`**, `method_name=action_update_in_github_quick`.
+7. `odoo_record_url` for every new `module.release` and paste the links in the reply.
+8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). The release is not done while `/ru/` (and the other seven languages) still show English notes.
+
+Report per release: module, serie, old → new version, state, commit count, URL, and whether changelog translations landed.
+
+## Public changelog translations (19.0+)
+
+Pull `ai_rules` `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
+
+After the English row is `3_published`:
+
+1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`.
+2. Translate every new English sentence to `ru_RU`, `fr_FR`, `de_DE`, `es_ES`, `pt_PT`, `nl_NL`, `it_IT`, `ar_001` (glossary / do-not-translate). Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists.
+3. Apply the loader (`support.translations._apply_description` or `_reapply_for_description`). Never `odoo_records_write` / MCP translations without the YAML.
+4. If this 19.0 page also lists older-serie rows (`migration_release_ids`), those public descriptions must be in the same TM list and applied. Do not leave them English.
+5. Prove it: `ru_RU` `description` ≠ `en_US` on the new row, and `/<lang>/apps/...` shows the translated sentence.
+
+Skip this block when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish). Store HTML (`resulted_description`) stays `en_US`.

@@ -26,6 +26,7 @@ Editable (rephrase freely; keep facts truthful):
 
 Hard do-not-touch:
 - `module.description.short_summary` — leave exactly as-is.
+- Prepublishments are **English-only**. Do not author translations on the draft; the `support_translations` loader re-applies them after publish.
 - The **first** feature in `feature_ids` (overview block) has no title — never add `name`/`subheader`; only improve its `body`.
 - Never invent capabilities.
 
