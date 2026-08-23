@@ -61,7 +61,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on
+- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`.
 - App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first (`17-translations`).
 
 ## 01-hub-serie
@@ -353,10 +353,11 @@ Regression: `modules_website` `test_en_us_store_leak` (includes the now-translat
 - `action_apply_prepublishment` re-applies translations in code; do not skip the hook.
 - After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
 - Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language.
+- HTML in `xml_translate` fields (`module.feature.body`, `module.release.description`, …) must follow always-on `ai_rules` `18-xml-translate-html`. Never empty `<i></i>` / `<i/>`.
 
 ## Out of scope until asked
 
-KnowSystem article bodies and `/docs` content stay English. Screenshot **files** stay English; `module.pic.name` and `alt_name` are translated. Country variants and the extended set are shipped (same list as `ai_rules` `17-translations`); production URL prefixes are Phase 11 activation. Seed from the root locale and analyze each string separately (translations may differ — not a copy, not an SEO-only event).
+KnowSystem article **records** and `/docs` stay English. Website app-page and ticket-form FAQ text is overlaid from `support/support_translations/tm/website/faqs/` (not Multi Languages). Store HTML stays `en_US`. Screenshot **files** stay English; `module.pic.name` and `alt_name` are translated. Country variants and the extended set are shipped (same list as `ai_rules` `17-translations`); production URL prefixes are Phase 11 activation. Seed from the root locale and analyze each string separately (translations may differ — not a copy, not an SEO-only event).
 
 ## 20-local-docker
 
@@ -949,8 +950,8 @@ Short, factual, no hype (“significantly”, “seamlessly”, “powerful”).
 
 ```html
 <ul style="list-style-type: none;">
-    <li class="mt8"><i class="fa fa-refresh text-info mr8"></i> The issue of X has been fixed.</li>
-    <li class="mt8"><i class="fa fa-plus text-success mr8"></i> The feature to Y has been added.</li>
+    <li class="mt8"><i class="fa fa-refresh text-info mr8"> </i> The issue of X has been fixed.</li>
+    <li class="mt8"><i class="fa fa-plus text-success mr8"> </i> The feature to Y has been added.</li>
 </ul>
 ```
 
@@ -958,6 +959,8 @@ Short, factual, no hype (“significantly”, “seamlessly”, “powerful”).
 - `fa fa-plus text-success` — new feature or optimization
 
 One `<li>` per change. Read recent `module.release` rows if unsure.
+
+**Never leave a FontAwesome `<i>` empty.** Write `<i class="fa ..."> </i>` (space inside the pair). Empty `<i></i>` is serialized by Odoo `xml_translate` to `<i/>`. HTML5 treats that as an unclosed start tag, so the changelog renders as a broken `+` / leftover `+` and the rest of the list is swallowed. Same for any other non-void icon/wrapper (`<span>`, `<b>`, `<em>`): never `></tag>` with no text, never self-close. Incident 2026-08-23: 94 translation releases shipped `<i class="fa fa-plus text-success mr8"></i>` and the public notes broke.
 
 ## Internal `notes` (mandatory)
 
