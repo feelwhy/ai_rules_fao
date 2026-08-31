@@ -9,9 +9,11 @@ Command: “prepare a release”, “make a release”, “publish a release”.
 Live writes go through MCP `user-faotools` (faotools.com). Inspect each tool schema first.
 Mutations: `odoo_records_write` / `odoo_records_create` / `odoo_actions_run`, then `odoo_operations_confirm`.
 
-**Scope: `tools` and `odoo-apps-addons` only.** Resolve `tech_name` in those repos. Refuse `support`, `life`, `system`, `faotools_env`. Do not bump local `__manifest__.py` (`11-manifest-version`); Quick GitHub Update writes GitHub.
+**Scope: `tools` and `odoo-apps-addons` only.** Resolve `tech_name` in those repos. Refuse `support`, `life`, `system`, `faotools_env`. Do not bump local `__manifest__.py` (`11-manifest-version`). Do not run Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`) as part of a release.
 
 The user’s “make a release” is the live-write gate. Ask only when the module/serie is ambiguous, the next `exact_version` already has a `module.release`, or the target is a prepublishment.
+
+**Translations are part of the release.** On 19.0+ the job includes step 8 (TM YAML + live loader apply) in the same turn as publish. Do not report published, do not stop at GitHub / demo rebuild, and do not treat “do not redeploy Functional” as a skip. The **only** skip is the user **explicitly** saying to skip translations / do not translate (quote that command; do not mark step 8 done).
 
 ## Resolve targets
 
@@ -68,22 +70,30 @@ Public `description` stays short; put the important detail here. Do not put toke
 3. Publish: write `state=3_published`.
 4. Get GitHub Commits: `odoo_actions_run` on **`module.description`** (`ids` = that description), `method_name=action_get_commits` (UI label “Get GitHub Commits”; the release action maps to `module_id.action_get_commits()`).
 5. Auto-link commits: search `github.commit` for that `module_id`, `ingore_commit=False`, preferably `in_release=False`. Pick rows that belong to this change (message, SHA, date after the previous release). Write `commit_ids` on the new `module.release`. If none match, say so — do not attach unrelated history.
-6. Quick GitHub Update: `odoo_actions_run` on **`module.description`**, `method_name=action_update_in_github_quick`.
+6. Do **not** run Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`). MCP wraps the call in a savepoint; that method’s `cr.commit()` then aborts the cursor (`InFailedSqlTransaction`). The operator runs it from the UI if needed.
 7. `odoo_record_url` for every new `module.release` and paste the links in the reply.
-8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). The release is not done while `/ru/` (and the other seven languages) still show English notes.
+8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). The release is **not done** until `/ru/` (and the other shipped languages) show the translated notes. This step is **never** skipped, delayed, or treated as a later follow-up unless the user **explicitly** says to skip translations (quote that command on the reprint; do not mark the step done).
 
-Report per release: module, serie, old → new version, state, commit count, URL, and whether changelog translations landed.
+Report per release: module, serie, old → new version, state, commit count, URL, and the `ru_RU` ≠ `en_US` proof.
 
 ## Public changelog translations (19.0+)
 
 Pull `ai_rules` `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
 
+**Hard gate.** A 19.0+ publish that leaves the new changelog English has failed the release. Do not report “published” until step 5 below has passed.
+
+These do **not** skip or postpone this block (they are not an explicit “skip translations”):
+
+- “do not redeploy / rebuild Functional” (faotools.com). Changelog apply is a loader write on the live DB, not a project rebuild.
+- Demo / master project rebuilds, GitHub update, or “YAML is in git”.
+- “the YAML is not on the container disk yet.”
+
 After the English row is `3_published`:
 
 1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`.
 2. Translate every new English sentence to `ru_RU`, `fr_FR`, `de_DE`, `es_ES`, `pt_PT`, `nl_NL`, `it_IT`, `ar_001` (glossary / do-not-translate). Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists.
-3. Apply the loader (`support.translations._apply_description` or `_reapply_for_description`). Never `odoo_records_write` / MCP translations without the YAML.
+3. **Apply now on faotools.com** via MCP `odoo_actions_run` on `support.translations`, method `_apply_description`, args = `[payload, installed_lang_codes, path]`. `payload` is the YAML `match` plus the new `releases` entry (load from the local file). That writes `update_field_translations` on the live row. Do **not** wait for a Functional image rebuild. `_reapply_for_description` only if that YAML is already on the container disk. Never `odoo_records_write` translations that are not in the YAML. If MCP refuses to parse a large payload, apply in language batches (sentence-only terms are enough; the loader wraps the icon). A parse failure is not a skip.
 4. If this 19.0 page also lists older-serie rows (`migration_release_ids`), those public descriptions must be in the same TM list and applied. Do not leave them English.
 5. Prove it: `ru_RU` `description` ≠ `en_US` on the new row, and `/<lang>/apps/...` shows the translated sentence.
 
-Skip this block when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish). Store HTML (`resulted_description`) stays `en_US`.
+Skip this block only when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish), or when the user **explicitly** commanded a skip. Store HTML (`resulted_description`) stays `en_US`.
