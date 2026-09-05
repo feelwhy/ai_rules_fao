@@ -37,12 +37,24 @@ Regression: `modules_website` `test_en_us_store_leak` (includes the now-translat
 ## Bind future work
 
 - Editing a tools module that has `i18n/` → update `.po` (or regenerate from TM) in the same task.
-- Editing a faotools.com page or 19.0 description → update TM YAML, then loader.
-- Publishing a **19.0+** `module.release` → TM-first translate `description` (not `notes`) in the same task; `33-faotools-release` step 8. Older-serie rows shown on that 19.0 page are in scope too.
-- `action_apply_prepublishment` re-applies translations in code; do not skip the hook.
+- Editing a faotools.com page or 19.0 description → update TM YAML, then loader. That includes every **new or renamed** `module.pic.name` / `alt_name` (see **Screenshot titles** below). Guideline body alone is not enough.
+- Publishing a **19.0+** `module.release` → TM-first translate `description` (not `notes`) and **apply the loader on faotools.com in the same task** (`33-faotools-release` step 8). Never leave that apply for a later Functional rebuild. Skip only if the user **explicitly** says to skip translations. Older-serie rows shown on that 19.0 page are in scope too.
+- `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs MCP `_apply_description`.
 - After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
 - Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language.
 - HTML in `xml_translate` fields (`module.feature.body`, `module.release.description`, …) must follow always-on `ai_rules` `18-xml-translate-html`. Never empty `<i></i>` / `<i/>`.
+
+## Screenshot titles (`module.pic`) — hard gate
+
+Incident 2026-09-01: Google Drive guideline **body** was translated; `/ru/` captions stayed English (`Open the Google Auth Platform`).
+
+PNG files stay English. **`module.pic.name` and `alt_name` are translated.** Replacing or renaming shots is a source-string change, same job as the body.
+
+1. Rewrite TM `confs[].pics` / `features[].pics` / top-level `pics` to the **new** English `name` and `alt_name` (new fingerprint). Do not leave the old titles under the old `sequence`.
+2. Translate both fields for every shipped language.
+3. MCP `_apply_description` **must include `pics`**. Omitting them leaves titles English. Do not apply the previous pic YAML onto the new shots.
+4. Loader `_match_child` matches English source/fingerprint first, then sequence. Old source + new title = no match. Sequence fallback can hit the wrong pic; `_apply_field_payload` then skips `plain` fields on a stale fingerprint (`return 0`) — silent English leftover.
+5. Body/guideline translated is **not** done. Prove `/ru/` (and each shipped lang) caption ≠ English: live `module.pic.name` `ru_RU` ≠ `en_US`.
 
 ## Out of scope until asked
 

@@ -59,5 +59,6 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`.
-- App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first (`17-translations`).
+- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`. New or replaced `module.pic` titles (`name` / `alt_name`) are TM + live loader in the **same** job as the shots; PNG files stay English.
+- Demo data for public apps: XML in the `tools` module, Python generators and script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) in `system/odootools_demo` — `34-demo-data`. KnowSystem articles additionally follow their `editor_type` contract — `35-knowsystem-demo`.
+- App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Do not leave `/ru/` English unless the user explicitly skips translations.

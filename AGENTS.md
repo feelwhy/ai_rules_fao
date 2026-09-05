@@ -61,8 +61,9 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`.
-- App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first (`17-translations`).
+- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`. New or replaced `module.pic` titles (`name` / `alt_name`) are TM + live loader in the **same** job as the shots; PNG files stay English.
+- Demo data for public apps: XML in the `tools` module, Python generators and script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) in `system/odootools_demo` — `34-demo-data`. KnowSystem articles additionally follow their `editor_type` contract — `35-knowsystem-demo`.
+- App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Do not leave `/ru/` English unless the user explicitly skips translations.
 
 ## 01-hub-serie
 
@@ -348,12 +349,24 @@ Regression: `modules_website` `test_en_us_store_leak` (includes the now-translat
 ## Bind future work
 
 - Editing a tools module that has `i18n/` → update `.po` (or regenerate from TM) in the same task.
-- Editing a faotools.com page or 19.0 description → update TM YAML, then loader.
-- Publishing a **19.0+** `module.release` → TM-first translate `description` (not `notes`) in the same task; `33-faotools-release` step 8. Older-serie rows shown on that 19.0 page are in scope too.
-- `action_apply_prepublishment` re-applies translations in code; do not skip the hook.
+- Editing a faotools.com page or 19.0 description → update TM YAML, then loader. That includes every **new or renamed** `module.pic.name` / `alt_name` (see **Screenshot titles** below). Guideline body alone is not enough.
+- Publishing a **19.0+** `module.release` → TM-first translate `description` (not `notes`) and **apply the loader on faotools.com in the same task** (`33-faotools-release` step 8). Never leave that apply for a later Functional rebuild. Skip only if the user **explicitly** says to skip translations. Older-serie rows shown on that 19.0 page are in scope too.
+- `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs MCP `_apply_description`.
 - After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
 - Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language.
 - HTML in `xml_translate` fields (`module.feature.body`, `module.release.description`, …) must follow always-on `ai_rules` `18-xml-translate-html`. Never empty `<i></i>` / `<i/>`.
+
+## Screenshot titles (`module.pic`) — hard gate
+
+Incident 2026-09-01: Google Drive guideline **body** was translated; `/ru/` captions stayed English (`Open the Google Auth Platform`).
+
+PNG files stay English. **`module.pic.name` and `alt_name` are translated.** Replacing or renaming shots is a source-string change, same job as the body.
+
+1. Rewrite TM `confs[].pics` / `features[].pics` / top-level `pics` to the **new** English `name` and `alt_name` (new fingerprint). Do not leave the old titles under the old `sequence`.
+2. Translate both fields for every shipped language.
+3. MCP `_apply_description` **must include `pics`**. Omitting them leaves titles English. Do not apply the previous pic YAML onto the new shots.
+4. Loader `_match_child` matches English source/fingerprint first, then sequence. Old source + new title = no match. Sequence fallback can hit the wrong pic; `_apply_field_payload` then skips `plain` fields on a stale fingerprint (`return 0`) — silent English leftover.
+5. Body/guideline translated is **not** done. Prove `/ru/` (and each shipped lang) caption ≠ English: live `module.pic.name` `ru_RU` ≠ `en_US`.
 
 ## Out of scope until asked
 
@@ -699,6 +712,20 @@ Reject and fix if any check fails:
 | Size | Exactly 1130px wide final PNG |
 | Caption | `alt_name` matches what a buyer actually sees |
 
+# Translations (hard gate) — titles and alts, not the PNG
+
+Screenshot **files** stay English. **`module.pic.name` and `alt_name` are translated.**
+
+Replacing or adding shots is **not** done when the PNG is on the page. Same job:
+
+1. Rewrite TM `confs[].pics` / `features[].pics` to the **new** English `name` and `alt_name` (drop the old titles).
+2. Translate both fields for every shipped language (`17-translations`).
+3. MCP `_apply_description` **must include `pics`**. Omitting them, or applying the old pic YAML, leaves `/<lang>/` captions in English.
+4. `action_apply_prepublishment` only re-applies YAML already on the Functional container — new local TM still needs `_apply_description`.
+5. Prove it: `/ru/` caption ≠ English (`module.pic.name` `ru_RU` ≠ `en_US`).
+
+Incident 2026-09-01: Google Drive guideline body was translated; titles such as `Open the Google Auth Platform` stayed English because TM still had the old console titles and the loader apply omitted `pics`.
+
 # Handoff for manual faOtools upload (default)
 
 After capture, crop/legend, and **QA pass**, move only final PNGs to:
@@ -926,9 +953,11 @@ Command: “prepare a release”, “make a release”, “publish a release”.
 Live writes go through MCP `user-faotools` (faotools.com). Inspect each tool schema first.
 Mutations: `odoo_records_write` / `odoo_records_create` / `odoo_actions_run`, then `odoo_operations_confirm`.
 
-**Scope: `tools` and `odoo-apps-addons` only.** Resolve `tech_name` in those repos. Refuse `support`, `life`, `system`, `faotools_env`. Do not bump local `__manifest__.py` (`11-manifest-version`); Quick GitHub Update writes GitHub.
+**Scope: `tools` and `odoo-apps-addons` only.** Resolve `tech_name` in those repos. Refuse `support`, `life`, `system`, `faotools_env`. Do not bump local `__manifest__.py` (`11-manifest-version`). Do not run Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`) as part of a release.
 
 The user’s “make a release” is the live-write gate. Ask only when the module/serie is ambiguous, the next `exact_version` already has a `module.release`, or the target is a prepublishment.
+
+**Translations are part of the release.** On 19.0+ the job includes step 8 (TM YAML + live loader apply) in the same turn as publish. Do not report published, do not stop at GitHub / demo rebuild, and do not treat “do not redeploy Functional” as a skip. The **only** skip is the user **explicitly** saying to skip translations / do not translate (quote that command; do not mark step 8 done).
 
 ## Resolve targets
 
@@ -985,22 +1014,440 @@ Public `description` stays short; put the important detail here. Do not put toke
 3. Publish: write `state=3_published`.
 4. Get GitHub Commits: `odoo_actions_run` on **`module.description`** (`ids` = that description), `method_name=action_get_commits` (UI label “Get GitHub Commits”; the release action maps to `module_id.action_get_commits()`).
 5. Auto-link commits: search `github.commit` for that `module_id`, `ingore_commit=False`, preferably `in_release=False`. Pick rows that belong to this change (message, SHA, date after the previous release). Write `commit_ids` on the new `module.release`. If none match, say so — do not attach unrelated history.
-6. Quick GitHub Update: `odoo_actions_run` on **`module.description`**, `method_name=action_update_in_github_quick`.
+6. Do **not** run Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`). MCP wraps the call in a savepoint; that method’s `cr.commit()` then aborts the cursor (`InFailedSqlTransaction`). The operator runs it from the UI if needed.
 7. `odoo_record_url` for every new `module.release` and paste the links in the reply.
-8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). The release is not done while `/ru/` (and the other seven languages) still show English notes.
+8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). The release is **not done** until `/ru/` (and the other shipped languages) show the translated notes. This step is **never** skipped, delayed, or treated as a later follow-up unless the user **explicitly** says to skip translations (quote that command on the reprint; do not mark the step done).
 
-Report per release: module, serie, old → new version, state, commit count, URL, and whether changelog translations landed.
+Report per release: module, serie, old → new version, state, commit count, URL, and the `ru_RU` ≠ `en_US` proof.
 
 ## Public changelog translations (19.0+)
 
 Pull `ai_rules` `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
 
+**Hard gate.** A 19.0+ publish that leaves the new changelog English has failed the release. Do not report “published” until step 5 below has passed.
+
+These do **not** skip or postpone this block (they are not an explicit “skip translations”):
+
+- “do not redeploy / rebuild Functional” (faotools.com). Changelog apply is a loader write on the live DB, not a project rebuild.
+- Demo / master project rebuilds, GitHub update, or “YAML is in git”.
+- “the YAML is not on the container disk yet.”
+
 After the English row is `3_published`:
 
 1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`.
 2. Translate every new English sentence to `ru_RU`, `fr_FR`, `de_DE`, `es_ES`, `pt_PT`, `nl_NL`, `it_IT`, `ar_001` (glossary / do-not-translate). Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists.
-3. Apply the loader (`support.translations._apply_description` or `_reapply_for_description`). Never `odoo_records_write` / MCP translations without the YAML.
+3. **Apply now on faotools.com** via MCP `odoo_actions_run` on `support.translations`, method `_apply_description`, args = `[payload, installed_lang_codes, path]`. `payload` is the YAML `match` plus the new `releases` entry (load from the local file). That writes `update_field_translations` on the live row. Do **not** wait for a Functional image rebuild. `_reapply_for_description` only if that YAML is already on the container disk. Never `odoo_records_write` translations that are not in the YAML. If MCP refuses to parse a large payload, apply in language batches (sentence-only terms are enough; the loader wraps the icon). A parse failure is not a skip.
 4. If this 19.0 page also lists older-serie rows (`migration_release_ids`), those public descriptions must be in the same TM list and applied. Do not leave them English.
 5. Prove it: `ru_RU` `description` ≠ `en_US` on the new row, and `/<lang>/apps/...` shows the translated sentence.
 
-Skip this block when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish). Store HTML (`resulted_description`) stays `en_US`.
+Skip this block only when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish), or when the user **explicitly** commanded a skip. Store HTML (`resulted_description`) stays `en_US`.
+
+## 34-demo-data
+
+_Demo data for tools apps — layer boundary, quality bar, shared cast, xmlid stability_
+
+# Demo data (tools + odootools_demo)
+
+Pull this rule for any task that adds or changes `tools/*/demo`, a `tools` manifest `demo` key, or `system/odootools_demo` loaders / template setup.
+
+Demo content for a public app is **either** plain XML inside that `tools` module **or** Python inside `system/odootools_demo`. There is no third option, and a `tools` module never ships a Python demo generator.
+
+## Layer boundary
+
+| Layer | Where | Ships to customers |
+|---|---|---|
+| 1 | `tools/<module>/demo/*.xml` + manifest `demo` | Yes (apps.odoo.com zip, client DB with demo) |
+| 2 | `system/odootools_demo` Python | No (our template / clones only) |
+| 2b | `system/odootools_demo/demo_scripts/<module>/` (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) | No — script inventory, never in the public zip |
+| 3 | `tools/<module>/i18n/*.po` demo terms | Yes, with the app |
+| 4 | `faotools_env/local/env-demo-*.sh` | Local + later production template build |
+
+**Real demo data belongs in `tools`. Basics and scripts belong in `system`.** The records a
+customer is meant to look at, click and edit are Layer 1; the machinery that produces or
+completes them — loaders, spec tables, upserts, refreshers, credentials, cross-app wiring,
+and every JSON the linter / reload scripts read — is Layer 2 / 2b. Odoo never loads
+`demo_xmlids.json`, `demo_purge.json`, or `asset_signoff.json`. Those files must not sit
+in a `tools` module.
+
+Layer 1: only that module's **own** models plus configuration it owns. Referenced actors are core demo xmlids in the module's transitive `depends`.
+
+Layer 2: users, `res.users` credentials, settings, cross-app targets, homepage, topicality cron, XXTOOLS / Y1TOOLS history.
+
+A `tools` module must not carry spec tables, upsert helpers, `<function>` demo loaders, or hand-written `ir.model.data` rows for demo.
+
+### Why Python demo cannot live in the module
+
+Demo targets are usually core records of apps the product does **not** depend on (`hr`, `crm`, `sale`, `purchase`). `ref("purchase.purchase_order_4")` cannot be used from a module whose `depends` is `["web"]`.
+
+A plain install with demo — **including the apps.odoo.com live preview** — shows only Layer 1. Do not move the generator back into `tools` to "fix" that.
+
+### Layer 1 must be self-sufficient — no plugs
+
+What Layer 1 ships has to stand on its own, because Layer 2 will not be there. A **plug** is a
+record whose only content lives in the other layer: a vault with no passwords, a type with no
+fields, a section with no articles, a role whose groups are stamped from Python, a rule whose
+target is created elsewhere. It is worse than shipping nothing — the app reads as unused, and
+that is the page the store preview shows.
+
+Before a family chunk is done, ask of every Layer 1 file: **installed alone, with demo, and
+nothing else — is there anything here to look at?**
+
+- **Container implies content.** If Layer 1 creates the parent, Layer 1 creates enough children
+ to make the parent worth opening. Splitting the two across layers is the plug.
+- **Visibility counts as content.** A record hidden by the module's own record rules is a plug
+ even though the row exists. Ship the `*.access` / member / publish rows that let the shipped
+ demo user (`base.user_demo`, `base.user_admin`) actually see it.
+- **What Layer 1 genuinely cannot produce moves out whole.** Not the parent in `tools` and the
+ child in `system` — the whole family goes to `odootools_demo`, and the module ships
+ `"demo": []`. `security_user_roles` is the reference case: roles are worthless without real
+ groups, so the roles went too.
+- **Configuration with nothing configured is still a plug.** A `custom.*` field definition whose
+  value no record carries reads as an empty side panel. Definitions may stay in Layer 1 (a
+  customer can fill them), but the values are then owed from Layer 2 in the same chunk — the
+  generated column is `x_oz_<code>_<id>`, an id-dependent name no XML can reference.
+
+### What Layer 1 can only do at install — Layer 2 owes the rest
+
+A noupdate demo record is **created on install and skipped on every `-u`**
+(`convert.py` `_tag_record`). Two Layer 1 patterns therefore work for a customer's fresh
+install and silently do nothing on our long-lived demo databases, so the same chunk owes a
+Layer 2 re-apply:
+
+- **Dropdown options.** `custom.extra.field.selection` rows do not reach the generated
+  `ir.model.fields`; only `custom_extra_field.write` pushes them (`_return_new_field_values`).
+  Layer 1 re-declares the field after its options; Layer 2 calls
+  `_demo_custom_field_sync_options` so an installed database stops showing an empty dropdown.
+- **Updating a foreign record.** A demo file may set a field on another module's xmlid
+  (`odoo_password_manager_custom_fields/demo` types the `odoo_password_manager` keys) — the only
+  Layer 1 way when the dependency cannot see the dependent. `env-demo-reload.sh` leaves foreign
+  xmlids to their owning module, and the `-u` skips the row, so Layer 2 re-stamps the value.
+
+### Layer 1 bans
+
+Never in tools demo XML:
+
+- Models: `res.users`, `res.groups`, `res.company`, `res.lang`, `ir.cron`, `ir.mail_server`, `ir.config_parameter`
+- Login credentials: `login` / `password` on `res.users`, and any secret that grants access to a real system. A password the **product itself** stores as business data (`password.key`, `portal.password.bundle`) is content, not a credential — sample values only, never a live one.
+- Anything that sends mail
+- Posted / validated transactional records: no `<function>` calling `action_post` / `action_confirm` / `button_validate` / `_action_done`; do not write `state` to `posted` / `done` / `sale` / `purchase` on core sale / purchase / invoice / picking models. Draft quotations, draft invoices, planned pickings only.
+
+Every Layer 1 record must be deletable by a client without side effects. `noupdate="1"`. Attachments under `<module>/static/demo/` with source URL + license in `static/demo/SOURCES.md`. HTML per `ai_rules` `18-xml-translate-html` (never empty `<i></i>` / `<i/>`).
+
+Never in `tools/<module>/demo/`: `demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`,
+or any other script JSON. Those live in `system/odootools_demo/demo_scripts/<module>/`.
+The linter fails a public module that still ships them.
+
+### Layer 2 rules (odootools_demo)
+
+- Guard: `_demo_module_installed("<module>")`, or `"<model>" not in self.env` → return.
+- Resolve targets with `self.env.ref(xmlid, raise_if_not_found=False)`; skip and log if missing.
+- Upsert by xmlid (`_demo_ensure_xmlid`). Demo `<function>` tags skip on `-u`; setup and `env-demo-reload.sh` call Python loaders directly.
+- **`odootools_demo.*` xmlids only.** Never create `ir.model.data` in a `tools` module namespace from `system`.
+- Password / extra-module install is gated on `_is_demo_template_db()` (escape hatch `odootools_demo.template_db_names`). Template ships **en_US only**; clones get languages from `after_clone_19`.
+- Date shufflers skip records owned by a tools or `odootools_demo` xmlid. Core xmlids (`sale.sale_order_1`, …) still shuffle — so an authored family needs its own refresher (see **Topicality**).
+
+## Shared cast
+
+Resolve by **xmlid**, never by uid.
+
+| Role | Xmlid / stamp |
+|---|---|
+| 0user | `base.user_demo` (login `demo`; xmlid `odootools_demo.user_0user`) |
+| Anita Oliver | `hr.employee_hne` → user `anita.oliver@example.com` |
+| Other team | core `hr` demo employees (Doris Cole, Ernest Reed, Sharlene Rhodes, Paul Williams) |
+| abs-xyz | `product.product_product_acoustic_bloc_screens_white` |
+| manual-cd | `product.product_product_4c` |
+| ODS-900 | `product.product_order_01` |
+| Sales teams | `sales_team.team_sales_department` → Europe; `sales_team.crm_team_1` → America |
+
+Password `faotools` for 0user and the team. **Never** touch OdooBot or Administrator passwords. Scrub real-looking portal identities (e.g. Dhruv Fefar). TZ `Europe/Brussels` on users and `resource.calendar`.
+
+Vendors in copy: **Gemini Furniture**, **Ready Mat**, **Azure Interior**, **Anita Oliver** (not Olivier, not GeM Designs).
+
+## Quality bar
+
+Demo must read as if a human prepared a customer database.
+
+- **Correct.** Numbers add up; every person, company and product named in free text exists as a record; every `ref` resolves.
+- **Current.** No fixed historical period, no validity window ending in the past. Dates are `eval` / relative or maintained by the topicality cron.
+- **Consistent.** One spelling per persona. One casing convention per model.
+- **Not an advertisement.** No "(added by the tool …)" footers, no `apps.odoo.com` / `faotools.com` links, no hardcoded serie number in demo text.
+- **Clean text.** ASCII-only English source (apps.odoo.com zip is latin-1); no Cyrillic/Greek lookalikes inside Latin words; no NBSP, zero-width, smart quotes, or named entities.
+- **Attachments.** If a record has an image or file field, attach a real professional-looking, close-to-real example from the internet — not a blank, not generated, not a screenshot of an older Odoo. Images: ≥1024 px on the long side, JPEG or WebP, ≤200 KB. Store under `<module>/static/demo/`.
+- **No copyright infringement.** Every demo asset and every demo text must be something we have the right to redistribute commercially (Layer 1 and Layer 2). Allowed: CC0 / public domain, content we created, or a license kept on file next to the asset (source URL + license in a comment or `static/demo/SOURCES.md`). Forbidden: branded product photos, trademarked logos, identifiable people, scraped stock, and full-text copies of third-party licenses, agreements, or articles. This applies to pictures, PDFs, email attachments, and KnowSystem / documentation bodies.
+
+The static linter (chunk 4) and runtime tests (chunk 5) enforce this. Until they exist, follow the bar by hand.
+
+## Xmlids
+
+- Stable and family-local. Do not rename an existing demo xmlid without a migration reason (noupdate contract).
+- No absolute database ids. Map `Source ID` / `MEASURE(n)` / `user_id.id = 9` through `env-demo-xml.sh resolve`, and leave the xmlid in an XML comment.
+- Dump source-less families with `env-demo-xml.sh dump`, then edit to the bar (relative dates, refs, no ads).
+
+## No obsolete demo data
+
+**The template database contains only records the current demo files own.** A record left over
+from an older demo generation is a defect, even when it looks harmless: the customer sees two
+knowledge bases, the UI review is unreadable, and translations key on text nobody maintains.
+
+Odoo does not clean this up for us. Removing a record from a demo file, or renaming its xmlid,
+deletes the `ir.model.data` row and leaves the record, so it survives every later `-u` as a
+record with no xmlid at all.
+
+Each family therefore declares the models it owns in
+`system/odootools_demo/demo_scripts/<module>/demo_purge.json`:
+
+```json
+{"models": ["knowsystem.article", "knowsystem.section", "knowsystem.tag"]}
+```
+
+- **Order children first** — the purge unlinks in the listed order.
+- **Only models the family owns.** Never a shared model (`res.partner`, `ir.attachment`,
+  `mail.message`): a stray there belongs to someone else.
+- **Never a runtime model** (`knowsystem.article.revision`, `know.view.stat`). Those records are
+  created by the application, have no xmlid by design, and die with their parent by cascade.
+
+`env-demo-reload.sh` purges before it resets (`--no-purge` opts out), and the build assertion
+fails when any declared model still holds a record without an xmlid. A family whose demo writes
+to an owned model and has no `demo_scripts/<module>/demo_purge.json` has not finished the chunk.
+
+## Topicality
+
+Demo must read as if a human prepared it last week, not in the year the template was built.
+`res.company.action_amend_demo_data` (`system/odootools_demo`) is the only mechanism that keeps a
+long-lived template current, and it does **not** cover a new family by itself:
+
+- Its date shufflers **skip records owned by a tools / `odootools_demo` xmlid**
+  (`_demo_without_authored`), so authored dates freeze at load time and age with the template.
+- Engagement stats do the opposite: no authored filter, `(6, 0, …)` writes, and a random
+  `create_uid` rewrite — they overwrite what the family authored.
+- Records the cron never heard of (revisions, progress rows, view counters, version labels such as
+  "2025 range") stay exactly as loaded, forever.
+
+So every family chunk, before it may be called done:
+
+1. **List** its ageing records: create / write dates, deadlines, counters, progress, "last revision",
+   date-shaped names.
+2. **Name the mechanism** that keeps each one current: an existing cron shuffler, a family refresher
+   called from the loader path, or a relative `eval` re-anchored on every load.
+3. **Add the missing refresher** in `odootools_demo` in the **same** chunk, idempotent: a second run
+   must not multiply rows or break chronology (created before the first revision, revisions in order,
+   no future dates unless the field means the future).
+4. **Do not let the cron fight authored intent.** A refresher that owns a field keeps the family's
+   cast author, relative order, and the story the copy tells.
+5. **Report the outcome** in the chunk report. "Nothing needs refreshing" is valid only with the
+   record list behind it.
+
+A family that ages into "created two years ago, never revised, zero views" has failed the quality
+bar even though every record is correct.
+
+## Translations
+
+Same change as the English demo (`ai_rules` / hub `17-translations`). Demo terms are `model` / `model_terms` in the module `.po`. The 8 phase-1 languages are gate-blocking; the extended 17 may trail. Noupdate copy does not re-apply on `-u` — fix means `env-demo-reload.sh` (delete xmlids, then re-init) or a template rebuild.
+
+KnowSystem article records stay English until the multilang decision in that family chunk. Install `knowsystem_multilang` on the template.
+
+## Family loop
+
+0. Decide the layer per record (**real data → `tools`, basics and scripts → `system`**) and check Layer 1 against the no-plugs test above. Script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) goes in `odootools_demo/demo_scripts/<module>/`, never in the public module.
+1. Author Layer 1 XML (and Layer 2 loaders if the target is outside `depends`). Any image or file field gets a **licensed real-world attachment** (source URL + license recorded); drop or replace anything we do not have the right to ship.
+2. Resolve every absolute id; fix that family's known defects.
+3. Topicality pass (see above): list the ageing records, name the mechanism, add the missing refresher.
+4. Static linter green; `env-up.sh demo19 --test <module>`.
+5. `env-demo-reload.sh demo19 <modules>` into local demo19; user reviews UI.
+6. Russian `.po` → user reviews; then the other 7 phase-1 languages; then the extended 17.
+
+Stop after each numbered step that needs a user look. Do not publish or swap the production template except on explicit command (`33-faotools-release`; production swap is a later chunk).
+
+## Local commands
+
+```bash
+./local/env-demo-build.sh --smoke     # tiny DB, setup, assert, drop
+./local/env-demo-reload.sh demo19 sticky_notes,smart_warnings
+./local/env-demo-xml.sh purge demo19 knowsystem --check   # obsolete records, report only
+./local/env-demo-xml.sh resolve demo19 res.partner 15,46
+./local/env-demo-xml.sh dump demo19 sticky.note --limit 20 --out /tmp/sticky_notes.xml
+```
+
+`env-demo-build.sh` calls `res.company.action_setup_demo_template()`.
+`env-demo-reload.sh` purges obsolete records, deletes that module's **demo** xmlids, runs `-u`, then `_reload_tools_demo_data()`. Renaming either method breaks the scripts. `--no-reset` is the old `-u`-only path, `--no-purge` keeps records no demo file owns.
+
+New Python loaders: idempotency case in `odootools_demo/tests/test_demo_template.py` (run twice → same record count). `env-up.sh demo19 --test odootools_demo`.
+
+## Releases
+
+One `module.release` per module whose **demo** changed, `exact_version` last number +1, note confirmed first (`33-faotools-release`). Do not bump local `tools` `__manifest__.py` `version` (`11-manifest-version`). Merge `19_demo` → `19.0` only when publishing.
+
+## Screenshot seed (side-goal)
+
+Demo DBs seed store recaptures (`31-prepublishment-screenshots`). Read `static/description/` PNGs + `index.html` alt; skip `icon.png` / `main.png` / `main_nopromo.png` / `app_icon_*`. Recreate the document type, visible text, and ≥2–3 list rows. Do not attach those PNGs as demo `ir.attachment` unless the product stores images.
+
+## Serie-proofing
+
+No serie bump in this work. Xmlids stay stable and family-local; no absolute ids; the serie number is never typed into demo content; demo XML lives in the module it belongs to.
+
+## 35-knowsystem-demo
+
+_KnowSystem demo articles must obey the contract of their editor_type (arch/description pair, real blocks, inlined mail-print body, revisions)_
+
+# KnowSystem demo articles
+
+Pull this rule together with `34-demo-data` for any task that writes `knowsystem*` demo data
+(articles, revisions, templates, documentation sections).
+
+A `knowsystem.article` is not "a record with some HTML". Each article declares an
+`editor_type`, and that type owns **how the two body fields must relate**. Demo data that
+ignores the contract looks fine in a list view and then breaks the moment a human opens the
+editor, prints the article, mails it, or restores a revision.
+
+## The two body fields
+
+| Field | Role |
+|---|---|
+| `description_arch` | The **editable source** the editor writes and re-opens |
+| `description` | The **rendered/consumed** body: website and portal display, printing report, `_notify_of_revisions` mail, clipboard copy, `indexed_description` (search), `kanban_description` |
+
+`knowsystem/models/knowsystem_article.py` `_update_description_safe` pairs them on `create` /
+`write`: if only one is given, the **other is set to the same raw value**. That fallback exists
+for imports, not for demo. Demo data that supplies one field ships an article whose consumed
+body was never produced by its editor.
+
+**Always write both fields explicitly**, with `description` equal to what that editor type
+actually produces:
+
+| `editor_type` | `description_arch` | `description` |
+|---|---|---|
+| `text` | plain text | same text with `\n` replaced by `<br />` (JS `_updateEditor`) |
+| `html` | authored HTML | byte-identical to the arch (`SimpleHtml` passes no adapter) |
+| `backend_editor` | builder document (see below) | **CSS-inlined, table-based** output of `toInline` from `@mail/views/web/fields/html_mail_field/convert_inline` (`KnowSystemHtml.adaptReadonly`) |
+
+There are exactly **three** editor types on 19.0 (`_selection_editor_types`): `backend_editor`
+("Backend Builder"), `html`, `text`. `website_editor` is a **stale value** left in old
+databases — never author it, and re-type any record that still carries it.
+
+## backend_editor: the arch is a builder document
+
+The arch must be the real wrapper plus real snippet sections, because the builder re-parses it:
+
+```html
+<div data-name="KnowSystem" class="o_layout knowsystem_layout oe_unremovable oe_unmovable">
+  <style id="design-element">...design CSS variables...</style>
+  <div class="container knowsystem_wrapper knowsystem_regular oe_unremovable">
+    <div class="row mw-100 mx-0">
+      <div class="col knowsystem_no_options knowsystem_wrapper_td bg-white oe_structure">
+        <section class="s_text_block ..."> ... </section>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+- Wrapper comes from `knowsystem.wrap_window` / `knowsystem.KnowSystemLayout`
+  (`views/editor/snippets.xml`, `static/src/wrap/wrapper.xml`). `KnowSystemHtml.wrapNewArticle`
+  injects it for an empty body; a demo arch without it opens as a foreign document.
+- Content is **snippet sections** from the KnowSystem snippet set (`s_text_block`,
+  `s_text_image`, `s_three_columns`, `s_media_list`, headings blocks, …) with their own classes
+  and `data-` attributes — never hand-rolled `<div>` soup, never Bootstrap markup invented for
+  the occasion. The builder must be able to select, move, duplicate and re-style every block.
+- Design options live in the `<style id="design-element">` block. Keep the one the editor wrote;
+  do not hand-edit CSS variables.
+- `description` is the mail/print body: a `<table role="presentation">` tree with inline
+  `style="..."`. It is roughly **twice** the arch size. Hand-writing it is not possible and not
+  allowed.
+- With `knowsystem_multilang` installed, `description` and `description_arch` are `translate=True`
+  Html fields, so always-on `ai_rules` `18-xml-translate-html` governs them: an icon span must be
+  `<span class="fa fa-info-circle …"> </span>`, never an empty pair. Card snippets such as
+  `s_three_columns` ship exactly that empty span in older articles — fix it when you reuse their
+  markup.
+
+## Therefore: capture backend_editor bodies from the editor, never by hand
+
+For `backend_editor` (and for any block-based body), the only correct authoring loop is:
+
+1. Author the **arch** in the module's demo XML (wrapper + real snippet sections), or build the
+   article in the editor in a local demo target.
+2. Run the capture, which drives the real editor in a headless browser and lets **its** code
+   write the pair, then merges both fields back into the demo XML:
+
+```bash
+./local/env-demo-capture.sh demo19 knowsystem.demo_article_welcome[,more_xmlids]
+```
+
+- Browser half: `system/odootools_demo/tests/test_demo_capture.py` (tag `demo_capture`, out of
+  the standard suite). It clicks Edit, waits for the builder iframe, triggers the module's own
+  commit so `adaptReadonly` inlines the document, saves through the editor's Save button, and
+  dumps the result.
+- Merge half: `faotools_env/local/lib/demo_capture.py` rewrites `description_arch` and
+  `description` of that record in place.
+- The synced `env-demo-*` images carry no browser, so the script builds a thin local image from
+  `lib/capture.Dockerfile` (Chrome + `websocket-client`) and rebuilds it whenever the base image
+  moves. Never install a browser into a running container: that vanishes on recreate.
+3. Re-load (`env-demo-reload.sh`) and re-open the article in the editor to prove it is still a
+   live builder document. Expect the editor to have normalized the arch and added its
+   `<style id="design-element">` block — that normalized arch is what belongs in the XML.
+
+`text` and `html` articles may be authored directly in XML, because their `description` is a
+mechanical transform of the arch.
+
+## Porting to a new major serie: re-capture, never copy
+
+When these articles move to the next serie (19.0 -> 20.0 and onward), **the body pair must be
+produced again by that serie's editor in a real headless browser.** Copying the previous serie's
+`description` (or its arch) is wrong even when it renders fine, because every producer of those
+strings can change between series:
+
+- the inliner itself (`toInline` / `getCSSRules` in `@mail/views/web/fields/html_mail_field/convert_inline`),
+- the KnowSystem wrapper templates (`knowsystem.wrap_window`, `knowsystem.KnowSystemLayout`),
+- the snippet set and each snippet's markup, classes and `data-` attributes,
+- the design-element CSS variables and the editor's normalization of the arch,
+- the builder's own save path (`KnowSystemHtml._commitChanges` / `adaptReadonly`).
+
+A copied body therefore ships last serie's HTML into this serie's editor, and the first user who
+opens it gets a document the builder no longer understands.
+
+Port procedure:
+
+1. Bring the demo XML over unchanged (the arch is the input, not the deliverable).
+2. Put the hub on the new serie and load the module in that serie's demo target.
+3. Run `env-demo-capture.sh <new-serie-target> <every backend_editor xmlid>` and let the new
+   editor rewrite both fields.
+4. Review the diff on the arch as well as the description: a changed wrapper or snippet markup is
+   a real port finding, not noise.
+5. Refresh the translation fingerprints afterwards, since the source text the TM keys on has
+   changed (`17-translations`).
+
+The same applies to any other body a serie's editor produces, and to a re-capture triggered by a
+new base image rather than a new serie.
+
+## Revisions
+
+`create` always writes one `knowsystem.article.revision` snapshot, and `write` on any of
+`name`, `description`, `section_id`, `tag_ids`, `attachment_ids`, `kanban_manual_description`
+adds another and posts the revision notification. A demo article therefore starts with exactly
+one revision that mirrors the loaded body — a knowledge base with no history looks unused.
+
+Demo revisions must follow the same contract as the article:
+
+- Carry the matching `editor_type` and **both** `description` and `description_arch`. The
+  revision model has no pairing logic, so a missing field stays empty and
+  `action_recover_this_revision` would wipe the article body.
+- Use `author_id` from the shared demo cast (`34-demo-data`) and **relative** `change_datetime`,
+  ordered oldest to newest.
+- Make the older bodies genuinely shorter or different: `description_change` is a length delta,
+  so identical snapshots render an empty, pointless history. `write_revision_date`,
+  `write_revision_uid` and `contributor_ids` are computed from the newest revision, so the
+  history is also what makes "Last revision by" believable.
+- A restored revision must be a valid document for its editor type — same wrapper and snippet
+  rules as above.
+
+## Companion modules
+
+- `knowsystem_multilang` is what makes `name`, `description`, `description_arch` and node names
+  translatable (`translate=True`). Without it these strings are `translate=False` and no `.po`
+  can carry them. Demo translations for the family therefore require it installed at export
+  time.
+- `is_published` / `website_published` on articles, sections and tags come from
+  `knowsystem_website`. Publish flags belong in that module's demo, not in `knowsystem/demo`.
+- `documentation.section` (`documentation_builder`) has its own `translate=True` fields and
+  consumes `action_get_published_name` plus the published body — the same arch/description
+  pairing applies to anything it renders.

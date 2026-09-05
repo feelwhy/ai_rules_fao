@@ -1,0 +1,166 @@
+---
+description: KnowSystem demo articles must obey the contract of their editor_type (arch/description pair, real blocks, inlined mail-print body, revisions)
+alwaysApply: false
+---
+
+# KnowSystem demo articles
+
+Pull this rule together with `34-demo-data` for any task that writes `knowsystem*` demo data
+(articles, revisions, templates, documentation sections).
+
+A `knowsystem.article` is not "a record with some HTML". Each article declares an
+`editor_type`, and that type owns **how the two body fields must relate**. Demo data that
+ignores the contract looks fine in a list view and then breaks the moment a human opens the
+editor, prints the article, mails it, or restores a revision.
+
+## The two body fields
+
+| Field | Role |
+|---|---|
+| `description_arch` | The **editable source** the editor writes and re-opens |
+| `description` | The **rendered/consumed** body: website and portal display, printing report, `_notify_of_revisions` mail, clipboard copy, `indexed_description` (search), `kanban_description` |
+
+`knowsystem/models/knowsystem_article.py` `_update_description_safe` pairs them on `create` /
+`write`: if only one is given, the **other is set to the same raw value**. That fallback exists
+for imports, not for demo. Demo data that supplies one field ships an article whose consumed
+body was never produced by its editor.
+
+**Always write both fields explicitly**, with `description` equal to what that editor type
+actually produces:
+
+| `editor_type` | `description_arch` | `description` |
+|---|---|---|
+| `text` | plain text | same text with `\n` replaced by `<br />` (JS `_updateEditor`) |
+| `html` | authored HTML | byte-identical to the arch (`SimpleHtml` passes no adapter) |
+| `backend_editor` | builder document (see below) | **CSS-inlined, table-based** output of `toInline` from `@mail/views/web/fields/html_mail_field/convert_inline` (`KnowSystemHtml.adaptReadonly`) |
+
+There are exactly **three** editor types on 19.0 (`_selection_editor_types`): `backend_editor`
+("Backend Builder"), `html`, `text`. `website_editor` is a **stale value** left in old
+databases — never author it, and re-type any record that still carries it.
+
+## backend_editor: the arch is a builder document
+
+The arch must be the real wrapper plus real snippet sections, because the builder re-parses it:
+
+```html
+<div data-name="KnowSystem" class="o_layout knowsystem_layout oe_unremovable oe_unmovable">
+  <style id="design-element">...design CSS variables...</style>
+  <div class="container knowsystem_wrapper knowsystem_regular oe_unremovable">
+    <div class="row mw-100 mx-0">
+      <div class="col knowsystem_no_options knowsystem_wrapper_td bg-white oe_structure">
+        <section class="s_text_block ..."> ... </section>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+- Wrapper comes from `knowsystem.wrap_window` / `knowsystem.KnowSystemLayout`
+  (`views/editor/snippets.xml`, `static/src/wrap/wrapper.xml`). `KnowSystemHtml.wrapNewArticle`
+  injects it for an empty body; a demo arch without it opens as a foreign document.
+- Content is **snippet sections** from the KnowSystem snippet set (`s_text_block`,
+  `s_text_image`, `s_three_columns`, `s_media_list`, headings blocks, …) with their own classes
+  and `data-` attributes — never hand-rolled `<div>` soup, never Bootstrap markup invented for
+  the occasion. The builder must be able to select, move, duplicate and re-style every block.
+- Design options live in the `<style id="design-element">` block. Keep the one the editor wrote;
+  do not hand-edit CSS variables.
+- `description` is the mail/print body: a `<table role="presentation">` tree with inline
+  `style="..."`. It is roughly **twice** the arch size. Hand-writing it is not possible and not
+  allowed.
+- With `knowsystem_multilang` installed, `description` and `description_arch` are `translate=True`
+  Html fields, so always-on `ai_rules` `18-xml-translate-html` governs them: an icon span must be
+  `<span class="fa fa-info-circle …"> </span>`, never an empty pair. Card snippets such as
+  `s_three_columns` ship exactly that empty span in older articles — fix it when you reuse their
+  markup.
+
+## Therefore: capture backend_editor bodies from the editor, never by hand
+
+For `backend_editor` (and for any block-based body), the only correct authoring loop is:
+
+1. Author the **arch** in the module's demo XML (wrapper + real snippet sections), or build the
+   article in the editor in a local demo target.
+2. Run the capture, which drives the real editor in a headless browser and lets **its** code
+   write the pair, then merges both fields back into the demo XML:
+
+```bash
+./local/env-demo-capture.sh demo19 knowsystem.demo_article_welcome[,more_xmlids]
+```
+
+- Browser half: `system/odootools_demo/tests/test_demo_capture.py` (tag `demo_capture`, out of
+  the standard suite). It clicks Edit, waits for the builder iframe, triggers the module's own
+  commit so `adaptReadonly` inlines the document, saves through the editor's Save button, and
+  dumps the result.
+- Merge half: `faotools_env/local/lib/demo_capture.py` rewrites `description_arch` and
+  `description` of that record in place.
+- The synced `env-demo-*` images carry no browser, so the script builds a thin local image from
+  `lib/capture.Dockerfile` (Chrome + `websocket-client`) and rebuilds it whenever the base image
+  moves. Never install a browser into a running container: that vanishes on recreate.
+3. Re-load (`env-demo-reload.sh`) and re-open the article in the editor to prove it is still a
+   live builder document. Expect the editor to have normalized the arch and added its
+   `<style id="design-element">` block — that normalized arch is what belongs in the XML.
+
+`text` and `html` articles may be authored directly in XML, because their `description` is a
+mechanical transform of the arch.
+
+## Porting to a new major serie: re-capture, never copy
+
+When these articles move to the next serie (19.0 -> 20.0 and onward), **the body pair must be
+produced again by that serie's editor in a real headless browser.** Copying the previous serie's
+`description` (or its arch) is wrong even when it renders fine, because every producer of those
+strings can change between series:
+
+- the inliner itself (`toInline` / `getCSSRules` in `@mail/views/web/fields/html_mail_field/convert_inline`),
+- the KnowSystem wrapper templates (`knowsystem.wrap_window`, `knowsystem.KnowSystemLayout`),
+- the snippet set and each snippet's markup, classes and `data-` attributes,
+- the design-element CSS variables and the editor's normalization of the arch,
+- the builder's own save path (`KnowSystemHtml._commitChanges` / `adaptReadonly`).
+
+A copied body therefore ships last serie's HTML into this serie's editor, and the first user who
+opens it gets a document the builder no longer understands.
+
+Port procedure:
+
+1. Bring the demo XML over unchanged (the arch is the input, not the deliverable).
+2. Put the hub on the new serie and load the module in that serie's demo target.
+3. Run `env-demo-capture.sh <new-serie-target> <every backend_editor xmlid>` and let the new
+   editor rewrite both fields.
+4. Review the diff on the arch as well as the description: a changed wrapper or snippet markup is
+   a real port finding, not noise.
+5. Refresh the translation fingerprints afterwards, since the source text the TM keys on has
+   changed (`17-translations`).
+
+The same applies to any other body a serie's editor produces, and to a re-capture triggered by a
+new base image rather than a new serie.
+
+## Revisions
+
+`create` always writes one `knowsystem.article.revision` snapshot, and `write` on any of
+`name`, `description`, `section_id`, `tag_ids`, `attachment_ids`, `kanban_manual_description`
+adds another and posts the revision notification. A demo article therefore starts with exactly
+one revision that mirrors the loaded body — a knowledge base with no history looks unused.
+
+Demo revisions must follow the same contract as the article:
+
+- Carry the matching `editor_type` and **both** `description` and `description_arch`. The
+  revision model has no pairing logic, so a missing field stays empty and
+  `action_recover_this_revision` would wipe the article body.
+- Use `author_id` from the shared demo cast (`34-demo-data`) and **relative** `change_datetime`,
+  ordered oldest to newest.
+- Make the older bodies genuinely shorter or different: `description_change` is a length delta,
+  so identical snapshots render an empty, pointless history. `write_revision_date`,
+  `write_revision_uid` and `contributor_ids` are computed from the newest revision, so the
+  history is also what makes "Last revision by" believable.
+- A restored revision must be a valid document for its editor type — same wrapper and snippet
+  rules as above.
+
+## Companion modules
+
+- `knowsystem_multilang` is what makes `name`, `description`, `description_arch` and node names
+  translatable (`translate=True`). Without it these strings are `translate=False` and no `.po`
+  can carry them. Demo translations for the family therefore require it installed at export
+  time.
+- `is_published` / `website_published` on articles, sections and tags come from
+  `knowsystem_website`. Publish flags belong in that module's demo, not in `knowsystem/demo`.
+- `documentation.section` (`documentation_builder`) has its own `translate=True` fields and
+  consumes `action_get_published_name` plus the published body — the same arch/description
+  pairing applies to anything it renders.

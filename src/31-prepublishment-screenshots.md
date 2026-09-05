@@ -193,6 +193,20 @@ Reject and fix if any check fails:
 | Size | Exactly 1130px wide final PNG |
 | Caption | `alt_name` matches what a buyer actually sees |
 
+# Translations (hard gate) — titles and alts, not the PNG
+
+Screenshot **files** stay English. **`module.pic.name` and `alt_name` are translated.**
+
+Replacing or adding shots is **not** done when the PNG is on the page. Same job:
+
+1. Rewrite TM `confs[].pics` / `features[].pics` to the **new** English `name` and `alt_name` (drop the old titles).
+2. Translate both fields for every shipped language (`17-translations`).
+3. MCP `_apply_description` **must include `pics`**. Omitting them, or applying the old pic YAML, leaves `/<lang>/` captions in English.
+4. `action_apply_prepublishment` only re-applies YAML already on the Functional container — new local TM still needs `_apply_description`.
+5. Prove it: `/ru/` caption ≠ English (`module.pic.name` `ru_RU` ≠ `en_US`).
+
+Incident 2026-09-01: Google Drive guideline body was translated; titles such as `Open the Google Auth Platform` stayed English because TM still had the old console titles and the loader apply omitted `pics`.
+
 # Handoff for manual faOtools upload (default)
 
 After capture, crop/legend, and **QA pass**, move only final PNGs to:

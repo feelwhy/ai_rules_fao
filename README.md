@@ -32,5 +32,6 @@ python3 tools/sync_rules.py --check
 - Live faOtools MCP
 - Prepublishment descriptions/screenshots + video covers
 - App store releases (`module.release` on faotools.com)
+- Demo data for tools apps (`34-demo-data`: layer boundary, quality bar, shared cast)
 
 Support/tools keep only repo-specific rules in-tree; shared material is here or in `ai_rules`.

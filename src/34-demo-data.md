@@ -1,0 +1,245 @@
+---
+id: 34-demo-data
+description: Demo data for tools apps — layer boundary, quality bar, shared cast, xmlid stability
+apply: agent
+---
+
+# Demo data (tools + odootools_demo)
+
+Pull this rule for any task that adds or changes `tools/*/demo`, a `tools` manifest `demo` key, or `system/odootools_demo` loaders / template setup.
+
+Demo content for a public app is **either** plain XML inside that `tools` module **or** Python inside `system/odootools_demo`. There is no third option, and a `tools` module never ships a Python demo generator.
+
+## Layer boundary
+
+| Layer | Where | Ships to customers |
+|---|---|---|
+| 1 | `tools/<module>/demo/*.xml` + manifest `demo` | Yes (apps.odoo.com zip, client DB with demo) |
+| 2 | `system/odootools_demo` Python | No (our template / clones only) |
+| 2b | `system/odootools_demo/demo_scripts/<module>/` (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) | No — script inventory, never in the public zip |
+| 3 | `tools/<module>/i18n/*.po` demo terms | Yes, with the app |
+| 4 | `faotools_env/local/env-demo-*.sh` | Local + later production template build |
+
+**Real demo data belongs in `tools`. Basics and scripts belong in `system`.** The records a
+customer is meant to look at, click and edit are Layer 1; the machinery that produces or
+completes them — loaders, spec tables, upserts, refreshers, credentials, cross-app wiring,
+and every JSON the linter / reload scripts read — is Layer 2 / 2b. Odoo never loads
+`demo_xmlids.json`, `demo_purge.json`, or `asset_signoff.json`. Those files must not sit
+in a `tools` module.
+
+Layer 1: only that module's **own** models plus configuration it owns. Referenced actors are core demo xmlids in the module's transitive `depends`.
+
+Layer 2: users, `res.users` credentials, settings, cross-app targets, homepage, topicality cron, XXTOOLS / Y1TOOLS history.
+
+A `tools` module must not carry spec tables, upsert helpers, `<function>` demo loaders, or hand-written `ir.model.data` rows for demo.
+
+### Why Python demo cannot live in the module
+
+Demo targets are usually core records of apps the product does **not** depend on (`hr`, `crm`, `sale`, `purchase`). `ref("purchase.purchase_order_4")` cannot be used from a module whose `depends` is `["web"]`.
+
+A plain install with demo — **including the apps.odoo.com live preview** — shows only Layer 1. Do not move the generator back into `tools` to "fix" that.
+
+### Layer 1 must be self-sufficient — no plugs
+
+What Layer 1 ships has to stand on its own, because Layer 2 will not be there. A **plug** is a
+record whose only content lives in the other layer: a vault with no passwords, a type with no
+fields, a section with no articles, a role whose groups are stamped from Python, a rule whose
+target is created elsewhere. It is worse than shipping nothing — the app reads as unused, and
+that is the page the store preview shows.
+
+Before a family chunk is done, ask of every Layer 1 file: **installed alone, with demo, and
+nothing else — is there anything here to look at?**
+
+- **Container implies content.** If Layer 1 creates the parent, Layer 1 creates enough children
+ to make the parent worth opening. Splitting the two across layers is the plug.
+- **Visibility counts as content.** A record hidden by the module's own record rules is a plug
+ even though the row exists. Ship the `*.access` / member / publish rows that let the shipped
+ demo user (`base.user_demo`, `base.user_admin`) actually see it.
+- **What Layer 1 genuinely cannot produce moves out whole.** Not the parent in `tools` and the
+ child in `system` — the whole family goes to `odootools_demo`, and the module ships
+ `"demo": []`. `security_user_roles` is the reference case: roles are worthless without real
+ groups, so the roles went too.
+- **Configuration with nothing configured is still a plug.** A `custom.*` field definition whose
+  value no record carries reads as an empty side panel. Definitions may stay in Layer 1 (a
+  customer can fill them), but the values are then owed from Layer 2 in the same chunk — the
+  generated column is `x_oz_<code>_<id>`, an id-dependent name no XML can reference.
+
+### What Layer 1 can only do at install — Layer 2 owes the rest
+
+A noupdate demo record is **created on install and skipped on every `-u`**
+(`convert.py` `_tag_record`). Two Layer 1 patterns therefore work for a customer's fresh
+install and silently do nothing on our long-lived demo databases, so the same chunk owes a
+Layer 2 re-apply:
+
+- **Dropdown options.** `custom.extra.field.selection` rows do not reach the generated
+  `ir.model.fields`; only `custom_extra_field.write` pushes them (`_return_new_field_values`).
+  Layer 1 re-declares the field after its options; Layer 2 calls
+  `_demo_custom_field_sync_options` so an installed database stops showing an empty dropdown.
+- **Updating a foreign record.** A demo file may set a field on another module's xmlid
+  (`odoo_password_manager_custom_fields/demo` types the `odoo_password_manager` keys) — the only
+  Layer 1 way when the dependency cannot see the dependent. `env-demo-reload.sh` leaves foreign
+  xmlids to their owning module, and the `-u` skips the row, so Layer 2 re-stamps the value.
+
+### Layer 1 bans
+
+Never in tools demo XML:
+
+- Models: `res.users`, `res.groups`, `res.company`, `res.lang`, `ir.cron`, `ir.mail_server`, `ir.config_parameter`
+- Login credentials: `login` / `password` on `res.users`, and any secret that grants access to a real system. A password the **product itself** stores as business data (`password.key`, `portal.password.bundle`) is content, not a credential — sample values only, never a live one.
+- Anything that sends mail
+- Posted / validated transactional records: no `<function>` calling `action_post` / `action_confirm` / `button_validate` / `_action_done`; do not write `state` to `posted` / `done` / `sale` / `purchase` on core sale / purchase / invoice / picking models. Draft quotations, draft invoices, planned pickings only.
+
+Every Layer 1 record must be deletable by a client without side effects. `noupdate="1"`. Attachments under `<module>/static/demo/` with source URL + license in `static/demo/SOURCES.md`. HTML per `ai_rules` `18-xml-translate-html` (never empty `<i></i>` / `<i/>`).
+
+Never in `tools/<module>/demo/`: `demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`,
+or any other script JSON. Those live in `system/odootools_demo/demo_scripts/<module>/`.
+The linter fails a public module that still ships them.
+
+### Layer 2 rules (odootools_demo)
+
+- Guard: `_demo_module_installed("<module>")`, or `"<model>" not in self.env` → return.
+- Resolve targets with `self.env.ref(xmlid, raise_if_not_found=False)`; skip and log if missing.
+- Upsert by xmlid (`_demo_ensure_xmlid`). Demo `<function>` tags skip on `-u`; setup and `env-demo-reload.sh` call Python loaders directly.
+- **`odootools_demo.*` xmlids only.** Never create `ir.model.data` in a `tools` module namespace from `system`.
+- Password / extra-module install is gated on `_is_demo_template_db()` (escape hatch `odootools_demo.template_db_names`). Template ships **en_US only**; clones get languages from `after_clone_19`.
+- Date shufflers skip records owned by a tools or `odootools_demo` xmlid. Core xmlids (`sale.sale_order_1`, …) still shuffle — so an authored family needs its own refresher (see **Topicality**).
+
+## Shared cast
+
+Resolve by **xmlid**, never by uid.
+
+| Role | Xmlid / stamp |
+|---|---|
+| 0user | `base.user_demo` (login `demo`; xmlid `odootools_demo.user_0user`) |
+| Anita Oliver | `hr.employee_hne` → user `anita.oliver@example.com` |
+| Other team | core `hr` demo employees (Doris Cole, Ernest Reed, Sharlene Rhodes, Paul Williams) |
+| abs-xyz | `product.product_product_acoustic_bloc_screens_white` |
+| manual-cd | `product.product_product_4c` |
+| ODS-900 | `product.product_order_01` |
+| Sales teams | `sales_team.team_sales_department` → Europe; `sales_team.crm_team_1` → America |
+
+Password `faotools` for 0user and the team. **Never** touch OdooBot or Administrator passwords. Scrub real-looking portal identities (e.g. Dhruv Fefar). TZ `Europe/Brussels` on users and `resource.calendar`.
+
+Vendors in copy: **Gemini Furniture**, **Ready Mat**, **Azure Interior**, **Anita Oliver** (not Olivier, not GeM Designs).
+
+## Quality bar
+
+Demo must read as if a human prepared a customer database.
+
+- **Correct.** Numbers add up; every person, company and product named in free text exists as a record; every `ref` resolves.
+- **Current.** No fixed historical period, no validity window ending in the past. Dates are `eval` / relative or maintained by the topicality cron.
+- **Consistent.** One spelling per persona. One casing convention per model.
+- **Not an advertisement.** No "(added by the tool …)" footers, no `apps.odoo.com` / `faotools.com` links, no hardcoded serie number in demo text.
+- **Clean text.** ASCII-only English source (apps.odoo.com zip is latin-1); no Cyrillic/Greek lookalikes inside Latin words; no NBSP, zero-width, smart quotes, or named entities.
+- **Attachments.** If a record has an image or file field, attach a real professional-looking, close-to-real example from the internet — not a blank, not generated, not a screenshot of an older Odoo. Images: ≥1024 px on the long side, JPEG or WebP, ≤200 KB. Store under `<module>/static/demo/`.
+- **No copyright infringement.** Every demo asset and every demo text must be something we have the right to redistribute commercially (Layer 1 and Layer 2). Allowed: CC0 / public domain, content we created, or a license kept on file next to the asset (source URL + license in a comment or `static/demo/SOURCES.md`). Forbidden: branded product photos, trademarked logos, identifiable people, scraped stock, and full-text copies of third-party licenses, agreements, or articles. This applies to pictures, PDFs, email attachments, and KnowSystem / documentation bodies.
+
+The static linter (chunk 4) and runtime tests (chunk 5) enforce this. Until they exist, follow the bar by hand.
+
+## Xmlids
+
+- Stable and family-local. Do not rename an existing demo xmlid without a migration reason (noupdate contract).
+- No absolute database ids. Map `Source ID` / `MEASURE(n)` / `user_id.id = 9` through `env-demo-xml.sh resolve`, and leave the xmlid in an XML comment.
+- Dump source-less families with `env-demo-xml.sh dump`, then edit to the bar (relative dates, refs, no ads).
+
+## No obsolete demo data
+
+**The template database contains only records the current demo files own.** A record left over
+from an older demo generation is a defect, even when it looks harmless: the customer sees two
+knowledge bases, the UI review is unreadable, and translations key on text nobody maintains.
+
+Odoo does not clean this up for us. Removing a record from a demo file, or renaming its xmlid,
+deletes the `ir.model.data` row and leaves the record, so it survives every later `-u` as a
+record with no xmlid at all.
+
+Each family therefore declares the models it owns in
+`system/odootools_demo/demo_scripts/<module>/demo_purge.json`:
+
+```json
+{"models": ["knowsystem.article", "knowsystem.section", "knowsystem.tag"]}
+```
+
+- **Order children first** — the purge unlinks in the listed order.
+- **Only models the family owns.** Never a shared model (`res.partner`, `ir.attachment`,
+  `mail.message`): a stray there belongs to someone else.
+- **Never a runtime model** (`knowsystem.article.revision`, `know.view.stat`). Those records are
+  created by the application, have no xmlid by design, and die with their parent by cascade.
+
+`env-demo-reload.sh` purges before it resets (`--no-purge` opts out), and the build assertion
+fails when any declared model still holds a record without an xmlid. A family whose demo writes
+to an owned model and has no `demo_scripts/<module>/demo_purge.json` has not finished the chunk.
+
+## Topicality
+
+Demo must read as if a human prepared it last week, not in the year the template was built.
+`res.company.action_amend_demo_data` (`system/odootools_demo`) is the only mechanism that keeps a
+long-lived template current, and it does **not** cover a new family by itself:
+
+- Its date shufflers **skip records owned by a tools / `odootools_demo` xmlid**
+  (`_demo_without_authored`), so authored dates freeze at load time and age with the template.
+- Engagement stats do the opposite: no authored filter, `(6, 0, …)` writes, and a random
+  `create_uid` rewrite — they overwrite what the family authored.
+- Records the cron never heard of (revisions, progress rows, view counters, version labels such as
+  "2025 range") stay exactly as loaded, forever.
+
+So every family chunk, before it may be called done:
+
+1. **List** its ageing records: create / write dates, deadlines, counters, progress, "last revision",
+   date-shaped names.
+2. **Name the mechanism** that keeps each one current: an existing cron shuffler, a family refresher
+   called from the loader path, or a relative `eval` re-anchored on every load.
+3. **Add the missing refresher** in `odootools_demo` in the **same** chunk, idempotent: a second run
+   must not multiply rows or break chronology (created before the first revision, revisions in order,
+   no future dates unless the field means the future).
+4. **Do not let the cron fight authored intent.** A refresher that owns a field keeps the family's
+   cast author, relative order, and the story the copy tells.
+5. **Report the outcome** in the chunk report. "Nothing needs refreshing" is valid only with the
+   record list behind it.
+
+A family that ages into "created two years ago, never revised, zero views" has failed the quality
+bar even though every record is correct.
+
+## Translations
+
+Same change as the English demo (`ai_rules` / hub `17-translations`). Demo terms are `model` / `model_terms` in the module `.po`. The 8 phase-1 languages are gate-blocking; the extended 17 may trail. Noupdate copy does not re-apply on `-u` — fix means `env-demo-reload.sh` (delete xmlids, then re-init) or a template rebuild.
+
+KnowSystem article records stay English until the multilang decision in that family chunk. Install `knowsystem_multilang` on the template.
+
+## Family loop
+
+0. Decide the layer per record (**real data → `tools`, basics and scripts → `system`**) and check Layer 1 against the no-plugs test above. Script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) goes in `odootools_demo/demo_scripts/<module>/`, never in the public module.
+1. Author Layer 1 XML (and Layer 2 loaders if the target is outside `depends`). Any image or file field gets a **licensed real-world attachment** (source URL + license recorded); drop or replace anything we do not have the right to ship.
+2. Resolve every absolute id; fix that family's known defects.
+3. Topicality pass (see above): list the ageing records, name the mechanism, add the missing refresher.
+4. Static linter green; `env-up.sh demo19 --test <module>`.
+5. `env-demo-reload.sh demo19 <modules>` into local demo19; user reviews UI.
+6. Russian `.po` → user reviews; then the other 7 phase-1 languages; then the extended 17.
+
+Stop after each numbered step that needs a user look. Do not publish or swap the production template except on explicit command (`33-faotools-release`; production swap is a later chunk).
+
+## Local commands
+
+```bash
+./local/env-demo-build.sh --smoke     # tiny DB, setup, assert, drop
+./local/env-demo-reload.sh demo19 sticky_notes,smart_warnings
+./local/env-demo-xml.sh purge demo19 knowsystem --check   # obsolete records, report only
+./local/env-demo-xml.sh resolve demo19 res.partner 15,46
+./local/env-demo-xml.sh dump demo19 sticky.note --limit 20 --out /tmp/sticky_notes.xml
+```
+
+`env-demo-build.sh` calls `res.company.action_setup_demo_template()`.
+`env-demo-reload.sh` purges obsolete records, deletes that module's **demo** xmlids, runs `-u`, then `_reload_tools_demo_data()`. Renaming either method breaks the scripts. `--no-reset` is the old `-u`-only path, `--no-purge` keeps records no demo file owns.
+
+New Python loaders: idempotency case in `odootools_demo/tests/test_demo_template.py` (run twice → same record count). `env-up.sh demo19 --test odootools_demo`.
+
+## Releases
+
+One `module.release` per module whose **demo** changed, `exact_version` last number +1, note confirmed first (`33-faotools-release`). Do not bump local `tools` `__manifest__.py` `version` (`11-manifest-version`). Merge `19_demo` → `19.0` only when publishing.
+
+## Screenshot seed (side-goal)
+
+Demo DBs seed store recaptures (`31-prepublishment-screenshots`). Read `static/description/` PNGs + `index.html` alt; skip `icon.png` / `main.png` / `main_nopromo.png` / `app_icon_*`. Recreate the document type, visible text, and ≥2–3 list rows. Do not attach those PNGs as demo `ir.attachment` unless the product stores images.
+
+## Serie-proofing
+
+No serie bump in this work. Xmlids stay stable and family-local; no absolute ids; the serie number is never typed into demo content; demo XML lives in the module it belongs to.
