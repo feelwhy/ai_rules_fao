@@ -91,7 +91,7 @@ These do **not** skip or postpone this block (they are not an explicit “skip t
 After the English row is `3_published`:
 
 1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`.
-2. Translate every new English sentence to `ru_RU`, `fr_FR`, `de_DE`, `es_ES`, `pt_PT`, `nl_NL`, `it_IT`, `ar_001` (glossary / do-not-translate). Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists.
+2. Translate every new English sentence to **every shipped language** in `support_translations.const.SHIPPED_LANGS` (glossary / do-not-translate). Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists.
 3. **Apply now on faotools.com** via MCP `odoo_actions_run` on `support.translations`, method `_apply_description`, args = `[payload, installed_lang_codes, path]`. `payload` is the YAML `match` plus the new `releases` entry (load from the local file). That writes `update_field_translations` on the live row. Do **not** wait for a Functional image rebuild. `_reapply_for_description` only if that YAML is already on the container disk. Never `odoo_records_write` translations that are not in the YAML. If MCP refuses to parse a large payload, apply in language batches (sentence-only terms are enough; the loader wraps the icon). A parse failure is not a skip.
 4. If this 19.0 page also lists older-serie rows (`migration_release_ids`), those public descriptions must be in the same TM list and applied. Do not leave them English.
 5. Prove it: `ru_RU` `description` ≠ `en_US` on the new row, and `/<lang>/apps/...` shows the translated sentence.
