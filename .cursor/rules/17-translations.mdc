@@ -41,7 +41,8 @@ Regression: `modules_website` `test_en_us_store_leak` (includes the now-translat
 - Publishing a **19.0+** `module.release` → TM-first translate `description` (not `notes`) and **apply the loader on faotools.com in the same task** (`33-faotools-release` step 8). Never leave that apply for a later Functional rebuild. Skip only if the user **explicitly** says to skip translations. Older-serie rows shown on that 19.0 page are in scope too.
 - `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs MCP `_apply_description`.
 - After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
-- Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language.
+- Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language. `check_view_term_restyle.py` fails a QWeb restyle that left only the old tagged `.pot` msgid.
+- Existing DBs do not pick up a new view msgid on `-u` (`overwrite=False`). `_fill_empty_view_translations` in `support_translations`, `odootools_demo`, and every tools / `odoo-apps-addons` module that owns QWeb `<template>` views writes the `.po` onto empty `arch_db` terms. Do not skip that fill after a template restyle.
 - HTML in `xml_translate` fields (`module.feature.body`, `module.release.description`, …) must follow always-on `ai_rules` `18-xml-translate-html`. Never empty `<i></i>` / `<i/>`.
 
 ## Screenshot titles (`module.pic`) — hard gate
