@@ -58,6 +58,28 @@ PNG files stay English. **`module.pic.name` and `alt_name` are translated.** Rep
 4. Loader `_match_child` matches English source/fingerprint first, then sequence. Old source + new title = no match. Sequence fallback can hit the wrong pic; `_apply_field_payload` then skips `plain` fields on a stale fingerprint (`return 0`) — silent English leftover.
 5. Body/guideline translated is **not** done. Prove `/ru/` (and each shipped lang) caption ≠ English: live `module.pic.name` `ru_RU` ≠ `en_US`.
 
+## Closing a hub-wide empty-msgstr backlog
+
+Companion to `ai_rules` `17-translations` "Closing an empty msgstr backlog" checklist — that
+section's steps (full language list, stem-vs-code mapping, whitespace-is-not-empty, mail.template
+exemption, core-reuse sourcing, independent re-scan, full-repo finish) apply here; this section is
+the hub-specific tooling to run them with.
+
+- Full language list lives in `support/support_translations/const.py`
+ (`SHIPPED_LANGS`, `PO_STEM_TO_LANG`) — read it, do not re-type the list by hand.
+- Core `.po` sources to reuse verbatim strings from: `odoo/odoo/addons/base/i18n/` (base models —
+ note the extra nested `odoo/` segment only `base` has), and the flatter
+ `odoo/addons/<module>/i18n/` for everything else (`project`, `product`, `mail`, `stock`, …).
+- Before filling any `support_connector` / `ticketing` / `support_teams` term, run
+ `support/support_translations/scripts/check_mail_templates.py` first to see the current-green
+ baseline, and again after the batch to prove it is still green — a fill that turns it red is the
+ one class of "progress" that is actually a regression.
+- After a `system/odootools_demo` (or any module) batch, re-parse every `i18n/*.po` file for that
+ module with `polib` directly — do not trust "MISSING: 0" from a one-off apply script as proof the
+ module has zero empty `msgstr` left; it only proves that batch's own msgids landed.
+- Finish with one full-hub re-scan (`tools`, `support`, `system`, `odoo-apps-addons`, `life`)
+ against the complete `SHIPPED_LANGS` list before reporting the backlog closed.
+
 ## Out of scope until asked
 
 KnowSystem article **records** and `/docs` stay English. Website app-page and ticket-form FAQ text is overlaid from `support/support_translations/tm/website/faqs/` (not Multi Languages). Store HTML stays `en_US`. Screenshot **files** stay English; `module.pic.name` and `alt_name` are translated. Country variants and the extended set are shipped (same list as `ai_rules` `17-translations`); production URL prefixes are Phase 11 activation. Seed from the root locale and analyze each string separately (translations may differ — not a copy, not an SEO-only event).
