@@ -63,7 +63,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
 - Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`. New or replaced `module.pic` titles (`name` / `alt_name`) are TM + live loader in the **same** job as the shots; PNG files stay English.
 - Demo data for public apps: XML in the `tools` module, Python generators and script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) in `system/odootools_demo` — `34-demo-data`. KnowSystem articles additionally follow their `editor_type` contract — `35-knowsystem-demo`.
-- App store releases (`module.release` on faotools.com): `33-faotools-release` (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Do not leave `/ru/` English unless the user explicitly skips translations.
+- App store releases (`module.release` on faotools.com): `33-faotools-release` is **always-on** (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Filling the app `.po` does not count. Do not leave `/ru/` English unless the user explicitly skips translations.
 
 ## 01-hub-serie
 
@@ -981,6 +981,8 @@ Mutations: `odoo_records_write` / `odoo_records_create` / `odoo_actions_run`, th
 The user’s “make a release” is the live-write gate. Ask only when the module/serie is ambiguous, the next `exact_version` already has a `module.release`, or the target is a prepublishment.
 
 **Translations are part of the release.** On 19.0+ the job includes step 8 (TM YAML + live loader apply) in the same turn as publish. Do not report published, do not stop at GitHub / demo rebuild, and do not treat “do not redeploy Functional” as a skip. The **only** skip is the user **explicitly** saying to skip translations / do not translate (quote that command; do not mark step 8 done).
+
+**App `.po` fill is not this step.** Completing `tools/<module>/i18n/*.po` does not translate public `module.release.description`. A 19.0+ row that is `3_published` while `/it/` or `/ru/` still shows the English changelog has failed. Incident 2026-09-10: Appointments `1.3.33` shipped English because the publish chat treated the `.po` backlog as “translations done” and never wrote TM / `_apply_description`.
 
 ## Resolve targets
 
