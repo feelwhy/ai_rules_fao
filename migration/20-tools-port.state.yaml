@@ -1,0 +1,830 @@
+# Machine-readable state for the tools 19.0 -> 20.0 port.
+#
+# CONTRACT: a fresh agent session with no memory must be able to read this file plus the live
+# faotools.com records and determine exactly what is safe to do next. Git branch tips cannot
+# express "stage Gx.7, green, on these SHAs", so they are not state.
+#
+# RULES
+#   * Update at every stage boundary, in the same chunk as the work.
+#   * Never mark a stage done whose gate did not pass. `blocked` is a status, not a skip.
+#   * On any ambiguity between this file and reality, trust reality and STOP - do not guess.
+#   * Process: ai_rules_fao 36-major-version-port. Transforms: ai_rules 22-migrate-v19-to-v20.
+
+schema_version: 1
+program: tools-19-to-20
+updated_at: 2026-09-14T11:55:00+01:00
+updated_by: agent/20_2-gx9
+
+# ---------------------------------------------------------------- pins
+# saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
+# A fix present on 19.0 may be absent from the target (8638 such commits measured).
+pins:
+  source_serie: "19.0"
+  target_serie: "saas-19.4"       # stands in for the future 20.0
+  final_serie: "20.0"             # not released yet
+  # Re-pinned twice on 2026-09-12: 3ead42e8511 (two automated store updates) and then
+  # 84e7d1c4840, the parallel chat's commit of defects 3-5. Neither touched a 20_2 module,
+  # so the Gx.0 seed is valid against this pin (subtree hashes re-verified).
+  tools_19_0: 84e7d1c4840ebc46db5d3265f6aa6619a7198236   # re-pin on every owner fix
+  tools_19_0_repin_pending: false
+  odoo_19_0: f8496b42a96f35affb6bb9ecac2310e8c174d3e2
+  enterprise_19_0: 78d34d73ec5eccd39432ac16c22cb0f600d8d60b
+  odoo_saas_19_4: 3630379f63633612e5a9e8d435deecbe26eaa15a
+  enterprise_saas_19_4: 8d73a02a8ba9a99fb41b2cd01b1680c6ded4b837
+  pinned_at: 2026-09-12
+
+# ---------------------------------------------------------------- phases
+phases:
+  "1_delta_analysis":
+    status: done
+    artifacts:
+      - docs/20-tools-touchpoints.md
+      - docs/20-saas-19.4-delta.md
+    result:
+      source_confirmed_breaks: 34    # 25 + OWL 3 / same-path JS / ICP (2026-09-14)
+      open_hypotheses: 5          # H1, H2, H5, H6, H7 (H3 and H4 closed; H4 binding ≠ OWL-clean)
+      runtime_reproduced: 3       # ir.access KeyError; set_param AttributeError; useState TypeError
+  "2_living_rules":
+    status: done
+    artifacts:
+      - ../ai_rules/src/22-migrate-v19-to-v20.md
+      - ../ai_rules/tools/check_migrate_v20.py
+      - src/36-major-version-port.md
+      - docs/20-tools-port-status.md
+      - migration/20-tools-port.state.yaml
+  "3_branches":
+    status: done
+    artifacts:
+      - migration/20-tools-groups.md          # owner's authoritative group/order file
+      - migration/check_group_assignment.py   # the assertion rule 36 requires
+    result:
+      # Mirrors the previous serie cut exactly (tools da67cbeb41c "tools: 19.0 initial commit",
+      # parent = 18.0 tip, tree = tech files only).
+      tools_scaffold: 971c21a311ebe5682576a86396ef539c71d7c216
+      tools_scaffold_parent: 12348603477eead2438bd545b2703a4330a19c97
+      tools_scaffold_tree:
+        [.cursor/rules/email-suite-modules.mdc, .cursor/rules/jstree-navigation.mdc,
+         .cursorignore, .cursorindexingignore, .gitignore, .gitlab-ci.yml, requirements.txt]
+      tools_branches: 21          # 18 groups + 20_port + 20_final + 20.0
+      system_20_0: f42c38f        # full 19.0 content, not a scaffold: phase 4.2 ports in place
+      assignment_check: pass      # 93 addons, each in exactly one group
+      pushed: true                # origin, 2026-09-12; 21 tools refs + system 20.0
+  "4_infrastructure":
+    # NOT done: 4.5 below. The tooling (4.1-4.4) is in, but three hypotheses were
+    # scheduled here and cannot run yet - do not close the phase on the tooling alone.
+    status: in_progress
+    "4.1_image":
+      status: done
+      artifacts:
+        - ../faotools_env/local/env-serie-image.sh
+        - ../faotools_env/local/lib/serie-core.Dockerfile
+      result:
+        image: faotools/env-demo-20:current
+        base: faotools/env-demo-19:current   # OS layer + wkhtmltopdf + env_dbfilter_header reused
+        core_ref: saas-19.4
+        core_rev: 3630379f63633612e5a9e8d435deecbe26eaa15a   # == pins.odoo_saas_19_4
+        odoo_release: "saas~19.4"
+        build_minutes: 2.7
+        # Docker Hub publishes no saas/20.0 tag, so `FROM odoo:<serie>` is impossible.
+        # Core comes from git, the same mechanism as master project images.
+        # Unlike master, the baked core is REMOVED before the copy: a `cp -a` on top
+        # leaves files the branch deleted, which would hide exactly the breaks we test for.
+        verified:
+          # 2026-09-12: the "no stale 19.0 files" line below was a COUNT and was WRONG - see
+          # incidents.image_stale_19_addons. The image was rebuilt; the Dockerfile now empties
+          # the packaged addons tree and both it and env-serie-image.sh assert that.
+          - "packaged dist-packages/addons empty; odoo/addons name set == saas-19.4 (662, 0 stale)"
+          - "removed view product.product_variant_easy_edit_view absent"
+          - "stock.move.uom_id present, product_uom gone"
+          - "ir.attachment.datas gone, _inverse_raw present"
+          - "addon dirs 662 == 642 addons/ + 21 odoo/addons/ - 1 hidden .gitkeep (no stale 19.0 files)"
+          - "rerun is a no-op (base id + core rev labels)"
+    "4.2_targets":
+      status: done
+      artifacts:
+        - ../faotools_env/local/lib/common.sh      # rows, repo_branch_for_serie, repos_for_target
+        - ../faotools_env/local/lib/stack.sh       # local-source prepare/assert paths
+        - ../faotools_env/local/env-sync.sh        # skip local-source targets
+        - ../faotools_env/local/README.md
+      result:
+        targets:
+          demo20: {db: odooallapps20.odootools.com, port: 18200, source: local}
+          demo20e: {db: odooallapps20e.odootools.com, port: 18201, source: local}
+        image: faotools/env-demo-20:current
+        # "One serie, one branch" only holds after a serie is released. Three
+        # different answers are needed here, so branch resolution became per-repo.
+        branch_map:
+          odoo_enterprise: saas-19.4     # Odoo ships no 20.0 branch yet
+          tools: 20_port                 # aggregate; PORT_BRANCH=20_5 to review one group
+          system: "20.0"                 # ported in place, no aggregate exists
+          others_odoo_apps_addons: not_mounted   # no 20 branch; wrong-serie code is worse than none
+          demo_scripts_override: 20_demo         # env-demo-* forces tools/system here, as on 19
+        branches_created: [tools@20_demo, system@20_demo]   # local only, not pushed
+        verified:
+          - "demo20/demo20e resolve to db, image, ports, source=local"
+          - "per-repo branches resolve as mapped; demo19e resolution unchanged"
+          - "env-up.sh demo20 dies naming env-demo-build.sh, and touches no branch"
+          - "env-prepare.sh --check reports 'not built yet' for 20, 19.0 rows unchanged"
+        open:
+          - "no DB yet: needs one ported tools group before a real launch (4.3 system port is in)"
+          - "enterprise is one checkout, so demo20e and demo19e cannot serve at once"
+          - "env-serie.sh 20.0 would still mis-resolve upstream repos; it is not on the launch path"
+    "4.3_system_port":
+      status: done
+      result:
+        branch: system@20.0              # 6feaf60 on origin; shared checkout stays 19.0
+        dropped: [kwkhtmltopdf_assets]   # dead override of a hook absent at both refs
+        manifests_unprefixed:
+          odootools_demo: {from: 19.0.1.0.2, to: 1.0.2}
+          verifalia: {from: 19.0.1.1.1, to: 1.1.1}
+          already_unprefixed: [faotools_after_init, faotools_enterprise, single_email_for_communication]
+        field_ports:
+          - "odootools_demo: ir.attachment datas → raw (demo_cloud_storage, website cover)"
+          - "odootools_demo: stock.move product_uom → uom_id (demo_stock, res_company)"
+        ticket_serie: "saas~N major → (N+1).0; image version_info[0] is 'saas~19'"
+        checker:
+          known_false_positive: "odootools_demo/.../demo_password_manager.py:366 _demo_pwm_http_session (calls_super walks nested class)"
+          manifest_version: "system clean; sticky_notes@19.0.1.0.11 flags on saas-*, silent on 20.0"
+        smoke: not_run                    # env-demo-build needs a ported tools group
+        rules_updated:
+          - ../ai_rules/src/22-migrate-v19-to-v20.md   # two-stage version; version_info[0]
+          - ../ai_rules/tools/check_migrate_v20.py     # kind manifest-version
+          - src/36-major-version-port.md               # Gx.3 unprefix; Fx re-prefix
+          - src/11-manifest-version.md                 # port exception
+    "4.4_gates":
+      status: done
+      "4.4a_warning_gate":
+        status: done
+        artifacts:
+          - ../faotools_env/local/lib/odoo_log_gate.py
+          - ../faotools_env/local/lib/test_odoo_log_gate.py
+          - ../faotools_env/local/env-log-gate.sh
+          - migration/20-warning-allowlist.yaml
+        result:
+          wired: "run_odoo_tests tees stdout → logs/<target>/test-window.log then odoo_log_gate.py"
+          skip: "LOG_GATE=0"
+          fail: "ERROR/CRITICAL in the window; WARNING from a module UNDER TEST; datas-removed pattern"
+          record: "WARNING from core/enterprise or a tools module not under test, fingerprinted"
+          allowlist: "expired rows fail; covers_errors:true required to mask ERROR/CRITICAL"
+          scoped_2026_09_12: >
+            Rescoped after the 20_2 pilot produced 6 false failures on a green run:
+            (1) the window now ENDS at "Initiating shutdown" - the healthcheck racing
+            teardown logged 2x "cursor already closed" + 2x "Exception during request
+            handling"; (2) `ours` is the modules under test + odootools_demo, not every
+            tools module in the all-apps dump - itlibertas_timesheet's routing-map
+            warning is not evidence about the group being ported; (3) an error a passing
+            test provokes on purpose must be declared with covers_errors:true.
+          attribution_limit: >
+            ours_addon matches a module name in the logger or message. A core logger that
+            names only a MODEL (odoo.fields "portal.password.key.name") cannot be
+            attributed, so it records. Re-read those by hand when 20_4 runs.
+      "4.4b_drift_timer":
+        status: done
+        artifacts:
+          - ../faotools_env/local/env-port-drift.sh
+          - ../faotools_env/local/install-port-drift.sh
+          - ../faotools_env/local/systemd/faotools-port-drift.timer
+          - ../faotools_env/local/systemd/faotools-port-drift.service
+        result:
+          never_checkout: true
+          tests_when: "20_port has addons AND tools already on 20_port AND system on 20.0 AND both clean AND demo20 DB exists"
+          rebuild: "env-serie-image.sh when baked core ≠ remote tip; no --expect"
+          pin_drift: "exit 2; does not rewrite the ledger"
+          timer_installed: false   # ./local/install-port-drift.sh — weekly Mon 10:30, not run on install
+          first_check: "2026-09-12: odoo tip = pin 3630379f6363; enterprise tip aedd5f5db507 ≠ pin 8d73a02a8ba9 (not re-pinned)"
+    # Scheduling defect found 2026-09-12 while closing 4.4: H1, H2 and H7 carry `phase: 4`,
+    # but all three are RUNTIME checks and there is no 20 database until a tools group is
+    # ported. Phase 4 therefore cannot deliver them. Left OPEN rather than marked done or
+    # quietly reassigned; the owner decides whether they move to the pilot's Gx.6 / Gx.7.
+    "4.5_runtime_hypotheses":
+      status: blocked
+      blocked_on: "no demo20 database until one tools group is ported (4.2 open item)"
+      items: [H1, H2, H7]
+      proposed: "run H1 + H2 at pilot Gx.6 (fresh install matrix), H7 at pilot Gx.7 (test window)"
+      owner_decision_required: true
+    "4.6_ci_on_20_branches":
+      status: open
+      note: >
+        .gitlab-ci.yml came over on the scaffold with VERSION "11.0", stale exactly as on 19.0.
+        The tracker called this "phase 4 work if we want CI on these branches" and it was never
+        decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
+  "5_pre_release_group_loops":
+    status: in_progress
+    active_group: "20_c"
+    open_items:
+      - >
+        env-test / env-demo-build clone names are not session-unique
+        (test_db_name() = "test_<target>", env-demo-build = one BUILD_DB). Two chats testing
+        the same target destroy each other's run: clone_test_db terminates connections to
+        that name and drops it. Cost us two failed Gx.2 attempts and disrupted the parallel
+        chat's knowsystem run on 2026-09-12. Fix is a per-session suffix; NOT done.
+  "6_final_serie_release": {status: pending}
+  "7_master_infrastructure": {status: pending}
+  "8_final_group_loops": {status: pending}
+  "9_publish_loops": {status: pending}
+  "10_cutover": {status: pending}
+
+# ---------------------------------------------------------------- aggregates
+# All tools branches sit on the scaffold commit until their first group merge.
+aggregates:
+  20_port: {git_sha: d7254425af9, created: true, pushed: true}
+  20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
+  "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
+  system_20_0: {git_sha: 6feaf60, created: true, pushed: true}
+
+# ---------------------------------------------------------------- groups
+# stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
+# stage_status: pending | in_progress | blocked | green | failed
+# checker_findings: output of check_migrate_v20.py at the recorded pins (pre-port baseline)
+groups:
+  "20_2":
+    order: 1
+    pilot: true
+    modules: [smart_warnings, complementary_contact_data, sticky_notes,
+              complementary_employee_data, complementary_lead_data]
+    stage: Gx.9
+    stage_status: green
+    # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
+    # only scaffold tech files, so checking it out in the shared tree would strip every
+    # addon from the 4 running containers that bind-mount /home/feelwhy/Odoo/tools.
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_2
+    seed:
+      commit: 4340624e5f5
+      from_pin: 84e7d1c4840ebc46db5d3265f6aa6619a7198236
+      verified: "all 5 module subtree hashes equal the pin; 43 .po files each"
+    contract: migration/contracts/20_2.md
+    gx3:
+      manifests_unprefixed:
+        smart_warnings: {from: 19.0.1.0.15, to: 1.0.15}
+        sticky_notes: {from: 19.0.1.0.11, to: 1.0.11}
+        complementary_contact_data: {from: 19.0.1.0.7, to: 1.0.7}
+        complementary_employee_data: {from: 19.0.1.0.3, to: 1.0.3}
+        complementary_lead_data: {from: 19.0.1.0.3, to: 1.0.3}
+      view_ports:
+        - "complementary_lead_data: dropped inherit of crm group lead_priority (absent saas-19.4); tag_ids-before remains"
+      a8_groups_api: unchanged   # user_ids / implied_by_ids / all_implied_by_ids / all_user_ids
+      checker: {dead_hook: 0, js_import: 0, view_xmlid: 0, field_lit: 0, stale_override: 0, manifest_version: 0, patch_target: 0, patch_shadow: 0}
+    gx4:
+      layer1_changed: false
+      complementary_demo: "no plugs; core xmlids res_partner_12 / employee_hne / crm_case_14 exist on saas-19.4; no dates, no attachments, no editor bodies"
+      empty_layer1: [smart_warnings, sticky_notes]   # Layer 2 in odootools_demo — Gx.5 is real
+    gx5:
+      layer2_changed: false
+      loaders: [odootools_demo.models.demo_notes_alerts]
+      purge_json: [sticky_notes, smart_warnings, complementary_contact_data,
+                   complementary_employee_data, complementary_lead_data]
+      verified: >
+        no rule-22 hits in the loaders (product_uom_qty and hr.work_contact_hne still
+        exist on saas-19.4; no datas / product_uom writes). Idempotent upserts via
+        _demo_upsert_record. Gx.5 is a review, not a code change.
+    gx3_security:
+      # Second Gx.3 pass, after the ir.access fold into rule 22 + checker.
+      ir_access_ported:
+        - "sticky_notes/security/security.xml: ir.rule -> ir.access, domain_force -> domain,
+           operation crud (no group_id = restriction, as before)"
+        - "smart_warnings/security/security.xml: same; company_ids still in _eval_context"
+        - "sticky_notes + smart_warnings + complementary_contact_data:
+           security/ir.model.access.csv -> security/ir.access.csv, core header
+           id,name,model_id,group_id/id,operation,domain; manifests updated"
+        - "smart_warnings ACL row on model base.model_ir_model_access -> ir.access
+           (ir.model.access_ids is One2many('ir.access') now)"
+      po_impact: none      # ACL / rule names are not exportable terms
+      checker: no findings
+    gx6:
+      stage_status: green
+      log: /tmp/gx20_2_matrix.log
+      runner: /tmp/gx20_2_matrix.sh          # session-unique gx20_2_* DB names, dropped after
+      image: "faotools/env-demo-20:current rebuilt 2026-09-12 (incident image_stale_19_addons)"
+      result: >
+        14 of 14. Each of the 5 modules installs as its own closure with --without-demo=True,
+        installs --with-demo, and takes a -u. Community only; demo20e not run.
+      first_run: >
+        12 of 14 before the image fix: complementary_employee_data could not load because the
+        image still exposed hr_homeworking (deleted at saas-19.4, auto_install) from the
+        packaged 19.0 addons tree. Nothing to do with the group's own code.
+      infra_noise: >
+        env_dbfilter_header (baked at /mnt/extra-addons) imports odoo.service.db, removed on
+        saas-19.4; dropped from local run/demo20/odoo.conf server_wide_modules.
+        --without-demo=all is invalid since 19.0 (config WARNING, "assume True"); the runner
+        now passes --without-demo=True.
+    gx7:
+      stage_status: green
+      group_install: "all 5 modules together, --with-demo, on the rebuilt image"
+      tests: "0 failed, 0 error(s) of 5 tests (--test-tags /complementary_contact_data)"
+      log_gate: >
+        FAIL 0 RECORD 0 ALLOW 1 - the allowlisted deliberate varchar crash
+        (covers_errors: true). The 3 RECORDs of the previous run were
+        "invalid addons directory dist-packages/addons, skipped", a consequence of emptying
+        that tree; the path entry was dropped from the demo20 conf and the runner.
+      languages: >
+        The test DB installs with --load-language over the 42 support_translations
+        SHIPPED_LANGS, read from const.py. Without it 2 tests error with
+        `UserError: Invalid language code: ru_RU`: they read in Russian without activating
+        the language, and env.lang raises for an inactive lang on BOTH refs (19.0
+        environments.py:300, saas-19.4 :331). The Gx.2 baseline passed only because
+        env-test.sh clones demo19, where all 42 are already active - an environment
+        difference, not a port break, and not a reason to edit the test.
+      caveat: >
+        Only complementary_contact_data ships tests (5, all about the comment i18n healer).
+        Green here proves install + upgrade + that one healer, NOT the group's features;
+        acceptance rests on the contract's manual checks at Gx.8.
+      browser_smoke: login_ok          # 2026-09-14: /web/login 200, admin/admin → /odoo/discuss
+      cause: >
+        NOT a port break. complementary_contact_data/tests/test_extra_contact_comment.py uses
+        with_context(lang="ru_RU") and web_read in ru without activating the language, and
+        env.lang raises for an inactive lang on BOTH refs (19.0 environments.py:300,
+        saas-19.4 :331). The Gx.2 baseline passed only because env-test.sh clones demo19,
+        where all 42 languages are active; this matrix creates a fresh en_US-only DB.
+      fix: "Gx.7 test DB may activate ru_RU (or other langs a test reads) AFTER en_US.
+             Do not --load-language the 42-lang list as the first/only codes — that
+             leaves en_US inactive (2026-09-14). Gx.8 review is en_US, not shipped langs."
+      log_gate: "FAIL 3 - the 2 test errors + the suite summary; no other ERROR/CRITICAL"
+    gx8:
+      stage_status: green
+      walk: >
+        Owner confirmed all 5. Agent smoke (en_US): partner 15 pin+sticky+alert+extra;
+        employee 6 pin+sticky+extra; lead 14 pin+sticky+alert (placeholder rendered)
+        +extra; /odoo/smart-alerts list 5 + form 10; /odoo/sticky-notes kanban 8 + form 12.
+        No useState crash. Pin was OWL 3 t-if="showStickyBtn" (fixed this.showStickyBtn).
+      url: http://localhost:18200/web/login
+      url: http://localhost:18200/web/login
+      db: odooallapps20.odootools.com
+      compose: faotools_env/local/run/demo20/compose.yml
+      tools_bind: /home/feelwhy/Odoo/_worktrees/tools-20_2
+      shared_tools_left_on: "19.0"     # do not env-up.sh demo20 — that would checkout 20_port
+      modules_installed:
+        [sale_management, purchase, hr, crm, account,
+         smart_warnings, sticky_notes, complementary_contact_data,
+         complementary_employee_data, complementary_lead_data]
+      odootools_demo: not_installed    # depends on unported apps (email_suite, joint_calendar, …)
+      layer2_seed: /tmp/gx8_20_2_seed.py
+      seeded: {sticky_notes: 8, smart_warnings: 5, complementary_hr_partner: 1}
+      languages: en_US
+      languages_note: >
+        2026-09-14: DB was created with --load-language over the 42 SHIPPED_LANGS
+        (first = ru_RU, en_US not in the list). install_lang therefore activated
+        Russian, set ir.default partner lang to ru_RU, and left en_US active=False
+        (CSV has no active column; fields.Boolean() defaults False). Preferences
+        hid English. Owner: feature walk is en_US only; translations at Fx.3 / Px.7.
+        Fixed: res.lang._activate_lang("en_US") + admin lang=en_US. The 42 shipped
+        langs are still active from that install; do not repeat the load-language
+        list on later review DBs.
+      logins: {admin: admin, demo: demo}
+      login_probe: "HTTP 200; admin session lands on /odoo/discuss"
+      note: >
+        Slim review DB, not the all-apps template. Layer-2 loaders were replayed by a
+        one-off shell because odootools_demo cannot install on this group alone.
+        set_param is gone on saas-19.4 — neutralize used set_str (see port_items).
+    gx9:
+      stage_status: green
+      commits: [eb0af09c740, d7254425af9]
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_2
+      merged_to: 20_port
+      merge: fast-forward 971c21a311e..d7254425af9
+      port_worktree: /home/feelwhy/Odoo/_worktrees/tools-20_port
+      shared_tools_left_on: "19.0"
+      pushed: true
+      checker: "no findings (5 modules on 20_port @ d7254425af9)"
+    baseline:
+      command: "env-test.sh demo19 smart_warnings,sticky_notes,complementary_contact_data,complementary_employee_data,complementary_lead_data"
+      result: "0 failed, 0 error(s) of 3 tests; all 5 modules upgrade; log gate FAIL 0 RECORD 7 ALLOW 1"
+      log: /tmp/gx2-rerun.log
+      caveat: >
+        Only complementary_contact_data ships tests (3, all about one i18n healer). The other
+        four modules have no tests/ package, so this baseline proves install + upgrade, NOT
+        the features. Acceptance rests on the named manual checks in the contract.
+      collision: >
+        First two attempts died when a parallel chat ran env-test.sh demo19 concurrently:
+        test_db_name() is test_<target>, so both sessions share test_demo19 and each clone
+        terminates + drops the other's. Root cause NOT fixed - see open_items.
+    checker_findings: {dead_hook: 0, js_import: 0, view_xmlid: 0, field_lit: 0, stale_override: 0, manifest_version: 0}
+    note: >
+      Pre-port checker was clean except manifest-version. Gx.3 found crm group lead_priority
+      gone — not a checker kind. Still a poor effort estimate; do not extrapolate.
+  "20_c":
+    order: 2
+    modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
+              project_custom_fields, task_custom_fields, product_custom_fields,
+              product_custom_fields_website_sale, custom_fields]
+    stage: null
+    stage_status: pending
+    checker_findings: {dead_hook: 0, js_import: 0, view_xmlid: 0, field_lit: 0, stale_override: 0}
+  "20_14":
+    order: 3
+    modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
+              dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
+    stage: null
+    stage_status: pending
+    known_breaks: [_track_subtype, _inverse_datas, _to_store_defaults, ir_attachment_datas,
+                   chatter_import, ensure_jquery, x2many_commands, store_add_signature,
+                   store_get_result]
+    note: Heaviest Store-API rework alongside 20_suite.
+  "20_5":
+    order: 4
+    modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
+    stage: null
+    stage_status: pending
+    known_breaks: [x2many_commands, ir_attachment_datas]
+    enterprise_required: true
+  "20_6":
+    order: 5
+    modules: [product_stock_balance, stock_limitation, product_dynamic_code]
+    stage: null
+    stage_status: pending
+    known_breaks: [product_variant_easy_edit_view, ir_attachment_datas]
+  "20_9":
+    order: 6
+    modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
+              odoo_typo_reporter]
+    stage: null
+    stage_status: pending
+    known_breaks: [website_root_interaction, ir_attachment_datas]
+  "20_10":
+    order: 7
+    modules: [task_checklist, crm_checklist, sale_order_checklist, purchase_order_checklist]
+    stage: null
+    stage_status: pending
+  "20_12":
+    order: 8
+    modules: [partner_color_codes, activities_todo, recurrent_activities]
+    stage: null
+    stage_status: pending
+    known_breaks: [self_readable_fields, self_writeable_fields]
+  "20_11":
+    order: 9
+    modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
+    stage: null
+    stage_status: pending
+    known_breaks: [stock_move_product_uom, ir_attachment_datas]
+  "20_7":
+    order: 10
+    modules: [itlibertas_timesheet, itlibertas_timesheet_gantt, odoo_menu_management]
+    stage: null
+    stage_status: pending
+    known_breaks: [_track_subtype, self_readable_fields, self_writeable_fields]
+    enterprise_required: true
+    note: >
+      Attendance patches fully replace core methods without super() while core moved to
+      makeRpcWithGeolocation and renamed searchReadEmployee. Runtime check required (H6).
+  "20_16":
+    order: 11
+    modules: [business_appointment, business_appointment_website, business_appointment_sale,
+              business_appointment_website_sale, business_appointment_custom_fields,
+              business_appointment_custom_fields_website, business_appointment_time_tracking,
+              business_appointment_hr, business_appointment_gantt]
+    stage: null
+    stage_status: pending
+    known_breaks: [_track_subtype, x2many_commands, resource_attendance_onchange_hours]
+    enterprise_required: true
+    blocked_by: []                      # defect 1 fixed by owner in the current pin
+  "20_15":
+    order: 12
+    modules: [knowsystem, knowsystem_website, knowsystem_multilang,
+              knowsystem_website_custom_fields, knowsystem_custom_fields, documentation_builder,
+              knowsystem_eshop]
+    stage: null
+    stage_status: pending
+    known_breaks: [dynamic_field_plugins, dynamic_placeholder_plugin, option_sequence,
+                   ensure_jquery, x2many_commands, website_sale_split]
+    blocked_by: []                      # defect 3 committed in 84e7d1c4840
+    note: >
+      Riskiest group in the program: carries 4 of the 9 JS breaks and the html_builder/html_editor
+      rework, which was still moving at saas-19.4. Also needs editor re-capture for
+      backend_editor bodies. Do not schedule early.
+  "20_suite":
+    order: 13
+    modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
+              internal_thread_accounting, odoo_email_from, email_suite_accounting,
+              odoo_email_from_accounting]
+    stage: null
+    stage_status: pending
+    known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
+                   mail_fields_import, chatter_import, x2many_commands, store_add_signature,
+                   store_get_result, message_model_edit_signature]
+    blocked_by: []                      # defect 5 committed in 84e7d1c4840
+    note: Full Store-API rewrite, not renames.
+  "20_3":
+    order: 14
+    modules: [product_management, product_management_accounting, product_management_website_sale,
+              product_management_purchase, product_management_stock]
+    stage: null
+    stage_status: pending
+  "20_4":
+    order: 15
+    modules: [odoo_password_manager, security_user_roles, task_numbers,
+              odoo_password_manager_custom_fields]
+    stage: null
+    stage_status: pending
+    known_breaks: [ir_attachment_datas]
+    blocked_by: []                      # defect 4 committed in 84e7d1c4840
+  "20_13":
+    order: 16
+    modules: [notification_crm, mail_activity_notification, notification_project,
+              mail_composer_on_send_message]
+    stage: null
+    stage_status: pending
+    known_breaks: [chatter_import]
+  "20_8":
+    order: 17
+    modules: [vendor_product_management, vendor_portal_management, product_add_suppliers,
+              variant_price_system]
+    stage: null
+    stage_status: pending
+    known_breaks: [product_variant_easy_edit_view, product_lst_price_inverse_rename]
+    blocked_by: []                      # defect 2 fixed by owner in the current pin
+  "20_17":
+    order: 18
+    modules: [customer_scoring, vendor_scoring, header_clock, res_partner_completeness]
+    stage: null
+    stage_status: pending
+    known_breaks: [self_readable_fields, self_writeable_fields]
+
+# ---------------------------------------------------------------- live records
+# One entry per module once phase 8 starts. Never reuse a stale id after a failed apply.
+live:
+  topical_version_raised: false     # ticketing.support_topical_odoo_version, owner-gated
+  descriptions: {}                  # tech_name -> {prepublish_id, release_id, github_sha,
+                                    #               tm_applied_at, promoted_at}
+
+# ---------------------------------------------------------------- locks
+# Several sessions and the owner share one checkout per repo and one live database.
+locks:
+  live_mcp: null            # {module_description_family, session, acquired_at}
+  local_target: null        # {target, session, acquired_at}
+  tools_branch: null        # branch this program expects checked out in the shared tree
+
+# ---------------------------------------------------------------- open items
+# Hypotheses may NOT be written into a port as fact (see rule 22).
+hypotheses:
+  H1: {claim: "asset bundles unchanged", check: "runtime asset gate on pinned image", phase: 4}
+  H2: {claim: "remaining fields in surviving models not renamed", check: "registry read after fresh install", phase: 4}
+  H5: {claim: "optional product on sale.order.line affects our line creation", check: "runtime", phase: "Gx.6"}
+  H6: {claim: "attendance ACL + geolocation changes affect kiosk code", check: "install + browser smoke", phase: "Gx.6"}
+  H7: {claim: "which deprecation warnings our code triggers", check: "test-window log on pinned image", phase: 4}
+
+incidents:
+  - id: image_stale_19_addons
+    found: 2026-09-12
+    phase: 4.1
+    blocks: "every group's Gx.6 / Gx.7 on faotools/env-demo-20:current"
+    symptom: >
+      complementary_employee_data install dies on
+      FileNotFoundError: /usr/lib/python3/dist-packages/addons/hr_homeworking/security/security.xml.
+      hr_homeworking does not exist at saas-19.4 at all; it is auto_install=True, so anything
+      pulling hr installs a module upstream deleted.
+    cause: >
+      env-serie-image.sh writes the saas-19.4 tree into /usr/lib/python3/dist-packages/odoo/addons
+      (owner odoo, 664 entries, has base, no hr_homeworking) but leaves the Debian-packaged 19.0
+      tree at /usr/lib/python3/dist-packages/addons (owner root, dated with the base image), which
+      is ALSO on the addons path. Different inodes for addons/sale/__manifest__.py vs
+      odoo/addons/sale/__manifest__.py prove they are two trees, not an overlay. For the ~599
+      modules in both, odoo/addons wins because it comes first on the path; the 63 modules
+      saas-19.4 deleted stay discoverable from the stale tree. Those leftovers are also
+      PARTIAL - hr_homeworking kept __manifest__.py and models/ but lost security/ and views/ -
+      which is why it fails on a missing file rather than merely being out of date.
+    measured:
+      stale_in_addons: 63        # in the image, absent at saas-19.4 (incl. 34 theme_*, hr_homeworking)
+      missing_from_addons: 44    # at saas-19.4, absent from the stale tree (present in odoo/addons)
+    ledger_correction: >
+      phases.4.1.result.verified claimed "addon dirs 662 == ... (no stale 19.0 files)". That was a
+      COUNT, and 63 stale minus 44 missing happens to land near the expected total. A count cannot
+      see a stale or partially-stripped module; compare the NAME SETS per addons root.
+    correction_2026_09_12: >
+      Dropping the dir from --addons-path DOES NOT WORK, tried and measured. Both trees are
+      portions of the `odoo.addons` implicit namespace package (neither has __init__.py), so
+      Odoo's addons path is a _NamespacePath and the packaged tree is appended whatever the
+      conf says - the log line just moves it to the end and hr_homeworking still loads. The
+      workaround has to be at the filesystem layer: mount an empty dir over it, or empty it
+      in the image.
+    options:
+      - "workaround: mount an empty dir over /usr/lib/python3/dist-packages/addons in
+         run/demo20/compose.yml (odoo/addons alone is the complete saas-19.4 surface).
+         No rebuild, covers the long-running service and `compose run --rm` one-offs."
+      - "real fix: env-serie-image.sh empties or removes the packaged 19.0 addons tree; rebuild
+         the image. Shared - affects demo20/demo20e and every group."
+    status: fixed
+    fix: >
+      lib/serie-core.Dockerfile empties dist-packages/addons after the core copy (leaving a
+      README that says why) and asserts it holds no module directory; env-serie-image.sh
+      asserts the same on the built image and prints the baked addon count. Rebuilt
+      2026-09-12 at the pinned SHA (branch tip still equalled the pin, so the same source
+      was tested).
+    verified: >
+      Image odoo/addons name set == `git ls-tree origin/saas-19.4:addons` +
+      `:odoo/addons` exactly: 662 each, 0 stale, 0 missing. hr_homeworking absent from every
+      root. Gx.6 then went 14/14 including complementary_employee_data.
+    assertion_lesson: >
+      Compare NAME SETS per addons root, never a count. The original 4.1 check was a count,
+      and 63 stale against 44 missing landed near the expected total.
+
+# Defects on 19.0 found by analysis. Each BLOCKS its group until the owner fixes it and the
+# pin is refreshed (rule 36, non-negotiable 2).
+source_serie_defects:
+  - {id: 1, module: business_appointment_sale, group: 20_16, issue: "sale.order.line product_uom",
+     status: fixed_by_owner, fixed_in: 12348603477eead2438bd545b2703a4330a19c97}
+  - {id: 2, module: vendor_portal_management, group: 20_8, issue: "supplierinfo product_uom",
+     status: fixed_by_owner, fixed_in: 12348603477eead2438bd545b2703a4330a19c97}
+  # 3-5 were fixed on 19.0 by an agent on the owner's explicit command (2026-09-12), which
+  # overrides rule 36 non-negotiable 1 for these three only. They are NOT committed yet, so the
+  # pin above still carries them: keep `blocked_by` in place until commit + re-pin.
+  # 3-5 committed and pushed by the parallel chat on 2026-09-12 as 84e7d1c4840
+  # ("Restore case-insensitive title sort and deleted-message gating on 19.0"), which
+  # touched only knowsystem, message_edit and odoo_password_manager. blocked_by cleared.
+  - {id: 3, module: knowsystem, group: 20_15, status: fixed_and_committed,
+     fixed_in: 84e7d1c4840ebc46db5d3265f6aa6619a7198236,
+     issue: "_generate_order_by_inner / _inherits_join_calc override absent from core at both refs",
+     fix: "knowsystem/models/knowsystem_article.py: single _order_field_to_sql over
+           _field_to_sql(); kms_order_by context flag dropped",
+     verified: "demo19 shell: LOWER(\"knowsystem_article\".\"name\"->>%s) ASC. Regression test
+                knowsystem/tests/test_article_ordering.py - 4 tests, green in the cloned test DB
+                (knowsystem 25 tests, 0 failed 0 error). The row-order probe reported earlier was
+                NOT evidence: en_US.utf8 collation already ignores case, so it passes with the hook
+                dead. Assert the emitted SQL."}
+  - {id: 4, module: odoo_password_manager, group: 20_4, status: fixed_and_committed,
+     fixed_in: 84e7d1c4840ebc46db5d3265f6aa6619a7198236,
+     issue: "_generate_order_by override absent from core at both refs - TWO sites: password_key.py
+             and portal_password_key.py. The checker reported only the first, because
+             portal.password.key declares no core parent in its own class; the second was found by
+             grep. Checker hardened for that class of miss (see checker_baseline).",
+     fix: "both models: _order_field_to_sql over _field_to_sql(). The old bodies also carried a
+           always-true `if \"name asc\" or ...` guard and replaced a nonexistent `value` column.",
+     verified: "demo19 shell: LOWER(...\"name\"->>%s) ASC on both models, and _read_group ordering
+                through portal.password.key / password.user.log resolves. Regression test
+                odoo_password_manager/tests/test_password_ordering.py (new tests/ package)."}
+  - {id: 5, module: message_edit, group: 20_suite, status: fixed_and_committed,
+     fixed_in: 84e7d1c4840ebc46db5d3265f6aa6619a7198236,
+     issue: "isEmpty prototype patch shadowed by upstream fields.Attr; dead since 19.0. Second
+             consequence: the module's `editable` getter reads this.isEmpty and therefore got
+             upstream's value, so the group-based edit permission was gated on the wrong flag.",
+     fix: "patch computeIsEmpty() instead of get isEmpty(); upstream routes the field compute
+           through that prototype method at both refs (19.0 :350, saas-19.4 :404)",
+     verified: "static only - patch-shadow reproduced the bug at message_model.js:82 on a pre-fix
+                copy and reports clean after, with the class-bound checker.",
+     open: "No browser regression test. message_edit has no static/tests, so locking the reactive
+            behaviour needs a hoot suite wired into web.assets_unit_tests (precedent:
+            odoo_typo_reporter). Not written, because it cannot be run by --test <module>: hoot
+            suites execute in the web JS run, and a broken one would break that shared suite."}
+
+# Port work (not 19.0 defects): these work today and break only on the target serie. Recorded
+# here because neither was in the ledger, the tracker, or rule 22 - and neither is reachable by
+# the checker, since the dead-hook check requires a super() call and both overrides have none.
+port_items:
+  - {key: product_lst_price_inverse_rename, module: variant_price_system, group: 20_8,
+     site: "models/product_product.py:32",
+     evidence: "product.product._set_product_lst_price at 19.0 product_product.py:309, absent at
+                saas-19.4; core's lst_price inverse is now _inverse_product_lst_price (:386,
+                wired at :38). Our method is bound by object on the redeclared field, so the
+                inverse keeps firing - rename it and re-read core's field declaration."}
+  - {key: resource_attendance_onchange_hours, module: business_appointment, group: 20_16,
+     site: "models/resource_calendar_attendance.py:12",
+     evidence: "resource.calendar.attendance._onchange_hours present at 19.0
+                (resource/models/resource_calendar_attendance.py), deleted at saas-19.4. Ours is
+                registered by @api.onchange so it still fires; check core's replacement clamping
+                before keeping the 24:00 handling."}
+  - {key: crm_lead_priority_group, module: complementary_lead_data, group: 20_2,
+     site: "views/crm_lead.xml (inherit crm.crm_lead_view_form)",
+     status: fixed_in_gx3,
+     folded_into_rule22: true,      # "Named inherit anchors" + checker kind view-anchor
+     evidence: "group name='lead_priority' present at 19.0 crm_lead_views.xml:248
+                (lead-only sibling of the opportunity tag_ids group), absent at saas-19.4.
+                Lead and opportunity sidebars merged into one group with a single tag_ids.
+                Checker view-xmlid does not catch named-group inherits (the view survives)."}
+  - {key: crm_lead_priority_group_other_groups, module: opportunity_custom_fields, group: 20_c,
+     site: "views/crm_lead.xml:12",
+     status: open,
+     evidence: "same missing crm anchor as 20_2, found by the new view-anchor check.
+                Fix during that group's Gx.3, not now."}
+  - key: ir_config_parameter_set_param
+    module: odootools_demo
+    group: system
+    status: observed_gx8
+    folded_into_rule22: true
+    checker_kind: python-api
+    site: "ir.config_parameter.set_param / get_param"
+    program_scale: "tools 221 sites (166 prod / 55 test); system 35; odoo-apps-addons 5"
+    evidence: >
+      saas-19.4: get_param / set_param absent (19.0 ir_config_parameter.py:60,82).
+      Successors get_str / get_bool / get_int / get_float and set_*
+      (odoo/addons/base/models/ir_config_parameter.py:78,100,124).
+      Runtime: AttributeError on Gx.8 neutralize. Neutralize used set_str.
+  - key: owl3_usestate
+    module: all
+    group: 20_2
+    status: observed_gx8
+    folded_into_rule22: true
+    checker_kind: js-symbol
+    program_scale: "66 files / 25 tools modules"
+    site: "import { useState } from @odoo/owl / const { useState } = owl"
+    evidence: >
+      saas-19.4 ships OWL 3. useState is in 19.0 owl.js exports, absent from
+      owl.d.ts and from owl3_compatibility_layer.js. Core FormRenderer.setup
+      does this.state = proxy({}) (form_renderer.js:56). Runtime on the 20_2
+      review DB: TypeError: useState is not a function. Loudest because
+      smart_warnings / sticky_notes patch FormRenderer — every backend form.
+      20_2 sites: smart_form.js:8, sticky_form.js:10, contact_info.js:5.
+  - key: owl3_useeffect_deps
+    module: knowsystem
+    group: 20_15
+    status: open
+    folded_into_rule22: true
+    checker_kind: owl-hook
+    site: "useEffect(fn, deps) from @odoo/owl"
+    evidence: >
+      OWL 3 useEffect is useEffect(fn); extra args ignored. Three sites:
+      knowsystem iframe :153 :168, cloud_base_documents documents_kanban_record.js:19.
+      Replacement: useLayoutEffect from @web/owl2/utils.
+  - key: owl3_tref_xpath
+    module: all
+    group: several
+    status: open
+    folded_into_rule22: true
+    checker_kind: "owl-xpath + owl-tref"
+    program_scale: "5 dead @t-ref inherits; 23 own-template t-ref/t-model leftovers"
+    site: "//article[@t-ref='root'] / //div[@t-ref='shadowBody'] / t-model="
+    evidence: >
+      Compat: t-ref -> t-custom-ref, t-model -> t-custom-model, t-portal -> t-custom-portal.
+      web.KanbanRecord now t-inherits web.CardRenderer and sets t-custom-ref=root.
+      mail.Message shadowBody is t-ref="this.shadowBody". Dead XPaths:
+      cloud_base, knowsystem, odoo_password_manager, product_management kanban
+      records; message_edit message.xml. Own t-model: email_suite
+      scheduled_date_dialog_patch.xml.
+  - key: js_symbol_same_path
+    module: several
+    group: several
+    status: open
+    folded_into_rule22: true
+    checker_kind: js-symbol
+    site: "Deferred, LazyComponent, loadEmoji, effect, BaseOptionComponent"
+    evidence: >
+      File survived; export did not. Counts on tools@19.0: Deferred 4, LazyComponent 1,
+      loadEmoji 1, effect 1, BaseOptionComponent 8. Successors in rule 22 table.
+  - {key: partner_filter_type_person, modules: [crm_duplicates, customer_scoring,
+                                                partner_duplicates, vendor_scoring],
+     groups: [20_14, 20_10, 20_14, 20_10],
+     status: open,
+     site: "views/res_partner*.xml (inherit base.view_res_partner_filter)",
+     evidence: "filter name='type_person' present at 19.0
+                odoo/addons/base/views/res_partner_views.xml:327, absent at saas-19.4
+                (remaining matches are unrelated names in hr_work_entry / l10n_my_edi_pos).
+                Found by view-anchor; fix during each owning group's Gx.3."}
+  - key: ir_access_rewrite
+    module: all
+    group: 20_2
+    status: fixed_in_20_2_only      # 4 of 5 modules install on the target; 86 modules still owe it
+    folded_into_rule22: true      # "Security: ir.rule + ir.model.access merged into ir.access"
+    checker_kind: security-model
+    program_scale: "181 sites in 86 of 93 tools modules (86 ir.model.access.csv, 95 XML records)"
+    first_absent: saas-19.4
+    sites:
+      - sticky_notes/security/security.xml
+      - smart_warnings/security/security.xml
+      - sticky_notes/security/ir.model.access.csv
+      - smart_warnings/security/ir.model.access.csv
+      - complementary_contact_data/security/ir.model.access.csv
+    evidence: >
+      ir_rule.py and ir.model.access exist at 19.0 and saas-19.1..19.3; both gone at
+      saas-19.4 (pin 3630379f6363). Successor is ir.access
+      (odoo/addons/base/models/ir_access.py). XML: model ir.access, domain (was
+      domain_force), group_id (was groups M2M), operation crud subset (was perm_*),
+      empty group_id = restriction (the old no-groups global rule).
+      CSV: rename ir.model.access.csv -> ir.access.csv (manifest too); header
+      id,name,model_id,group_id/id,operation,domain; model_id is the technical model
+      name (sticky.note), not the model_ xmlid. Runtime: KeyError ir.rule on
+      sticky_notes and smart_warnings install.
+
+# Not covered by any group: the group list spans `tools` only.
+uncovered:
+  - {repo: odoo-apps-addons, module: ai_mcp_server, break: mail_message_tracking_value_ids,
+     sites: ["services/tool_service.py:1256", "services/catalog_service.py:245",
+             "tests/test_mcp_models.py:709+"],
+     evidence: "mail.message.tracking_value_ids and mail.tracking.value removed at saas-19.3;
+                these iterate msg.sudo().tracking_value_ids, so they raise on 20.0",
+     status: unscheduled}
+
+# check_migrate_v20.py at the pins above, whole tools repo (93 modules).
+checker_baseline:
+  measured_at: 2026-09-12
+  after_defect_fixes: {dead_hook: 16, js_import: 25, patch_target: 4, patch_shadow: 0,
+                       view_xmlid: 3, field_lit: 24, stale_override: 0}
+  before_defect_fixes: {stale_override: 3, patch_shadow: 1}   # the three order hooks + isEmpty
+  new_kinds_2026_09_12:
+    # Whole tools repo at the pins above, --only view-anchor,security-model (196s).
+    security_model: 181            # 86 modules; every one of them blocks its own Gx.6
+    view_anchor: 6                 # 5 modules; ALL verified real, 0 false positives
+    view_anchor_sites: ["complementary_lead_data lead_priority (fixed in Gx.3)",
+                        "opportunity_custom_fields lead_priority",
+                        "crm_duplicates / customer_scoring / partner_duplicates / vendor_scoring
+                         type_person"]
+    regression_proof: >
+      view-anchor reproduces complementary_lead_data/views/crm_lead.xml:31 against the 19.0
+      source and reports clean on the fixed worktree. security-model lists all 5 sites in
+      20_2 that the install hit one at a time.
+  tool_changes_2026_09_12:
+    - "new patch-shadow check: prototype patch of an upstream class field (fields.Attr), bound to
+       the patched class through the name its module exports, ancestors followed via `extends`,
+       members located by brace depth rather than an assumed indent"
+    - "empty core chain now falls back to the implicit `base` ancestor, so a class whose
+       _inherit names only our own mixin is no longer skipped (portal.password.key)"
+    - "_name = X with _inherit = [X, ...] keeps X as the core parent; discarding it reported
+       five live core methods on odoo_email_from's mail.compose.message as stale"
+    - "repo-internal super() chains are suppressed by definition site, not by owning module"

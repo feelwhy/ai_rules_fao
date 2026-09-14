@@ -18,6 +18,27 @@ All edits go through the `user-faotools` MCP. Inspect each tool schema before ca
 - If no prepublishment exists, run `action_make_prepublish` on the origin.
 - Child records (`module.feature`, `module.pic`, `module.extra.note`, `optional.app`, `module.conf`) must belong to the prepublishment (`description_id` -> prepublish record).
 
+### Exception: a NEW major serie has no origin to prepublish from
+
+The rules above describe a same-serie prepublishment, where the live record already exists. A major
+port (`36-major-version-port`) creates the new serie's page instead, so it works differently:
+
+- Create a **standalone prepublication**: a copy of the published current-serie description with the
+  major `version` switched, **no `pre_publish_origin_id`**, `prepublish=True` **+
+  `force_no_git=True`**, `documentation_url` cleared, and current-serie videos not carried over.
+- Applying it **promotes that same record in place** (`action_apply_prepublishment` clears the draft
+  flags and re-renders) rather than copying into an origin. Release links on that record stay valid,
+  so the draft `module.release` may live on it from the start.
+- Because there is no origin pointer, writing the current serie's description is structurally
+  impossible — which is the point. Never create one pointing at it.
+- **`not_supported=True` is banned** on any record intended for publication: the GitHub writer
+  switches to the archive branch, which **deletes** `icon.png` / `main.png` / `main_nopromo.png` and
+  rewrites the manifest author to "Archived". `prepublish=True` already hides the draft from public
+  listings, and `force_no_git=True` is the actual GitHub guard.
+- Snapshot record ids, child counts and attachment checksums **before** applying. The apply unlinks
+  children and reparents, so a mid-flight failure has no clean revert — treat it as an incident, not
+  a retry.
+
 ## What you may change vs must not
 
 Editable (rephrase freely; keep facts truthful):

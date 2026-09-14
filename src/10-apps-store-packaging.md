@@ -7,7 +7,7 @@ apply: agent
 # Apps Store Metadata
 - Keep manifests valid Python dictionaries accepted by Odoo 19.
 - Preserve `name`, `summary`, `description`, `author`, `website`, `license`, `price`, `currency`, `images`, and `live_test_url` unless explicitly changing listing metadata.
-- Version format is `19.0.x.y.z`; never change `version` unless the user explicitly requests a bump (see `manifest-version` rule).
+- Version format is `<serie>.x.y.z`; never change `version` unless the user explicitly requests a bump (see `11-manifest-version`). During a 19 → 20 port the saas stand-in takes an **unprefixed** version (`1.3.33`) because `check_version` compares to `saas~19.4` — see `ai_rules` `22-migrate-v19-to-v20` **Manifest version**.
 
 # Module Independence
 - A top-level add-on must install with only its manifest dependencies and standard Odoo/Enterprise modules.

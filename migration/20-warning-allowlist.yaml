@@ -1,0 +1,33 @@
+# Test-window warning allowlist for the 19 → 20 port.
+# Consumed by faotools_env/local/lib/odoo_log_gate.py (env-up --test / env-test.sh).
+#
+# Scope of the gate:
+#   * the window ENDS at "Initiating shutdown" — teardown races are not our code
+#   * a WARNING fails only when it belongs to a module UNDER TEST (or odootools_demo);
+#     other tools modules present in the all-apps dump are recorded, not fatal
+#   * core/enterprise warnings are recorded — do not list them here
+#
+# Each allowlist row needs:
+#   logger_prefix, message_regex, expiry (YYYY-MM-DD), rationale
+#   issue_url is optional but should be set when the row is not a one-week pin.
+#   covers_errors: true is REQUIRED to mask an ERROR/CRITICAL, and is only for an
+#     error a passing test provokes on purpose. Never use it to quieten a real one.
+
+fail_patterns:
+  # ir.attachment.datas writes are swallowed on saas-19.4 (core typo: beeen).
+  - message_regex: "datas has bee+n removed"
+    rationale: "silent write drop; ai_rules 22-migrate-v19-to-v20"
+
+allowlist:
+  # complementary_contact_data asserts that reading a translated `comment` still
+  # stored as varchar raises, then that its healer converts the column to jsonb and
+  # the read succeeds. The raise is the point of the test, so the ERROR is expected
+  # while `test_ru_read_crashes_on_varchar_then_healer_fixes_it` passes.
+  - logger_prefix: odoo.sql_db
+    message_regex: 'extra_contact_info.*comment.*->>'
+    covers_errors: true
+    expiry: "2026-12-31"
+    rationale: >
+      Deliberate varchar->jsonb failure provoked inside
+      complementary_contact_data test_ru_read_crashes_on_varchar_then_healer_fixes_it.
+      Re-check at the 20.0 port: if the healer is gone, this row must go with it.

@@ -63,6 +63,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
 - Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`. New or replaced `module.pic` titles (`name` / `alt_name`) are TM + live loader in the **same** job as the shots; PNG files stay English.
 - Demo data for public apps: XML in the `tools` module, Python generators and script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) in `system/odootools_demo` — `34-demo-data`. KnowSystem articles additionally follow their `editor_type` contract — `35-knowsystem-demo`.
+- Porting the `tools` apps to a new **major** Odoo serie: `36-major-version-port` (branch topology, per-group gates, durable ledger, publish loop). The serie-pair **transforms** live in `ai_rules` (`20-migrate-v17-to-v18`, `21-migrate-v18-to-v19`, `22-migrate-v19-to-v20`) with the mechanical checker at `ai_rules/tools/check_migrate_v20.py`. Program state: `migration/20-tools-port.state.yaml` (authoritative) plus `docs/20-tools-port-status.md`.
 - App store releases (`module.release` on faotools.com): `33-faotools-release` is **always-on** (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Filling the app `.po` does not count. Do not leave `/ru/` English unless the user explicitly skips translations.
 
 ## 01-hub-serie
@@ -220,7 +221,7 @@ _Apps-store packaging, metadata, and installability expectations for tools modul
 # Apps Store Metadata
 - Keep manifests valid Python dictionaries accepted by Odoo 19.
 - Preserve `name`, `summary`, `description`, `author`, `website`, `license`, `price`, `currency`, `images`, and `live_test_url` unless explicitly changing listing metadata.
-- Version format is `19.0.x.y.z`; never change `version` unless the user explicitly requests a bump (see `manifest-version` rule).
+- Version format is `<serie>.x.y.z`; never change `version` unless the user explicitly requests a bump (see `11-manifest-version`). During a 19 → 20 port the saas stand-in takes an **unprefixed** version (`1.3.33`) because `check_version` compares to `saas~19.4` — see `ai_rules` `22-migrate-v19-to-v20` **Manifest version**.
 
 # Module Independence
 - A top-level add-on must install with only its manifest dependencies and standard Odoo/Enterprise modules.
@@ -246,6 +247,11 @@ _Never change tools module manifest version unless the user explicitly requests 
 - **Never** modify the `version` field in any `__manifest__.py` under `tools/`.
 - When editing manifests (dependencies, assets, data, metadata), leave `version` exactly as it is.
 - Bump `version` only when the user explicitly asks for a version increase or release bump.
+- **Port exception (19 → 20 only):** during the saas-19.4 stand-in (`Gx.3`), drop the
+  serie prefix (`19.0.1.3.33` → `1.3.33`) so `check_version` does not set
+  `installable=False` on `saas~19.4`. At `Fx` / phase 8, on real 20.0, write
+  `20.0.` + that same tail. Do not invent a fourth number. See `ai_rules`
+  `22-migrate-v19-to-v20` **Manifest version**.
 - If a task would normally imply a version change, do not bump automatically — ask the user first.
 - “Make / publish a release” bumps `module.description.exact_version` on faotools.com (`33-faotools-release`). Do not bump the local `__manifest__.py` unless the user also asks for that.
 
@@ -466,6 +472,27 @@ All edits go through the `user-faotools` MCP. Inspect each tool schema before ca
 - The live record is referenced by `pre_publish_origin_id`. NEVER write to it.
 - If no prepublishment exists, run `action_make_prepublish` on the origin.
 - Child records (`module.feature`, `module.pic`, `module.extra.note`, `optional.app`, `module.conf`) must belong to the prepublishment (`description_id` -> prepublish record).
+
+### Exception: a NEW major serie has no origin to prepublish from
+
+The rules above describe a same-serie prepublishment, where the live record already exists. A major
+port (`36-major-version-port`) creates the new serie's page instead, so it works differently:
+
+- Create a **standalone prepublication**: a copy of the published current-serie description with the
+  major `version` switched, **no `pre_publish_origin_id`**, `prepublish=True` **+
+  `force_no_git=True`**, `documentation_url` cleared, and current-serie videos not carried over.
+- Applying it **promotes that same record in place** (`action_apply_prepublishment` clears the draft
+  flags and re-renders) rather than copying into an origin. Release links on that record stay valid,
+  so the draft `module.release` may live on it from the start.
+- Because there is no origin pointer, writing the current serie's description is structurally
+  impossible — which is the point. Never create one pointing at it.
+- **`not_supported=True` is banned** on any record intended for publication: the GitHub writer
+  switches to the archive branch, which **deletes** `icon.png` / `main.png` / `main_nopromo.png` and
+  rewrites the manifest author to "Archived". `prepublish=True` already hides the draft from public
+  listings, and `force_no_git=True` is the actual GitHub guard.
+- Snapshot record ids, child counts and attachment checksums **before** applying. The apply unlinks
+  children and reparents, so a mid-flight failure has no clean revert — treat it as an incident, not
+  a retry.
 
 ## What you may change vs must not
 
@@ -980,6 +1007,13 @@ Mutations: `odoo_records_write` / `odoo_records_create` / `odoo_actions_run`, th
 
 The user’s “make a release” is the live-write gate. Ask only when the module/serie is ambiguous, the next `exact_version` already has a `module.release`, or the target is a prepublishment.
 
+**A new-major-serie release is different.** During a major port (`36-major-version-port`) the target is a **standalone prepublication** with no `pre_publish_origin_id` (see `30-prepublishment-descriptions`). Specifics:
+
+- The draft `module.release` lives on that same record and stays valid when the record is promoted in place. **Publish the release while the draft is still hidden, then apply the prepublication** (`36-major-version-port` `Px.3` before `Px.4`). On a standalone draft the apply only clears `prepublish` / `not_supported` / `force_no_git` and re-renders (`module_description.py:859-866`) — it destroys nothing, and it is the write that makes the page public. Publishing the release first is therefore what guarantees the page is never public with an empty changelog.
+- It is a **migration** release: `migration=True`, and the first line is the flag entry — `<li class="mt8"><i class="fa fa-flag-checkered text-success mr8"> </i> The app is published to version 20.</li>` — naming the **new** serie, followed by `fa-plus` lines for substantial changes.
+- Preserve the `exact_version` tail across the major bump; do not invent an extra increment. (`cloud_base` 18.0 ended at `1.4.44` and its 19.0 migration release was also `1.4.44`.)
+- The GitHub update runs **server-side inside Odoo** with the stored `github_connector.github_access_token` — `odoo shell` on the container or the UI button — never through MCP, because `_update_in_git` calls `cr.commit()` per module and aborts an MCP savepoint. Use the **full** update, never the quick variant, and do not build a parallel plain-git export path: the pushed manifest, `index.html` and image layout must stay byte-comparable with previous releases. Assert `not_supported` and `force_no_git` are both False first, or the archive branch deletes the store images.
+
 **Translations are part of the release.** On 19.0+ the job includes step 8 (TM YAML + live loader apply) in the same turn as publish. Do not report published, do not stop at GitHub / demo rebuild, and do not treat “do not redeploy Functional” as a skip. The **only** skip is the user **explicitly** saying to skip translations / do not translate (quote that command; do not mark step 8 done).
 
 **App `.po` fill is not this step.** Completing `tools/<module>/i18n/*.po` does not translate public `module.release.description`. A 19.0+ row that is `3_published` while `/it/` or `/ru/` still shows the English changelog has failed. Incident 2026-09-10: Appointments `1.3.33` shipped English because the publish chat treated the `.po` backlog as “translations done” and never wrote TM / `_apply_description`.
@@ -1476,3 +1510,203 @@ Demo revisions must follow the same contract as the article:
 - `documentation.section` (`documentation_builder`) has its own `translate=True` fields and
   consumes `action_get_published_name` plus the published body — the same arch/description
   pairing applies to anything it renders.
+
+## 36-major-version-port
+
+_Process for porting the tools apps to a new major Odoo serie (branches, gates, ledger, publish)_
+
+# Major-version port (tools apps)
+
+How a whole serie of faOtools apps moves to a new major Odoo version: branch topology, per-group
+gates, durable state, and the publish loop. The **technical** transforms live in `ai_rules`
+`22-migrate-v19-to-v20` (one rule per serie pair). This rule is the process around them.
+
+Current program: 19.0 → 20.0 via `saas-19.4`. Evidence base:
+`docs/20-saas-19.4-delta.md`, surface inventory `docs/20-tools-touchpoints.md`,
+live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-port-status.md`.
+
+## Non-negotiables
+
+1. **Agents never write the current serie.** No code, no live `module.description`, no releases on
+   the serie being ported *from*. This is not "the branch is frozen" — the owner edits it freely.
+2. **A current-serie bug blocks its group.** Report it, stop the group, wait for the owner's fix,
+   then fetch, re-pin, re-seed, and re-run the baseline. Never implement a new-serie-only
+   workaround, and never record a known-red baseline as green.
+3. **Latest current-serie source is always the port source.** Re-fetch and re-pin at every group
+   stage; do not port from a stale pin.
+4. **Compare trees, not ancestry.** `saas-x.y` branches are independent forks; a fix on the stable
+   serie may be absent from the target (measured: 8638 such commits for 19.0 → saas-19.4).
+5. **One reviewable idea per chunk**, and a completed test/build/deploy ends the turn. Layer-1 demo
+   (`tools`) and Layer-2 demo (`system`) are always separate chunks.
+6. **Nothing enters the technical rule as fact unless source-confirmed** against a stated pin.
+   Hypotheses carry their named check and stay out of porting instructions.
+7. **Feature review is `en_US` until the translation stages.** `Gx.6`–`Gx.9` (and later
+   group review DBs) keep `en_US` active and Mitchell Admin / the demo user on `en_US`.
+   Do not `--load-language` a shipped list that omits `en_US`, and do not run
+   `_demo_activate_shipped_langs` "because Gx.8 needs them". Translations are `Fx.3`
+   and `Px.7` only.
+
+## Branch topology
+
+One shared scaffold commit derived from the current serie, containing **only** the top-level
+technical files. Every group branch and aggregate starts from that exact commit, so ordinary merges
+work and history stays usable. Do not create unrelated orphan roots.
+
+```
+<current serie>  ──►  scaffold (tech files only)
+                        ├── one branch per group (e.g. 20_2 … 20_17)
+                        ├── <next>_port   aggregate: pre-release ports accumulate here
+                        ├── <next>_final  aggregate: what the master template runs pre-cutover
+                        └── <next>.0      the published branch
+```
+
+Propagation invariant:
+
+- Group accepted on the pre-release serie → merge into `_port`; later group changes re-merge there.
+- At the final-serie transition, initialize `_final` from the complete `_port`.
+- Group accepted on the final serie → merge into **both** `_port` and `_final`.
+- At publish, merge the group into `<next>.0` and **freeze the group branch**. Later fixes originate
+  on `<next>.0` and flow to `_final`.
+- Before cutover, `git diff --exit-code <next>.0 _final` must be empty.
+
+Top-level technical files need a parity check at every aggregate merge; requirements are the union
+required by the modules present.
+
+Major serie branches are never deleted. Stale work branches go only with explicit per-branch
+confirmation, and only after a content-level proof — `git branch --merged` is not that proof.
+
+## Group order
+
+The owner's group/order file is authoritative. At branch creation, assert every module is assigned
+exactly once and matches that file. A manifest `depends` scan only **reports** ordering constraints;
+it does not reorder anything.
+
+Expect the pilot group to be unrepresentative. In this program the pilot (`20_2`) and `20_c` are the
+only groups with no confirmed finding, so the pilot calibrates the loop but must not be used to
+extrapolate effort.
+
+## Per-group loop
+
+Each stage is a chunk. `Gx` runs on the pre-release serie, `Fx` on the released serie, `Px` publishes.
+
+| Stage | Gate |
+|---|---|
+| `Gx.0` source seed | fetch + pin latest current-serie SHA; mechanical copy incl. `i18n/`; tree equals pin + tech files |
+| `Gx.1` feature contract | reconcile live description, docs, source; map features to automated or named-manual checks |
+| `Gx.2` current-serie baseline | test slice passes on the pinned current serie; a new bug here **blocks** (non-negotiable 2) |
+| `Gx.3` technical port | rule-22 transforms; **drop** the manifest serie prefix (`19.0.1.3.33` → `1.3.33`); **`check_migrate_v20.py` clean** including `manifest-version`. Re-prefix to `20.0.x` at `Fx`, not here. |
+| `Gx.4` Layer-1 demo | `tools` XML/assets, no plugs, licenses, topicality, editor re-capture where the body is editor-produced |
+| `Gx.5` Layer-2 demo | `system` loaders/purge/idempotency; never combined with `Gx.4` |
+| `Gx.6` install matrix | fresh install per closure, with and without demo, one update, community + enterprise as applicable |
+| `Gx.7` behavior | module + group tests, warning gate, browser/console smoke, each its own run |
+| `Gx.8` review DB | cumulative base + active group, demo reloaded, **en_US** active and admin in English, URL handed over |
+| `Gx.9` acceptance | on owner confirmation merge to `_port`, reconcile requirements, cumulative smoke |
+
+`Fx` repeats the port against the released serie and adds translations
+(`Fx.3`, diff-driven) and the publication drafts (`Fx.6`, `Fx.7`). The same
+`Fx` pass **re-prefixes** each module's manifest `version` to `20.0.` + the tail
+that `Gx.3` left unprefixed — that is the one bump `11-manifest-version` allows.
+
+`Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
+resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
+
+| Stage | Gate |
+|---|---|
+| `Px.1` publication readiness | re-read the live draft; reconcile it row by row against the `Fx.6` / `Fx.7` intent; screenshot QA passes |
+| `Px.2` code publication | merge the group to the published branch, push, verify the remote tree and module list, freeze the group branch |
+| `Px.3` release publication | publish the migration release (`state=3_published`) on the draft **while it is still hidden**, run `action_get_commits`, link only the relevant commits, no Quick GitHub Update |
+| `Px.4` description publication | `action_apply_prepublishment` on the standalone draft — it promotes that record in place and **that write is what makes the page public**; verify no current-serie record changed |
+| `Px.5` full GitHub update | the **full** update, server-side inside Odoo (`odoo shell` on the container or the UI button), never through MCP, never the quick variant |
+| `Px.6` GitHub output gate | fast-forward the local published branch, inspect the generated manifest / `index.html` / images commit, run the packaging and static checks |
+| `Px.7` live translations | TM-first apply of description, `pics` and `releases` payloads through the loader; prove `ru_RU` ≠ `en_US` per page, caption and release, and that the HTML is closed |
+| `Px.8` master sync | merge the published branch into `_final`, run the candidate full matrix, and stop; promote / redeploy master only on the next confirmation, then verify containers and public demo URLs |
+| `Px.9` handoff | hand over the faotools.com page links and the exact store-ready branch and version; the owner performs the Odoo store publication |
+
+**`Px.3` before `Px.4`: publish the release while the draft is hidden, apply second.** Read
+`action_apply_prepublishment` before reordering these two. On a **standalone** draft it takes the
+`else` branch and only writes `prepublish` / `pre_publish_origin_id` / `not_supported` /
+`force_no_git` to False, then re-renders
+(`support/module_descriptor/models/module_description.py:859-866`). So:
+
+- the apply is **not** destructive here — the `unlink()` and child reparenting live in
+  `_copy_all_values` (`:937-981`), reached **only** when `pre_publish_origin_id` is set, which is
+  exactly what a major port does not have;
+- the apply **is** the moment the page goes public. Publishing the release first means the page is
+  complete the instant it appears. Applying first opens a window where the public page has no
+  changelog row, and a failure in between leaves that window open.
+
+Ordering the other way round was tried on 2026-09-12 and reverted the same day: the justification
+("verify the destructive apply before anything is public") does not survive reading the method. The
+pre-apply snapshot is still worth writing for the origin-linked case, and is not needed here.
+
+### Confirmation model
+
+Strict per-chunk confirmation through the pilot. After that, each group runs on a **group-level
+batch authorization**: declare the exact bounded stage sequence, then execute without asking between
+stages. Batching never removes a hard stop — stop and report immediately on any failing check, and
+before any live write, push, merge, or master promotion.
+
+## Quality gates
+
+- **Warnings.** Fail on any `ERROR`/`CRITICAL`, and on any **test-window** `WARNING` attributed to a
+  ported module or its demo package. Use a structured parser with logger attribution, never
+  `grep WARNING` over a historic log. Core/enterprise warnings are recorded, fingerprinted, and
+  non-blocking. Allowlist entries carry `(logger_prefix, message_regex, issue_url, expiry, rationale)`.
+  Absolute zero warnings including core is not achievable and must not be promised.
+- **The test window is narrower than the log, and "ours" is narrower than the repo.** Three scoping
+  rules, each of which produced a false failure on a green pilot run before it existed:
+  - the window **ends** at `Initiating shutdown`; after it the healthcheck races the closing pool
+    and logs `cursor already closed` plus `Exception during request handling`;
+  - **ours** is the modules **under test** plus the demo package — an all-apps clone has every
+    module installed, and a third module's routing-map warning is not evidence about this group;
+  - an error a passing test provokes **deliberately** must be declared (`covers_errors: true`),
+    never silently tolerated. A plain allowlist row must not be able to mask `ERROR`/`CRITICAL`.
+  Attribution works off a module name in the logger or message, so a core logger that names only a
+  **model** cannot be attributed and will record. Read those by hand for the owning group.
+- **Silent failures are the main risk.** Dead hooks, discarded field writes and string-keyed field
+  names emit nothing. The static checker is the only thing that catches them; run it, read it.
+- **Browser tests must prove they ran.** A green suite whose browser tests skipped is not acceptance.
+- **Tests clone.** Never mutate the served review database.
+- **Review language is `en_US`.** `res.lang.active` defaults to False; `install_lang`
+  activates only the **first** `--load-language` code (or `en_US` when unset) and that
+  becomes `ir.default` partner lang. `SHIPPED_LANGS` / `SHIPPED_DEMO_LANGS` start with
+  `ru_RU` and exclude `en_US`, so using that list as `--load-language` leaves English
+  inactive and Preferences hides it (incident 2026-09-14, `20_2` Gx.8). A Gx.7 test
+  that reads `ru_RU` may activate **that** language after `en_US`; it is not a reason
+  to ship a Russian review DB.
+
+## Durable state
+
+The ledger `migration/20-tools-port.state.yaml` is the contract that lets a **fresh session with no
+memory** resume safely. It records, per group: stage and status, the pinned current-serie/target/
+system SHAs, test artifact paths, live record ids, translation fingerprints, and locks.
+
+Rules:
+
+- Update the ledger at every stage boundary, in the same chunk as the work.
+- A new session reads the ledger **and** the live records, then refuses an ambiguous next step
+  instead of guessing.
+- Git branch tips are not state. They cannot express "stage `Gx.7`, green, on these SHAs".
+- Never mark a stage done whose gate did not pass. Blocked is a status, not a skip.
+
+## Live publication
+
+- Draft the new-serie description as a **standalone prepublication**: copy of the published current
+  serie with the major version switched, **no** origin pointer, `prepublish=True` +
+  `force_no_git=True`, docs cleared, no carried videos. Applying it promotes that same record in
+  place, so release links stay valid.
+- **`not_supported=True` is banned** on any record intended for publication: it switches the GitHub
+  writer to the archive branch, which deletes the store images and rewrites the author.
+- The GitHub update runs **server-side inside Odoo** with the stored token, never through MCP, and
+  never the "quick" variant. Do not build a parallel plain-git path.
+- Snapshot before any destructive apply; on partial failure treat it as an incident rather than
+  retrying blindly.
+- Raise the public "topical version" ceiling only when the owner says so — a half-populated new
+  serie storefront is worse than none.
+
+## Living rules
+
+A port that reveals a new technical fact pauses the module, updates `ai_rules` rule 22 **and its
+checker** in their own chunk, then resumes. A process correction updates this rule and the tracker
+before the affected stage is marked done. Every rule-22 entry carries its evidence and tested SHA;
+an entry without evidence does not belong there.
