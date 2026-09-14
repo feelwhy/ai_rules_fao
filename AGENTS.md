@@ -1531,13 +1531,19 @@ live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-po
    the serie being ported *from*. This is not "the branch is frozen" — the owner edits it freely.
 2. **A current-serie bug blocks its group.** Report it, stop the group, wait for the owner's fix,
    then fetch, re-pin, re-seed, and re-run the baseline. Never implement a new-serie-only
-   workaround, and never record a known-red baseline as green.
+   workaround, and never record a known-red baseline as green. The owner may **explicitly**
+   accept `Gx.9` with that defect still open — record the command, leave the defect `open`,
+   and do not copy an uncommitted 19.0 WIP onto the port branch. That is not a skip of the
+   defect and not a 20-only fix (incident 2026-09-14, `20_c` defect 6).
 3. **Latest current-serie source is always the port source.** Re-fetch and re-pin at every group
    stage; do not port from a stale pin.
 4. **Compare trees, not ancestry.** `saas-x.y` branches are independent forks; a fix on the stable
    serie may be absent from the target (measured: 8638 such commits for 19.0 → saas-19.4).
-5. **One reviewable idea per chunk**, and a completed test/build/deploy ends the turn. Layer-1 demo
-   (`tools`) and Layer-2 demo (`system`) are always separate chunks.
+5. **After the pilot, `Gx.0`–`Gx.7` is one authorized batch** (including Layer-1 and
+   Layer-2). The owner reviews the `Gx.8` database; `Gx.9` waits for that confirmation.
+   A completed test inside the batch does not end the turn. Hard stops still apply:
+   a failing check, a current-serie bug, a live write, a push, or a merge. The pilot
+   stayed per-stage so the loop could be calibrated.
 6. **Nothing enters the technical rule as fact unless source-confirmed** against a stated pin.
    Hypotheses carry their named check and stay out of porting instructions.
 7. **Feature review is `en_US` until the translation stages.** `Gx.6`–`Gx.9` (and later
@@ -1581,13 +1587,16 @@ The owner's group/order file is authoritative. At branch creation, assert every 
 exactly once and matches that file. A manifest `depends` scan only **reports** ordering constraints;
 it does not reorder anything.
 
-Expect the pilot group to be unrepresentative. In this program the pilot (`20_2`) and `20_c` are the
-only groups with no confirmed finding, so the pilot calibrates the loop but must not be used to
-extrapolate effort.
+Expect the pilot group to be unrepresentative. The 2026-09-12 claim that `20_2` and `20_c` had
+no confirmed finding is false: `ir.access` already hits both, and `20_c` Gx.8 found defect 6
+(portal sharing cache). The pilot still calibrates the loop; do not extrapolate effort from it.
 
 ## Per-group loop
 
-Each stage is a chunk. `Gx` runs on the pre-release serie, `Fx` on the released serie, `Px` publishes.
+`Gx` runs on the pre-release serie, `Fx` on the released serie, `Px` publishes.
+After the pilot, `Gx.0`–`Gx.7` is one chunk; `Gx.8` is the owner review; `Gx.9` is
+acceptance. Each stage still has its own gate — do not mark a stage done whose
+check has not passed.
 
 | Stage | Gate |
 |---|---|
@@ -1599,8 +1608,8 @@ Each stage is a chunk. `Gx` runs on the pre-release serie, `Fx` on the released 
 | `Gx.5` Layer-2 demo | `system` loaders/purge/idempotency; never combined with `Gx.4` |
 | `Gx.6` install matrix | fresh install per closure, with and without demo, one update, community + enterprise as applicable |
 | `Gx.7` behavior | module + group tests, warning gate, browser/console smoke, each its own run |
-| `Gx.8` review DB | cumulative base + active group, demo reloaded, **en_US** active and admin in English, URL handed over |
-| `Gx.9` acceptance | on owner confirmation merge to `_port`, reconcile requirements, cumulative smoke |
+| `Gx.8` review DB | cumulative base + active group, demo reloaded, **en_US** active and admin in English, URL handed over; portal `get_views` on the **running** worker for generated sharing fields (see Quality gates) |
+| `Gx.9` acceptance | on owner confirmation merge to `_port` (worktree only; do not switch shared `tools`), reconcile requirements, cumulative checker smoke. Push only if asked. |
 
 `Fx` repeats the port against the released serie and adds translations
 (`Fx.3`, diff-driven) and the publication drafts (`Fx.6`, `Fx.7`). The same
@@ -1641,10 +1650,11 @@ pre-apply snapshot is still worth writing for the origin-linked case, and is not
 
 ### Confirmation model
 
-Strict per-chunk confirmation through the pilot. After that, each group runs on a **group-level
-batch authorization**: declare the exact bounded stage sequence, then execute without asking between
-stages. Batching never removes a hard stop — stop and report immediately on any failing check, and
-before any live write, push, merge, or master promotion.
+Strict per-chunk confirmation through the pilot. After that, the default authorized
+batch is **`Gx.0`–`Gx.7`**. Declare that sequence, then execute without asking between
+stages. The owner reviews the `Gx.8` database; `Gx.9` waits for that confirmation.
+Batching never removes a hard stop — stop and report immediately on any failing
+check, and before any live write, push, merge, or master promotion.
 
 ## Quality gates
 
@@ -1665,6 +1675,12 @@ before any live write, push, merge, or master promotion.
   **model** cannot be attributed and will record. Read those by hand for the owning group.
 - **Silent failures are the main risk.** Dead hooks, discarded field writes and string-keyed field
   names emit nothing. The static checker is the only thing that catches them; run it, read it.
+- **Portal sharing / generated fields.** `Gx.8` must HTTP `get_views` as a **portal** user on the
+  **running** worker and compare arch vs `fields_get` for every generated `x_oz_*` (or other
+  custom column) on sharing forms. A fresh `odoo shell` is a new process cache and is not that
+  check. A container restart that makes the form open is not a fix. Do not 20-only workaround;
+  invalidate on 19.0 (`task_custom_fields` / `project.task._portal_accessible_fields`
+  `@ormcache(cache='stable')` at both refs). Incident 2026-09-14, `20_c` Gx.8, defect 6.
 - **Browser tests must prove they ran.** A green suite whose browser tests skipped is not acceptance.
 - **Tests clone.** Never mutate the served review database.
 - **Review language is `en_US`.** `res.lang.active` defaults to False; `install_lang`

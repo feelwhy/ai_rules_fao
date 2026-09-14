@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-14 (`20_2` **Gx.9 green** on `20_port` `d7254425af9`, pushed)
+**Last updated:** 2026-09-14 (`20_c` **Gx.9** on `20_port` `e5c5d4ad5c0`. Defect 6 uses `invalidate_ormcache`.)
 
 ## Where we are
 
@@ -19,7 +19,7 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — kinds `js-symbol`, `owl-xpath`, `owl-tref`, `owl-hook`, `python-api` |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **in progress** — pilot `20_2` **Gx.9 green**. Next group `20_c`. Shared `tools` stays `19.0`. |
+| 5 — per-group loops on saas-19.4 | **in progress** — `20_2` and `20_c` **Gx.9 green** on `20_port` `e5c5d4ad5c0`. Defect 6 ported (`invalidate_ormcache`). Shared `tools` stays `19.0`. |
 | 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
 | 7 — master infrastructure + faotools.com enablement | pending |
 | 8 — per-group loops on 20.0 | pending |
@@ -48,7 +48,7 @@ Every other "confirmed" break below is confirmed **against source trees at pinne
 
 | Ref | SHA |
 |---|---|
-| `tools@19.0` | `84e7d1c4840e` |
+| `tools@19.0` | `835c4be4b5de` |
 | `odoo@19.0` | `f8496b42a96f` |
 | `enterprise@19.0` | `78d34d73ec5e` |
 | `odoo@saas-19.4` | `3630379f6363` |
@@ -168,7 +168,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | # | Group | Modules | Stage | Known breaks |
 |---|---|---|---|---|
 | 1 | `20_2` **pilot** | 5 | `Gx.9` **green** | merged to `20_port` (`d7254425af9`, pushed) |
-| 2 | `20_c` | 8 | — | no `useState`; still owes `ir.access` |
+| 2 | `20_c` | 8 | `Gx.9` **green** | merged to `20_port` (`e5c5d4ad5c0`). Defect 6 ported (`cfb985df48f`). |
 | 3 | `20_14` | 9 | — | OWL 3 (`useState`, `useEffect` deps, `@t-ref`); Store API, `datas`, `_track_subtype`, Chatter, jQuery, `x2ManyCommands` |
 | 4 | `20_5` | 4 | — | `useState`; `x2ManyCommands`, `datas` |
 | 5 | `20_6` | 3 | — | `useState`; `@t-ref`; removed product view, `datas` |
@@ -217,16 +217,17 @@ is no demo20 database until a tools group is ported. Phase 4 stays open on them 
 ## 19.0 defects found by analysis
 
 Agents do not fix these on their own initiative. Each blocks its group until 19.0 is fixed and the
-pin is refreshed. Defects 3–5 were fixed by an agent on the owner's explicit command
-(2026-09-12); they are **not committed**, so the groups stay `blocked_by` until commit + re-pin.
+pin is refreshed. Defects 3–5 were fixed on the owner's command (2026-09-12) and committed in
+`84e7d1c4840`. Defect 6 is fixed on 19.0 (`a9154df3008`) and ported onto `20_c`.
 
 | # | Module | Group | Issue | State |
 |---|---|---|---|---|
 | 1 | `business_appointment_sale` | `20_16` | wrote `product_uom` on `sale.order.line` | fixed by owner in `12348603477e` |
 | 2 | `vendor_portal_management` | `20_8` | read `product_uom` on `product.supplierinfo` | fixed by owner in `12348603477e` |
-| 3 | `knowsystem` | `20_15` | overrides `_generate_order_by_inner` / `_inherits_join_calc`, absent from core at both refs | fixed, uncommitted — one `_order_field_to_sql` |
-| 4 | `odoo_password_manager` | `20_4` | overrides `_generate_order_by`, absent from core at both refs — **two** sites (`password_key.py`, `portal_password_key.py`) | fixed, uncommitted — one `_order_field_to_sql` each |
-| 5 | `message_edit` | `20_suite` | `isEmpty` prototype patch shadowed by upstream `fields.Attr`; dead since 19.0, and `editable` read the wrong flag as a result | fixed, uncommitted — patches `computeIsEmpty()` |
+| 3 | `knowsystem` | `20_15` | overrides `_generate_order_by_inner` / `_inherits_join_calc`, absent from core at both refs | fixed and committed in `84e7d1c4840` |
+| 4 | `odoo_password_manager` | `20_4` | overrides `_generate_order_by`, absent from core at both refs — **two** sites (`password_key.py`, `portal_password_key.py`) | fixed and committed in `84e7d1c4840` |
+| 5 | `message_edit` | `20_suite` | `isEmpty` prototype patch shadowed by upstream `fields.Attr`; dead since 19.0, and `editable` read the wrong flag as a result | fixed and committed in `84e7d1c4840` |
+| 6 | `task_custom_fields` | `20_c` | `project.task._portal_accessible_fields` `@ormcache(cache='stable')` not invalidated when a portal-editable custom field is written; sharing form OWL `field is undefined` | fixed on 19.0 `a9154df3008`, ported to `20_c` `47d58c3ad8a` |
 
 Only #4's first site came from the checker; `portal.password.key` names no core parent in its own
 class, so the chain check skipped it and a grep found it. That gap is now closed — see below.

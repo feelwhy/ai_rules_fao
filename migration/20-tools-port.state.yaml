@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-14T11:55:00+01:00
-updated_by: agent/20_2-gx9
+updated_at: 2026-09-14T13:42:00+01:00
+updated_by: agent/20_c-defect-6-port
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -25,7 +25,7 @@ pins:
   # Re-pinned twice on 2026-09-12: 3ead42e8511 (two automated store updates) and then
   # 84e7d1c4840, the parallel chat's commit of defects 3-5. Neither touched a 20_2 module,
   # so the Gx.0 seed is valid against this pin (subtree hashes re-verified).
-  tools_19_0: 84e7d1c4840ebc46db5d3265f6aa6619a7198236   # re-pin on every owner fix
+  tools_19_0: a9154df30087abfa50ceb6b68479f8285c017123   # 2026-09-14 defect 6 on 19.0; 20_c Gx.0 was 835c4be4b5d
   tools_19_0_repin_pending: false
   odoo_19_0: f8496b42a96f35affb6bb9ecac2310e8c174d3e2
   enterprise_19_0: 78d34d73ec5eccd39432ac16c22cb0f600d8d60b
@@ -227,7 +227,7 @@ phases:
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
 aggregates:
-  20_port: {git_sha: d7254425af9, created: true, pushed: true}
+  20_port: {git_sha: e5c5d4ad5c066cf01ce0bacdfbb119b923ee56b1, created: true, pushed: false, last_pushed: d7254425af9}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 6feaf60, created: true, pushed: true}
@@ -406,9 +406,107 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: null
-    stage_status: pending
-    checker_findings: {dead_hook: 0, js_import: 0, view_xmlid: 0, field_lit: 0, stale_override: 0}
+    stage: Gx.9
+    stage_status: green
+    blocked_by: []
+    # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
+    # ported onto 20_c as 47d58c3ad8a and rematched 20_port.
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_c
+    review_worktree: /home/feelwhy/Odoo/_worktrees/tools-20_c_review
+    seed:
+      commit: c781d8b6c17
+      from_pin: 835c4be4b5deb809cc9100bbf4725d894561f08a
+      verified: "all 8 module subtree hashes equal the pin; 42 .po files each"
+    contract: migration/contracts/20_c.md
+    gx3:
+      commit: 7381ecdded0
+      manifests_unprefixed:
+        custom_fields: {from: 19.0.1.0.11, to: 1.0.11}
+        partner_custom_fields: {from: 19.0.1.0.5, to: 1.0.5}
+        opportunity_custom_fields: {from: 19.0.1.0.5, to: 1.0.5}
+        opportunity_custom_fields_website: {from: 19.0.1.0.2, to: 1.0.2}
+        product_custom_fields: {from: 19.0.1.0.6, to: 1.0.6}
+        product_custom_fields_website_sale: {from: 19.0.1.0.4, to: 1.0.4}
+        project_custom_fields: {from: 19.0.1.0.5, to: 1.0.5}
+        task_custom_fields: {from: 19.0.1.0.5, to: 1.0.6}
+      view_ports:
+        - "opportunity_custom_fields: dropped inherit of crm group lead_priority"
+        - "opportunity_custom_fields: page name=lead gone; Extra Info page extra is the surviving tab"
+        - "opportunity_custom_fields: sheet hook is //sheet/group[group[@name='lead_partner']] (first sheet group is mobile revenue)"
+      ir_access_ported: "all 8 security/ir.model.access.csv → ir.access.csv; website two stay header-only; r vs crud 1:1"
+      checker: no findings
+      checker_miss: >
+        view-anchor looks up @name globally, so page name=lead was not reported
+        (the name exists on other views). Found by reading the target CRM form.
+    gx4:
+      layer1_changed: false
+      document_demo: "types + fields + selection rewrite-after-options; placements match surviving hooks"
+      empty_layer1: [custom_fields, opportunity_custom_fields_website, product_custom_fields_website_sale]
+    gx5:
+      layer2_changed: false
+      loaders: [odootools_demo.models.demo_custom_fields]
+      verified: "no get_param / datas / product_uom in the loader. Review only — system stays 19.0."
+    gx6:
+      stage_status: green
+      log: /tmp/gx20_c_matrix.log
+      runner: /tmp/gx20_c_matrix.sh
+      result: >
+        24 of 24. Each of the 8 modules installs as its own closure with
+        --without-demo=True, installs --without-demo= (demo on), and takes a -u.
+        Community only.
+    gx7:
+      stage_status: green
+      group_install: "all 8 together, with demo"
+      tests: "0 failed, 0 error(s) of 17 tests (--test-tags /partner_custom_fields)"
+      log_gate: "FAIL 0 RECORD 0 ALLOW 0"
+      caveat: >
+        Only partner_custom_fields ships tests (translate). Green proves install +
+        upgrade + those tests, not F1–T1. Acceptance is the Gx.8 walk.
+    gx8:
+      stage_status: walked
+      url: http://localhost:18200/web/login
+      db: odooallapps20.odootools.com
+      compose: faotools_env/local/run/demo20/compose.yml
+      tools_bind: /home/feelwhy/Odoo/_worktrees/tools-20_c_review
+      shared_tools_left_on: "19.0"
+      review_ui: "owner screenshots were ru_RU; many langs leftover from 20_2 slim DB"
+      modules_installed:
+        [sale_management, purchase, hr, crm, account, website_crm, website_sale, project,
+         smart_warnings, sticky_notes, complementary_contact_data,
+         complementary_employee_data, complementary_lead_data,
+         custom_fields, partner_custom_fields, opportunity_custom_fields,
+         opportunity_custom_fields_website, product_custom_fields,
+         product_custom_fields_website_sale, project_custom_fields, task_custom_fields]
+      odootools_demo: not_installed
+      seeded:
+        {partner_12: "SME + employees 48", lead_14: "B2B + employees 120",
+         product_4c: "Final + extra notes", project_1: "R&D + team 6", task_53: "Implementation"}
+      languages: en_US
+      logins: {admin: admin, demo: demo, portal: portal}
+      login_probe: "HTTP 200; container healthy"
+      local_unblock: "compose restart odoo — cache dies with the worker; not a fix"
+      blocked_on: >
+        Portal sharing form: arch has x_oz_tsk_1 (Version portal_edit_placement),
+        running-worker get_views fields_get omits it. Same _portal_accessible_fields
+        @ormcache(cache='stable') on 19.0. Admin/demo HTTP get_views include the field.
+        Fresh odoo-shell process also includes it (new cache). 19.0 demo has
+        portal_edit=False so the sharing form never injects the field. Defect 6.
+    gx9:
+      stage_status: green
+      accepted_with_open_defect: 6
+      commits: [7381ecdded0, e057443547e, 47d58c3ad8a, cfb985df48f, e5c5d4ad5c0]
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_c
+      merged_to: 20_port
+      merge: "ort merge; parents d7254425af9 + 7381ecdded0 → e057443547e; then 47d58c3ad8a → b5e44f0db76"
+      port_worktree: /home/feelwhy/Odoo/_worktrees/tools-20_port
+      shared_tools_left_on: "19.0"
+      pushed: false
+      tech_parity: "requirements.txt / .gitignore / .gitlab-ci.yml identical to 20_c tip and to 20_2 parent"
+      checker: "no findings (13 modules on 20_port @ e057443547e; 20_2 + 20_c)"
+    baseline:
+      command: "TEST_DB ignored; env-test.sh demo19 used test_demo19 — 15 partner tests"
+      result: "0 failed, 0 error(s) of 15 tests; GX2_RC=0"
+    checker_findings: {dead_hook: 0, js_import: 0, view_xmlid: 0, field_lit: 0, stale_override: 0, manifest_version: 0, security_model: 0}
   "20_14":
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
@@ -664,6 +762,25 @@ source_serie_defects:
             behaviour needs a hoot suite wired into web.assets_unit_tests (precedent:
             odoo_typo_reporter). Not written, because it cannot be run by --test <module>: hoot
             suites execute in the web JS run, and a broken one would break that shared suite."}
+  - {id: 6, module: task_custom_fields, group: 20_c, status: fixed_and_committed,
+     issue: "project.task._portal_accessible_fields is @ormcache(cache='stable') on 19.0 and
+             saas-19.4. TASK_PORTAL_* is computed from custom.task.field portal_edit_placement.
+             Creating/writing a field updates the sharing form arch via _generate_xml but does
+             not invalidate that cache. Portal fields_get then omits the new column while the
+             arch still has <field name=\"x_oz_tsk_N\"/>. OWL parseFieldNode throws
+             'field is undefined' and the sharing form will not open.",
+     evidence: "demo20 HTTP /web/dataset/call_kw/project.task/get_views view 1487:
+                portal uid=6 arch has custom_type_id + x_oz_tsk_1, fields_get has only
+                custom_type_id. admin uid=2 and demo uid=5 have both. A new odoo-shell
+                process on the same DB includes x_oz_tsk_1 for portal (fresh cache).
+                19.0 demo19: Version portal_edit=False, generated sharing view has empty
+                left_panel_group, so the hole is latent. Hook:
+                odoo addons/project/models/project_task.py _portal_accessible_fields
+                (19.0 :1048, saas-19.4 :1077); tools task_custom_fields/models/project_task.py
+                TASK_PORTAL_* + _get_portal_custom_fields.",
+     fix: "custom.task.field._generate_xml calls super then registry.clear_cache('stable').",
+     fixed_in: a9154df30087abfa50ceb6b68479f8285c017123,
+     ported_to: {20_c: cfb985df48fa8712fdd59470627faa5ac5076688, 20_port: e5c5d4ad5c066cf01ce0bacdfbb119b923ee56b1}}
 
 # Port work (not 19.0 defects): these work today and break only on the target serie. Recorded
 # here because neither was in the ledger, the tracker, or rule 22 - and neither is reachable by
@@ -690,10 +807,10 @@ port_items:
                 Lead and opportunity sidebars merged into one group with a single tag_ids.
                 Checker view-xmlid does not catch named-group inherits (the view survives)."}
   - {key: crm_lead_priority_group_other_groups, module: opportunity_custom_fields, group: 20_c,
-     site: "views/crm_lead.xml:12",
-     status: open,
-     evidence: "same missing crm anchor as 20_2, found by the new view-anchor check.
-                Fix during that group's Gx.3, not now."}
+     site: "views/crm_lead.xml",
+     status: fixed_in_gx3,
+     evidence: "same missing crm anchor as 20_2. Also page name=lead gone and first
+                //sheet/group is mobile revenue — both found by reading the target arch."}
   - key: ir_config_parameter_set_param
     module: odootools_demo
     group: system
