@@ -211,7 +211,15 @@ Rules:
 
 ## Living rules
 
-A port that reveals a new technical fact pauses the module, updates `ai_rules` rule 22 **and its
-checker** in their own chunk, then resumes. A process correction updates this rule and the tracker
-before the affected stage is marked done. Every rule-22 entry carries its evidence and tested SHA;
-an entry without evidence does not belong there.
+A port that reveals a new technical fact does **not** pause by default. Decide the fix, apply it,
+prove it on the stand-in (install or the check that failed), then write the fact into `ai_rules`
+rule 22 **and** `tools/check_migrate_v20.py` in the same job. Pause only when:
+
+- the issue is a **current-serie (19.0) defect** that must be fixed there before the group
+  continues (non-negotiable 2);
+- there is a **real choice** (two viable successors, a behaviour trade-off). No choice → do
+  not ask.
+
+A process correction updates this rule and the tracker before the affected stage is marked done.
+Every rule-22 entry carries its evidence and tested SHA; an entry without evidence does not
+belong there.

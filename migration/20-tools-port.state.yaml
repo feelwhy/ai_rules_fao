@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-14T13:42:00+01:00
-updated_by: agent/20_c-defect-6-port
+updated_at: 2026-09-15T11:20:00+01:00
+updated_by: agent/20_14-gx8-jquery-vendor
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -25,8 +25,9 @@ pins:
   # Re-pinned twice on 2026-09-12: 3ead42e8511 (two automated store updates) and then
   # 84e7d1c4840, the parallel chat's commit of defects 3-5. Neither touched a 20_2 module,
   # so the Gx.0 seed is valid against this pin (subtree hashes re-verified).
-  tools_19_0: a9154df30087abfa50ceb6b68479f8285c017123   # 2026-09-14 defect 6 on 19.0; 20_c Gx.0 was 835c4be4b5d
-  tools_19_0_repin_pending: false
+  # 2026-09-14: defect 7 then defect 8 on 19.0. The defect 7 commit was rewritten by the
+  # parallel release chat (51543980c6c -> 38fae979e21) before this pin was taken.
+  tools_19_0: 57ca6ad2d412f8c49f4bb36e1eb61ffb57418620   # prior pins a9154df3008, 38fae979e21
   odoo_19_0: f8496b42a96f35affb6bb9ecac2310e8c174d3e2
   enterprise_19_0: 78d34d73ec5eccd39432ac16c22cb0f600d8d60b
   odoo_saas_19_4: 3630379f63633612e5a9e8d435deecbe26eaa15a
@@ -511,12 +512,168 @@ groups:
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
               dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
+    blocked_by: []
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
+    enterprise_required: true   # cloud_base_documents depends on documents
     known_breaks: [_track_subtype, _inverse_datas, _to_store_defaults, ir_attachment_datas,
                    chatter_import, ensure_jquery, x2many_commands, store_add_signature,
-                   store_get_result]
+                   store_get_result, clear_cache, get_param, useState, owl_xpath]
     note: Heaviest Store-API rework alongside 20_suite.
+    seed:
+      commit: 43082e6873b
+      from_pin: 57ca6ad2d412f8c49f4bb36e1eb61ffb57418620
+      verified: "all 9 module subtree hashes equal the pin; 378 .po files (42 x 9)"
+      reseeds: ["b254a710293 from a9154df3008", "28402c93e44 from 51543980c6c (defect 7)",
+                "43082e6873b from 57ca6ad2d41 (defect 8)"]
+    contract: migration/contracts/20_14.md
+    gx1:
+      stage_status: green
+      live_ids: {cloud_base: 1031, owncloud_odoo: 1032, dropbox: 1033,
+                 google_drive_odoo: 1034, onedrive: 1035, cloud_base_documents: 1036,
+                 amazon_s3_odoo: 1106, box_odoo: 1108, nas_odoo: 1109}
+      pre_port_checker: "95 findings (3 dead-hook, 3 js-import, 11 js-symbol, 1 owl-xpath, 5 owl-tref, 1 owl-hook, 46 python-api, 1 patch-target, 11 security-model, 4 field-lit, 9 manifest-version)"
+    gx2:
+      stage_status: green
+      community: "env-test.sh demo19; 0 failed, 0 error(s) of 40 tests"
+      log_gate: "FAIL 0  RECORD 28  ALLOW 0 — records are core/muk only, no allowlist row added"
+      enterprise: "env-test.sh demo19e cloud_base_documents; 0 failed, 0 error(s) of 9 tests; log-gate FAIL 0 RECORD 25"
+      pin: 57ca6ad2d412f8c49f4bb36e1eb61ffb57418620
+      log: /tmp/gx2-20_14-comm2.log
+      note: >
+        Two 19.0 defects fixed first (7 folder reconcile, 8 ownCloud log levels).
+        40th test is the new share-URL happy path.
+    gx3:
+      stage_status: green
+      checker: {findings: 0, log: /tmp/gx3-20_14-checker-after.json}
+      manifests_unprefixed:
+        cloud_base: {from: 19.0.1.4.60, to: 1.4.60}
+        owncloud_odoo: {from: 19.0.1.1.11, to: 1.1.11}
+        dropbox: {from: 19.0.3.0.5, to: 3.0.5}
+        google_drive_odoo: {from: 19.0.1.3.7, to: 1.3.7}
+        onedrive: {from: 19.0.1.2.8, to: 1.2.8}
+        cloud_base_documents: {from: 19.0.1.1.17, to: 1.1.17}
+        amazon_s3_odoo: {from: 19.0.1.0.2, to: 1.0.2}
+        box_odoo: {from: 19.0.1.0.2, to: 1.0.2}
+        nas_odoo: {from: 19.0.1.0.2, to: 1.0.2}
+      ports:
+        - "ir.model.access.csv -> ir.access.csv (9 modules); cloud_base 20 rows + portal/user share domain"
+        - "security.xml: dropped ir.rule; share domains now on ir.access.csv"
+        - "get_param/set_param -> typed ICP; registry.clear_cache -> invalidate_ormcache"
+        - "useState -> proxy; t-ref -> t-custom-ref; owl xpath @t-custom-ref"
+        - "datas -> raw (controllers, views, download URLs, documents tests)"
+        - "_track_subtype -> _track_log_get_default_subtype; drop _inverse_datas; _to_store_defaults -> _store_attachment_fields"
+        - "Chatter import web_portal_project; onClickAddAttachments empty-box still opens; rootRef()"
+        - "ensure_jquery gone: loadJS jquery.js; x2ManyCommands from orm_plugin; useLayoutEffect"
+        - "test_clouds_folder: ir.access create + operation cud"
+    gx4:
+      stage_status: green
+      layer1: none
+      layer1_changed: false
+      verified: "no tools/*/demo in any of the 9 modules; File Manager empty until Layer 2 clients exist"
+    gx5:
+      stage_status: green
+      layer2_changed: true
+      loaders: [odootools_demo.models.demo_cloud_storage]
+      verified: >
+        system@20.0 demo_cloud_storage: set_str for cloud_base_folders_lock_time /
+        savepoint; _demo_cloud_ensure_customer_ranks; no_document=True on
+        attachment upserts. Other odootools_demo set_param leftovers belong to
+        later groups. Do not edit shared system 19.0.
+    gx6:
+      stage_status: green
+      log: /tmp/gx20_14_matrix.log
+      smoke: /tmp/gx20_14_portal_smoke (cloud_base no-demo EXIT 0)
+      leftover_log: /tmp/gx14_leftover_b1.log
+      result: >
+        Community 8/8 closures green (no-demo, with-demo, -u).
+        Stream/content_disposition from odoo.http.stream. Portal Shares
+        card is portal.entry (data/portal_entry_data.xml).
+        Leftover enterprise cloud_base_documents: no-demo / with-demo / -u
+        green on gx8 compose image with enterprise-saas-19.4 + system-20.0
+        (PREFIX gx14_b1_188129). Shared enterprise stayed 19.0.
+    gx7:
+      stage_status: green
+      runner: /tmp/gx20_14_gx7.sh
+      log: /tmp/gx20_14_gx7_391635_t.log
+      leftover_log: /tmp/gx14_b1_188129_test_t.log
+      tests: "0 failed, 0 error(s) of 42 tests (--test-tags /cloud_base,/owncloud_odoo,/amazon_s3_odoo,/box_odoo,/nas_odoo)"
+      leftover_tests: "0 failed, 0 error(s) of 51 tests (same tags + /cloud_base_documents); B1"
+      log_gate: "FAIL 0  RECORD 0  ALLOW 0"
+      leftover_log_gate: "FAIL 0  RECORD 7  ALLOW 0 — documents core (superuser create, markdown2)"
+      languages: en_US
+      first_red: >
+        test3_security_rights_check. _check_access is dead (name survives).
+        Ported to _access_domain + res_access_*. Case 1–4 then passed.
+      case5: >
+        Two saas facts, neither a 19.0 defect. (1) has_access('read')
+        short-circuits on transaction.access_read — write must
+        invalidate_access_cache(self._name). (2) after that cache was
+        empty, access_user_ids still read [] because saas x2many hides
+        inactive res.users (base.user_root). Compute uses
+        with_context(active_test=False). Rule 22 updated. Test file
+        unchanged.
+      leftover_owed: done
+    gx8:
+      stage_status: ready
+      url: http://localhost:18201/web/login
+      db: gx8_20_14
+      compose: faotools_env/local/run/gx8_20_14/compose.yml
+      container: odoo-local-gx8-20-14
+      tools_bind: /home/feelwhy/Odoo/_worktrees/tools-20_14
+      enterprise_bind: /home/feelwhy/Odoo/_worktrees/enterprise-saas-19.4
+      enterprise_pin: 8d73a02a8ba9a99fb41b2cd01b1680c6ded4b837
+      shared_tools_left_on: "19.0"
+      shared_enterprise_left_on: "19.0"   # do not env-up.sh demo20e
+      faotools_enterprise: >
+        Used. It stamps database.uuid / create_date / expiration_date (+30d)
+        and grants documents.group_documents_system. It does not ship
+        documents — that comes from the saas-19.4 worktree.
+      modules_installed:
+        [documents, web_enterprise, contacts, crm, project,
+         cloud_base, cloud_base_documents, owncloud_odoo, google_drive_odoo,
+         onedrive, dropbox, amazon_s3_odoo, box_odoo, nas_odoo,
+         faotools_enterprise]
+      odootools_demo: not_installed    # uninstallable on system@19.0 (set_param)
+      seeded: {documents_folders: 14, clouds_folder: 0, clouds_client: 0, sync_model: 0}
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      login_probe: "HTTP 200; /web/session/authenticate uid 2; /odoo 200"
+      install_log: /tmp/gx8_20_14_install.log
+      portal_get_views: n/a            # no generated x_oz_* sharing fields in this group
+      walk_finding: >
+        Owner accepted 2026-09-15 ("accepted for now"). Walk fixes: File
+        Manager xpath o-kanban-button-new → KanbanView.Buttons; vendored
+        jquery 3.6.3; OWL 3 this. on inherit / xml` / CloudLogs; chatter
+        canDownload this.; Store.add no get_result; portal.entry + t-call
+        attrs; jstree off-proxy + get_state/save_state guard (do not drop
+        state plugin); share heading col-12; _to_http_stream type=url
+        redirect — fetch only download/cloud_preview/preview group/
+        Documents FileViewer model=documents.document; bare /web/image/{id}
+        stays size=0. Chatter folder id / attach ids stay off the OWL proxy
+        so a pager reload does not remount a dummy AttachmentList.
+      note: >
+        Review URL http://localhost:18201. Shared tools/enterprise stay 19.0.
+        Leftover enterprise Gx.6/Gx.7 + B1: 51 tests, log-gate FAIL 0.
+    gx9:
+      stage_status: green
+      accepted: "2026-09-15 owner: the module group is accepted for now"
+      commits: [be8b6894be4, 2be60303496]
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
+      merged_to: 20_port
+      merge: "ort merge; parents e5c5d4ad5c0 + be8b6894be4 → 2be60303496"
+      port_worktree: /home/feelwhy/Odoo/_worktrees/tools-20_port
+      shared_tools_left_on: "19.0"
+      pushed: false
+      tech_parity: "requirements.txt / .gitignore / .gitlab-ci.yml identical"
+      checker: >
+        5 view-xmlid on 22 modules @ 2be60303496 — all indexer misses
+        (portal.portal_breadcrumbs, documents.format_file_size as
+        id='documents.format_file_size', website_crm.contactus_form,
+        project.portal_my_task exist at saas-19.4; website_sale.product
+        is a pre-existing 20_c hit). 0 real findings.
+      leftover_b1: "0 failed, 0 error(s) of 51 tests; Bugbot clean; security review no medium+"
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
@@ -781,6 +938,32 @@ source_serie_defects:
      fix: "custom.task.field._generate_xml calls super then registry.clear_cache('stable').",
      fixed_in: a9154df30087abfa50ceb6b68479f8285c017123,
      ported_to: {20_c: cfb985df48fa8712fdd59470627faa5ac5076688, 20_port: e5c5d4ad5c066cf01ce0bacdfbb119b923ee56b1}}
+  - {id: 7, module: cloud_base, group: 20_14, status: fixed,
+     issue: "Gx.2 on pinned 19.0: TestCloudsFolderPreparing.test1_general_cron_triggering
+             fails at line 200 after deactivating sync_model1 (child rule follows),
+             reactivating both, and running action_prepare_auto_folders. COMPANY 1
+             folder child_ids is 0; expected 1 (CHILD CONTACTS recovered).",
+     evidence: "env-test.sh demo19 2026-09-14, pin a9154df3008, 1 failed / 39.
+                Cause: Domain.optimize() drops '| active True/False' as a tautology;
+                _search then re-adds active=True so deactivated folders are never
+                reconciled. Same hole in cloud_base_documents._reconcile_folder_enterprise.",
+     fix: "_reconcile_folder / _reconcile_folder_enterprise search with active_test=False.",
+     fixed_in: 51543980c6c0856d4c4950ceac2c3c6b9e4abd57,
+     ported_to: {20_14: 28402c93e44e0b6aceef45c9c8fc01a066aaeb7c}}
+  - {id: 8, module: owncloud_odoo, group: 20_14, status: fixed,
+     issue: "Gx.2 log-gate FAIL 8 after defect 7: mocked 429 retry/share-quota tests
+             log WARNING on owncloud_odoo.libs.owncloud_service. Tests themselves pass.",
+     evidence: "env-test.sh demo19 2026-09-14, pin 51543980c6c, 0 failed / 39, EXIT 2.
+                Log lines from test_request_with_retry_* and
+                test_file_info_owncloud_falls_back_when_share_creation_is_rate_limited.
+                Production logger was wrong, not the gate: a bounded retry that the code
+                handles is not an administrator's problem, and the one outcome that is
+                (share URL missing) was only in the server log, unscoped to client or run.",
+     fix: "_request_with_retry logs the attempt at DEBUG; file_info_owncloud returns
+           share_url_fallback and clouds.client._owncloud_file_info writes one WARNING
+           clouds.log entry. Test asserts the flag both ways (fallback + happy path).",
+     fixed_in: 57ca6ad2d412f8c49f4bb36e1eb61ffb57418620,
+     ported_to: {20_14: 43082e6873b}}
 
 # Port work (not 19.0 defects): these work today and break only on the target serie. Recorded
 # here because neither was in the ledger, the tracker, or rule 22 - and neither is reachable by
