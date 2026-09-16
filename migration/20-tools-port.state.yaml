@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-15T11:20:00+01:00
-updated_by: agent/20_14-gx8-jquery-vendor
+updated_at: 2026-09-16T12:20:00+01:00
+updated_by: agent/20_5-gx9
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "20_c"
+    active_group: "20_5"
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -228,10 +228,10 @@ phases:
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
 aggregates:
-  20_port: {git_sha: e5c5d4ad5c066cf01ce0bacdfbb119b923ee56b1, created: true, pushed: false, last_pushed: d7254425af9}
+  20_port: {git_sha: 2be60303496, created: true, pushed: false, last_pushed: d7254425af9}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 6feaf60, created: true, pushed: true}
+  system_20_0: {git_sha: a860e7a5825, created: true, pushed: true}
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -547,6 +547,10 @@ groups:
     gx3:
       stage_status: green
       checker: {findings: 0, log: /tmp/gx3-20_14-checker-after.json}
+      access_or_followup: >
+        2026-09-16: access_clouds_share empty domain made explicit
+        [(1, '=', 1)] (19.0 File Manager TRUE rule). Same edit on 20_port.
+        Product behavior unchanged. Checker access-or 0 after.
       manifests_unprefixed:
         cloud_base: {from: 19.0.1.4.60, to: 1.4.60}
         owncloud_odoo: {from: 19.0.1.1.11, to: 1.1.11}
@@ -677,10 +681,151 @@ groups:
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
-    stage: null
-    stage_status: pending
-    known_breaks: [x2many_commands, ir_attachment_datas]
+    stage: Gx.9
+    stage_status: green
+    known_breaks: [x2many_commands, ir_attachment_datas, get_param, useState, owl_xpath]
     enterprise_required: true
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_5
+    shared_tools_left_on: "19.0"
+    shared_enterprise_left_on: "19.0"
+    contract: migration/contracts/20_5.md
+    seed:
+      commit: c81c22c5939
+      from_pin: 6a56483a0bb
+      verified: "4 module subtrees from pin; 168 .po files (42 x 4)"
+    gx1:
+      stage_status: green
+      live_ids: {joint_calendar: 1029, joint_calendar_gantt: 1030,
+                 kpi_scorecard: 1027, total_notify: 1028}
+      exact_versions: {joint_calendar: 1.2.9, joint_calendar_gantt: 1.0.4,
+                       kpi_scorecard: 1.1.12, total_notify: 1.3.10}
+      pre_port_checker: >
+        110 findings (62 owl-this, 18 security-model, 9 python-api, 8 js-symbol,
+        4 manifest-version, 3 js-import, 3 field-lit, 1 dead-hook, 1 owl-xpath,
+        1 stale-override)
+    gx2:
+      stage_status: green
+      community: "env-test.sh demo19; 0 failed, 0 error(s) of 0 tests; log-gate FAIL 0 RECORD 24"
+      enterprise: "env-test.sh demo19e joint_calendar_gantt; 0 failed, 0 error(s) of 0 tests; log-gate FAIL 0 RECORD 20"
+      pin: 6a56483a0bb
+      note: "No tests/ in any of the four modules. Baseline is install + -u only."
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      manifests_unprefixed:
+        joint_calendar: {from: 19.0.1.2.9, to: 1.2.9}
+        joint_calendar_gantt: {from: 19.0.1.0.4, to: 1.0.4}
+        kpi_scorecard: {from: 19.0.1.1.12, to: 1.1.12}
+        total_notify: {from: 19.0.1.3.10, to: 1.3.10}
+      ports:
+        - "ir.model.access.csv -> ir.access.csv (4); security.xml -> ir.access"
+        - "joint.event _check_access -> _access_domain + res_access_* + invalidate_access_cache"
+        - "get_param/set_param -> typed ICP; datas -> raw; has_access('read')"
+        - "get_mail_values -> _prepare_mail_values (already dead both refs)"
+        - "@tools.ormcache -> @api.ormcache; invalidate_ormcache"
+        - "calendar date_delay attribute dropped (RNG + FIELD_ATTRIBUTE_NAMES)"
+        - "gantt popover t-esc -> t-out (ir.ui.view _validate_qweb_directive)"
+        - "useState -> proxy; KPI New on KanbanView.Buttons; vendored jquery + jstree_state_guard"
+        - "KPI treeData off proxy; t-custom-ref; this. on inherit expressions"
+      wip: ""
+      note: >
+        B1 2026-09-16: access-or leftovers filled; grouped base.group_user
+        KPI rules retargeted to group_kpi_user + 19.0 ops (access-grant).
+    gx4:
+      stage_status: green
+      layer1: none
+      layer1_changed: false
+      verified: 'all four ship "demo": []'
+    gx5:
+      stage_status: green
+      layer2_changed: true
+      loaders: [demo_joint_calendar, demo_total_notify, demo_kpi]
+      verified: true
+      counts:
+        joint_calendar: 2
+        joint_event: 17
+        total_notify: 3
+        kpi_category: 10
+        kpi_period: 15
+        kpi_item: 27
+        kpi_scorecard_line: 405
+      note: >
+        2026-09-16: odootools_demo installed on gx8 after dropping unported
+        depends + sys.modules inherit gate + request_var. Loaders ran with
+        env.cr.commit(). America team created when sales_team.crm_team_1
+        missing. KPI purge no longer unlinks period lines (no xmlid).
+        demo/demo login=demo uid 6. Gx.8 still needs owner re-walk.
+    gx6:
+      stage_status: green
+      community_log: /tmp/gx5_gx67.log
+      enterprise_log: /tmp/gx5_gantt.log
+      result: >
+        Community no-demo / with-demo / -u green (PREFIX gx5_250707).
+        Enterprise joint_calendar_gantt no-demo / with-demo / -u green
+        (PREFIX gx5g_265439) after t-esc -> t-out.
+    gx7:
+      stage_status: green
+      community: "0 failed, 0 error(s) of 2 tests; log-gate FAIL 0 RECORD 0 ALLOW 0"
+      enterprise: "0 failed, 0 error(s) of 2 tests; log-gate FAIL 0 RECORD 0 ALLOW 0"
+      languages: en_US
+      caveat: >
+        No module tests/. The 2+2 counts are Odoo suite bookkeeping on
+        install tags. Feature acceptance is Gx.8 named-manual.
+    gx8:
+      stage_status: ready
+      walk_finding: >
+        Owner first-click 2026-09-16: no demo user (seed only wrote lang if
+        login existed; odootools_demo cannot install). Joint Calendar died
+        on class="o_calendar_sidebar" position= (saas expanded panel is
+        o_calendar_sidepanel_content). KPI died on bare panelState.collapsed.
+        Reminder Filters died on update.bind="handleChange". 20_14
+        rule_parent already this.handleChange; 20_2 has no FieldFilter.
+        Folded into Gx.3 + checker the same job. Do not mark Gx.9.
+        2026-09-16 access-or: empty grouped ACL ORed away KPI / reminder
+        domains. User rows already had access_user_ids; leftover empties
+        filled (KPI admin/tag company domain; total_notify user_id).
+        Checker access-or now 0 on 20_5.
+      url: http://localhost:18202/web/login
+      db: gx8_20_5
+      compose: faotools_env/local/run/gx8_20_5/compose.yml
+      container: odoo-local-gx8-20-5
+      tools_bind: /home/feelwhy/Odoo/_worktrees/tools-20_5
+      enterprise_bind: /home/feelwhy/Odoo/_worktrees/enterprise-saas-19.4
+      enterprise_pin: 8d73a02a8ba9a99fb41b2cd01b1680c6ded4b837
+      shared_tools_left_on: "19.0"
+      shared_enterprise_left_on: "19.0"   # do not env-up.sh demo20e
+      faotools_enterprise: not_installed  # depends on documents; ICP stamped in seed
+      modules_installed:
+        [web_enterprise, web_gantt, contacts, calendar, crm, sale_management,
+         project, hr, hr_holidays, joint_calendar, joint_calendar_gantt,
+         kpi_scorecard, total_notify]
+      odootools_demo: installed
+      seeded:
+        {event_rule: 6, joint_calendar: 2, joint_event: 17,
+         total_notify: 3, kpi_category: 10, kpi_item: 27, kpi_period: 15,
+         kpi_scorecard_line: 405}
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      login_probe: "HTTP 200; admin uid 2; demo/demo uid 6"
+      install_log: /tmp/gx8_20_5_install.log
+      portal_get_views: n/a
+      note: >
+        Review URL http://localhost:18202. Mailpit http://localhost:18025.
+        19.0 loaders ran (Gx.5 counts above). Cron total_notify nextcall
+        +5m for demo. Hard-refresh OWL assets. Shared tools / enterprise
+        stay 19.0. Owner asked to finalize + B1 then start 20_6.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-16
+      command: "finalize the current modules' group. then, commit (b1)..."
+      tests: >
+        PREFIX gx5_65393 community+gantt install/-u/test green after
+        access-grant ACL retarget. 0 failed of 2+2; log-gate FAIL 0.
+      checker: {findings: 0, access-or: 0, access-grant: 0}
+      merge_to_20_port: 7f1a9e2c39b
+      reviews:
+        bugbot: "KPI Internal User crud grant — fixed (access-grant). total_notify ACL missing — false (untracked csv)."
+        security: "KPI User write via xml crud — fixed to r + group_kpi_user."
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]

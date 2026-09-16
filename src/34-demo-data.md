@@ -243,3 +243,30 @@ Demo DBs seed store recaptures (`31-prepublishment-screenshots`). Read `static/d
 ## Serie-proofing
 
 No serie bump in this work. Xmlids stay stable and family-local; no absolute ids; the serie number is never typed into demo content; demo XML lives in the module it belongs to.
+
+## Major-version port (`36-major-version-port` `Gx.4` / `Gx.5` / `Gx.8`)
+
+A group port uses **the same 19.0 generators** for the **touched modules only**, then
+improves those generators when the stand-in needs it. There is no third demo path.
+
+- **Layer 1** stays in `tools/<module>/demo`. Port it with the module (`Gx.4`). Empty
+  `"demo": []` is valid only when 19.0 also ships empty and Layer 2 owns the family.
+- **Layer 2** stays in `system/odootools_demo` (`_load_demo_<family>`,
+  `demo_scripts/<module>/`). `Gx.5` **runs** `_reload_tools_demo_data` /
+  `env-demo-reload.sh` on the stand-in. Grep-for-`get_param` is not a check.
+- **Hard `depends` on an unported app is a `Gx.5` defect**, not a reason to skip.
+  Loaders already no-op via `_demo_module_installed`. Drop or guard the extra depend
+  so `odootools_demo` can install next to the group; keep skipping families whose
+  modules are absent.
+- **Improve the loader in the same group** when saas-19.4 breaks it: typed ICP,
+  `datas` → `raw`, `env.cr.commit()` on a piped saas `odoo shell` (stdin rolls back
+  otherwise), create `base.user_demo` / `demo`/`demo` if core `--without-demo=` did
+  not, topicality. Do not invent a parallel `/tmp/*_seed.py` as the resting generator.
+- **`Gx.8` refresh** is `env-demo-reload.sh <target> <touched-modules>` (or
+  `Company._reload_tools_demo_data()`), same as 19.0. A one-off seed is a walk aid
+  only while `Gx.5` is still open.
+- Prove it with **counts**, not kinds: `demo`/`demo` authenticates, and every
+  family the 19.0 loader creates is present (2 joint calendars **with events**,
+  3 reminders, KPI categories + periods + targets + items). One invented KPI
+  / calendar / reminder row is a failed `Gx.5`. A later group that hands over
+  `Gx.8` while those loaders have not run has failed the same way `20_5` did.

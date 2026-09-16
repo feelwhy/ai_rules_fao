@@ -39,6 +39,38 @@ live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-po
    Do not `--load-language` a shipped list that omits `en_US`, and do not run
    `_demo_activate_shipped_langs` "because Gx.8 needs them". Translations are `Fx.3`
    and `Px.7` only.
+8. **Owner-asked fixes stay in the plan and are applied on the newest group.** When the
+   owner asks to fix anything (first-click crash, missing `demo`/`demo`, checker miss),
+   the successor is written into rule 22 + the checker **and** becomes a required
+   `Gx.3` / `Gx.5` / `Gx.8` check on every later group. A later `Gx.3` that rediscovers
+  `useState`, a bare `state.` / `panelState.`, an exact `class="…"` inherit,
+  `update.bind="handleChange"`, a `t-on-*` arrow without `this.`, a formula
+  `browse([False])`, or a review DB with no demo user / no 19.0 loader
+  counts has failed. A green
+   checker does not skip a named successor. Retro-scan already-ported groups for the
+   same class in the same job (`20_5` Filters → `20_14` `rule_parent` already prefixed;
+   `20_2` had no FieldFilter).
+9. **JavaScript and XML are `Gx.3`, not a walk finding.** OWL templates, QWeb arches,
+   security XML, JS patches, and `t-inherit` XPath are the same job as Python. A
+   Python-only port with leftover `useState`, bare `panelState`, or a dead
+   `class="o_calendar_sidebar"` inherit has not finished `Gx.3`.
+10. **Demo is the 19.0 path for the touched modules, and the generators improve on
+    the port.** `Gx.4` / `Gx.5` must produce the same records the 19.0 loaders produce
+    for those modules (`env-demo-reload.sh` → `_reload_tools_demo_data` /
+    `_load_demo_<family>`), not a `/tmp` seed. If `odootools_demo` cannot install
+    because of a hard `depends` on an unported app, **that is a `Gx.5` defect**:
+    guard or drop that depend (`_demo_module_installed` already skips missing apps)
+    and run the touched-module loaders. Improving a loader (saas shell
+    `env.cr.commit()`, `base.user_demo`, typed ICP, `raw`, topicality) is in-scope
+    for that group. A `/tmp` walk seed does not close `Gx.5`.
+11. **The program ends with working infra, not only ported modules.** The Docker
+    image (`env-serie-image.sh` / `faotools/env-demo-20`), local targets
+    (`demo20` / `demo20e`), `env-demo-reload.sh` / `env-demo-build.sh`,
+    `odootools_demo` setup/reload, `faotools_after_init` / after_clone / post-install
+    scripts, and later `7_master_infrastructure` stay first-class. A group that
+    leaves demo as a one-off compose + `/tmp` seed has not finished the infra half
+    of that group. Phase 4.1–4.4 tooling done is not phase 4 closed (`4.5` still
+    blocked; no `demo20` DB yet).
 
 ## Branch topology
 
@@ -91,12 +123,12 @@ check has not passed.
 | `Gx.0` source seed | fetch + pin latest current-serie SHA; mechanical copy incl. `i18n/`; tree equals pin + tech files |
 | `Gx.1` feature contract | reconcile live description, docs, source; map features to automated or named-manual checks |
 | `Gx.2` current-serie baseline | test slice passes on the pinned current serie; a new bug here **blocks** (non-negotiable 2) |
-| `Gx.3` technical port | rule-22 transforms; **drop** the manifest serie prefix (`19.0.1.3.33` → `1.3.33`); **`check_migrate_v20.py` clean** including `manifest-version`. Re-prefix to `20.0.x` at `Fx`, not here. |
-| `Gx.4` Layer-1 demo | `tools` XML/assets, no plugs, licenses, topicality, editor re-capture where the body is editor-produced |
-| `Gx.5` Layer-2 demo | `system` loaders/purge/idempotency; never combined with `Gx.4` |
+| `Gx.3` technical port | **Python + JS + XML + security**, all in this stage. Apply every successor already in rule 22 / the checker (replay list below) before claiming green. Rule-22 transforms; **drop** the manifest serie prefix (`19.0.1.3.33` → `1.3.33`); **`check_migrate_v20.py` clean** including `manifest-version`, `js-symbol` / `js-import`, `owl-xpath` exact `class="…" position=`, and `owl-this` on `panelState` / `env` / `.bind` / getter idents / `t-on-*` arrows that call a method without `this.`. First-click of every designer the contract names (formula search, PDF preview, scorecard) belongs here when the group owns those surfaces. A clean run that still lets a first-click compile error through is a checker bug — fix the checker **and** the group's JS/XML in the same job. Re-prefix to `20.0.x` at `Fx`, not here. |
+| `Gx.4` Layer-1 demo | `tools` XML/assets for **this group's modules**, same bar as 19.0 (`34-demo-data`): no plugs, licenses, topicality, editor re-capture where the body is editor-produced. `"demo": []` is valid only when 19.0 also ships empty **and** Layer 2 owns the family. |
+| `Gx.5` Layer-2 demo | **Run** the 19.0 loaders for the touched modules (`env-demo-reload.sh` / `_reload_tools_demo_data` / `_load_demo_<family>`). Grep-for-`get_param` is not a check. If `odootools_demo` cannot install, fix its depends/loaders in `system@20.0` in the same group — do not mark green. Improve the generator when the stand-in needs it (commit on saas shell, create `base.user_demo`, typed ICP, `raw`, source rows when core demo is absent). **Prove it with counts**, not a seed script: every family the 19.0 loader creates must exist (2 joint calendars with events, 3 reminders, KPI categories + periods + targets + items — whatever that group ships). Never combined with `Gx.4`. A `/tmp` seed does not close this stage. |
 | `Gx.6` install matrix | fresh install per closure, with and without demo, one update, community + enterprise as applicable |
-| `Gx.7` behavior | module + group tests, warning gate, browser/console smoke, each its own run |
-| `Gx.8` review DB | cumulative base + active group, demo reloaded, **en_US** active and admin in English, URL handed over; portal `get_views` on the **running** worker for generated sharing fields (see Quality gates) |
+| `Gx.7` behavior | module + group tests, warning gate, browser/console smoke, each its own run. Smoke is **first-click every group menu** and the first tab of every designer/wizard the contract names (calendar, kanban, Filters). A compile-time inherit miss or `undefined.bind` / `undefined.collapsed` is a Gx.3 miss, not a walk finding. |
+| `Gx.8` review DB | cumulative base + active group, **demo reloaded the 19.0 way** for touched modules **and Gx.5 counts green**, **en_US** active and admin in English, `demo`/`demo` from `base.user_demo` / the loader (not a leftover `/tmp` user), URL handed over; first-click every group menu **and** the formula / PDF / scorecard / Filters surfaces the contract names; portal `get_views` on the **running** worker for generated sharing fields (see Quality gates). `/tmp` compose+seed is a walk aid only while `Gx.5` is still open — then `Gx.5` stays open and Gx.8 is **not** ready. Do not hand over admin-only. |
 | `Gx.9` acceptance | on owner confirmation merge to `_port` (worktree only; do not switch shared `tools`), reconcile requirements, cumulative checker smoke. Push only if asked. |
 
 `Fx` repeats the port against the released serie and adds translations
@@ -163,6 +195,39 @@ check, and before any live write, push, merge, or master promotion.
   **model** cannot be attributed and will record. Read those by hand for the owning group.
 - **Silent failures are the main risk.** Dead hooks, discarded field writes and string-keyed field
   names emit nothing. The static checker is the only thing that catches them; run it, read it.
+- **Learned-successor replay (every `Gx.3`).** Before the checker is called green, apply
+  the successors already named in rule 22 and this rule — do not wait for the owner to
+  hit the same crash again. Minimum replay (grows when the owner asks to fix something):
+  `ir.access`; empty grouped ACL (`access-or` — put the domain on the CSV
+  row, or write explicit `[(1, '=', 1)]`); grouped `ir.rule` on
+  `base.group_user` must not become a write permission (`access-grant` —
+  product-group + 19.0 ACL ops); `_check_access` → `_access_domain` + `res_access_*`; typed ICP;
+  `datas` → `raw`; `Stream` from `odoo.http.stream`; `invalidate_ormcache`;
+  `useState` / `reactive` → `proxy`; `t-custom-ref`; `this.` on OWL scope / bind /
+  getters / `t-on-*` arrows; exact `class="…"` inherit (calendar rail vs `o_calendar_sidepanel_content`);
+  New button on `web.KanbanView.Buttons`; vendored jquery + jstree off-proxy;
+  `t-esc` → `t-out` in `ir.ui.view`; drop calendar `date_delay`; `@api.ormcache`;
+  portal cards as `portal.entry`. A group that still has any of these in *its* tree
+  has not finished `Gx.3`.
+- **First-click OWL.** Before calling `Gx.8` ready, open every group menu and the first tab of
+  every designer the contract names, **including formula search, PDF preview, and the
+  scorecard**. `cannot be located in element tree`, `undefined.bind`,
+  `undefined.collapsed`, and `Invalid handler expression` / `Invalid falsy real id`
+  are Gx.3 / checker misses (incident 2026-09-16, `20_5` Gx.8: `o_calendar_sidebar`,
+  `panelState`, `update.bind="handleChange"`, then formula
+  `_onSearchNavigation` without `this.` + `browse([False])`). Do not excuse them
+  with a green checker — extend the checker in the same job.
+- **Demo parity (touched modules).** `Gx.5` / `Gx.8` prove the 19.0 loaders ran: `demo`/`demo`
+  authenticates (`base.user_demo`), and the family's **19.0 record counts** exist (2
+  joint calendars with events, 3 `total.notify`, KPI categories + periods + targets
+  + items — whatever that group's 19.0 loader creates). Invented walk rows in
+  `/tmp/*_seed.py` are not that proof. `Gx.8` is not ready while `Gx.5` is open.
+  If the generator is wrong on saas-19.4, fix the generator in the same group.
+- **Infra progress.** A group that needs Layer-2 demo must leave `odootools_demo`
+  installable on that stand-in (or a documented, committed slim path — not `/tmp`).
+  `env-demo-reload.sh` / `env-demo-build.sh` / `faotools_after_init` / after_clone stay
+  on the program path. Do not call phase 4 closed while `4.5` is blocked or there is
+  no `demo20` database.
 - **Portal sharing / generated fields.** `Gx.8` must HTTP `get_views` as a **portal** user on the
   **running** worker and compare arch vs `fields_get` for every generated `x_oz_*` (or other
   custom column) on sharing forms. A fresh `odoo shell` is a new process cache and is not that
@@ -210,9 +275,12 @@ Rules:
 
 ## Living rules
 
-A port that reveals a new technical fact does **not** pause by default. Decide the fix, apply it,
-prove it on the stand-in (install or the check that failed), then write the fact into `ai_rules`
-rule 22 **and** `tools/check_migrate_v20.py` in the same job. Pause only when:
+A port that reveals a new technical fact does **not** pause by default. Decide the fix, apply it
+**on the current group**, prove it on the stand-in (install or the check that failed), then write
+the fact into `ai_rules` rule 22 **and** `tools/check_migrate_v20.py` in the same job so the
+**newest** group's `Gx.3` applies it. The same for a demo-generator or infra fix: write it into
+`34-demo-data` / `env-demo-*` / `faotools_after_init` and run it, do not leave a `/tmp` copy as
+the source of truth. Pause only when:
 
 - the issue is a **current-serie (19.0) defect** that must be fixed there before the group
   continues (non-negotiable 2);
