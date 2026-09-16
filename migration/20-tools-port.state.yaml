@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-16T16:10:00+01:00
-updated_by: agent/20_9-gx9-b1
+updated_at: 2026-09-16T17:20:00+01:00
+updated_by: agent/20_10-gx9
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -1068,22 +1068,142 @@ groups:
   "20_10":
     order: 7
     modules: [task_checklist, crm_checklist, sale_order_checklist, purchase_order_checklist]
+    stage: Gx.9
+    stage_status: green
+    known_breaks: [useState, static_list_replaceWith, project_view_task_kanban_card_id]
+    enterprise_required: false
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_10
+    shared_tools_left_on: "19.0"
+    shared_enterprise_left_on: "19.0"
+    contract: migration/contracts/20_10.md
+    seed:
+      commit: de050173895
+      from_pin: 17f1d97163d
+      verified: "4 module subtrees from pin"
+    gx1:
+      stage_status: green
+      live_ids: {task_checklist: 1083, crm_checklist: 1082,
+                 sale_order_checklist: 1084, purchase_order_checklist: 1081}
+      exact_versions: {task_checklist: 1.2.9, crm_checklist: 1.2.9,
+                       sale_order_checklist: 1.0.4, purchase_order_checklist: 1.0.5}
+    gx2:
+      stage_status: green
+      community: "PREFIX gx210_283963 GX2_OK. No tests/ in any of the four."
+      pin: 17f1d97163d
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      manifests_unprefixed:
+        task_checklist: {from: 19.0.1.2.9, to: 1.2.9}
+        crm_checklist: {from: 19.0.1.2.9, to: 1.2.9}
+        sale_order_checklist: {from: 19.0.1.0.4, to: 1.0.4}
+        purchase_order_checklist: {from: 19.0.1.0.5, to: 1.0.5}
+      ports:
+        - "ir.model.access.csv -> ir.access.csv (4); history ops cr not rc"
+        - "useState -> proxy; this.state / this.props"
+        - "StaticList._replaceWith -> list.set(ids)"
+        - "task kanban inherit project.view_task_card (card_id shell)"
+        - "purchase company rule -> ir.access restriction"
+      note: >
+        Gx.6 first fail: hollow project.view_task_kanban. Second fail:
+        operation=rc rejected. Parent-bound view-anchor + access-op added
+        to the checker. Retro-scan of accepted groups: crm_duplicates
+        settings name=crm is a sibling-inherit false positive (20_9
+        already installed green).
+    gx4:
+      stage_status: green
+      layer1: [task_checklist/demo, crm_checklist/demo,
+               sale_order_checklist/demo, purchase_order_checklist/demo]
+      layer1_changed: false
+    gx5:
+      stage_status: green
+      layer2_changed: true
+      loaders: [_load_demo_checklists]
+      verified: true
+      counts:
+        check_list: 6
+        crm_check_list: 8
+        order_check_item: 7
+        purchase_check_item: 6
+        check_company_list: 1
+        demo_user: true
+      note: >
+        PREFIX gx10567_446203 GX5_OK (layer-1 counts). Gx.8 stamp raised
+        to tcl=6 ccl=8 scl=7 pcl=6 plus history; B1 PREFIX b110_528073.
+    gx6:
+      stage_status: green
+      result: >
+        Community no-demo / with-demo / -u PREFIX gx10567_446203 green.
+        No enterprise lane.
+    gx7:
+      stage_status: green
+      community: "no tests/; log-gate FAIL 0 RECORD 3 ALLOW 0 (env_dbfilter_header x3)"
+      languages: en_US
+      review_url: http://localhost:18205/web/login
+      note: Gx.8 is the owner walk of that URL. Do not mark Gx.8/Gx.9.
+    gx8:
+      stage_status: green
+      url: http://localhost:18205/web/login
+      db: gx8_20_10
+      compose: faotools_env/local/run/gx8_20_10/compose.yml
+      ports: {http: 18205, longpolling: 19205}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_10, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      note: >
+        owner walk accepted. Layer-2 stamp: mixed progress, topical
+        history, no items on CRM Won / task Done.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-16
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        PREFIX b110_528073 B1_20_10_OK. parked tests-prep suites.
+        B1_COUNTS tcl=6 ccl=8 scl=7 pcl=6 th=219 ch=140 sh=54 ph=27
+        won=0 done=0 old=0. --test OK. log-gate FAIL 0 RECORD 5.
+      checker: {findings: 0}
+      merge_to_20_port: 705a6b54e2b
+      reviews:
+        bugbot: "no bugs"
+        security: "no medium+; ir.access preserves 19.0 ops; restriction AND; cr not rc"
+  "20_4":
+    order: 8
+    modules: [odoo_password_manager, security_user_roles, task_numbers,
+              odoo_password_manager_custom_fields]
     stage: null
     stage_status: pending
+    known_breaks: [ir_attachment_datas]
+    blocked_by: []                      # defect 4 committed in 84e7d1c4840
   "20_12":
-    order: 8
+    order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
     stage: null
     stage_status: pending
     known_breaks: [self_readable_fields, self_writeable_fields]
+  "20_suite":
+    order: 10
+    modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
+              internal_thread_accounting, odoo_email_from, email_suite_accounting,
+              odoo_email_from_accounting]
+    stage: null
+    stage_status: pending
+    known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
+                   mail_fields_import, chatter_import, x2many_commands, store_add_signature,
+                   store_get_result, message_model_edit_signature]
+    blocked_by: []                      # defect 5 committed in 84e7d1c4840
+    note: Full Store-API rewrite, not renames.
   "20_11":
-    order: 9
+    order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
     stage: null
     stage_status: pending
     known_breaks: [stock_move_product_uom, ir_attachment_datas]
   "20_7":
-    order: 10
+    order: 12
     modules: [itlibertas_timesheet, itlibertas_timesheet_gantt, odoo_menu_management]
     stage: null
     stage_status: pending
@@ -1093,7 +1213,7 @@ groups:
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. Runtime check required (H6).
   "20_16":
-    order: 11
+    order: 13
     modules: [business_appointment, business_appointment_website, business_appointment_sale,
               business_appointment_website_sale, business_appointment_custom_fields,
               business_appointment_custom_fields_website, business_appointment_time_tracking,
@@ -1104,7 +1224,7 @@ groups:
     enterprise_required: true
     blocked_by: []                      # defect 1 fixed by owner in the current pin
   "20_15":
-    order: 12
+    order: 14
     modules: [knowsystem, knowsystem_website, knowsystem_multilang,
               knowsystem_website_custom_fields, knowsystem_custom_fields, documentation_builder,
               knowsystem_eshop]
@@ -1117,32 +1237,12 @@ groups:
       Riskiest group in the program: carries 4 of the 9 JS breaks and the html_builder/html_editor
       rework, which was still moving at saas-19.4. Also needs editor re-capture for
       backend_editor bodies. Do not schedule early.
-  "20_suite":
-    order: 13
-    modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
-              internal_thread_accounting, odoo_email_from, email_suite_accounting,
-              odoo_email_from_accounting]
-    stage: null
-    stage_status: pending
-    known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
-                   mail_fields_import, chatter_import, x2many_commands, store_add_signature,
-                   store_get_result, message_model_edit_signature]
-    blocked_by: []                      # defect 5 committed in 84e7d1c4840
-    note: Full Store-API rewrite, not renames.
   "20_3":
-    order: 14
+    order: 15
     modules: [product_management, product_management_accounting, product_management_website_sale,
               product_management_purchase, product_management_stock]
     stage: null
     stage_status: pending
-  "20_4":
-    order: 15
-    modules: [odoo_password_manager, security_user_roles, task_numbers,
-              odoo_password_manager_custom_fields]
-    stage: null
-    stage_status: pending
-    known_breaks: [ir_attachment_datas]
-    blocked_by: []                      # defect 4 committed in 84e7d1c4840
   "20_13":
     order: 16
     modules: [notification_crm, mail_activity_notification, notification_project,

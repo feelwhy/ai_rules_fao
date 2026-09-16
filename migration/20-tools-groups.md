@@ -59,11 +59,30 @@
 - Employees Contact Full Details / complementary_employee_data
 - Opportunities Contact Full Details / complementary_lead_data
 
+## 20_4
+
+- Password Manager / odoo_password_manager
+- Security User Roles / security_user_roles
+- Task Auto Numbering and Search / task_numbers
+- Password Manager: Custom Fields / odoo_password_manager_custom_fields
+
 ## 20_12
 
 - Contacts Color Coding / partner_color_codes
 - Activities To-Do Interface / activities_todo
 - Recurring Activities / recurrent_activities
+
+## 20_suite
+
+- Message/Note Editing / message_edit
+- Lost Messages Routing / mail_manual_routing
+- Message Citing / message_citing
+- Odoo Messaging Suite / email_suite
+- Private Thread / internal_thread
+- Private Thread: Invoices / internal_thread_accounting
+- Odoo Email From / odoo_email_from
+- Odoo Messaging Suite: Invoices / email_suite_accounting
+- Odoo Email From: Invoices / odoo_email_from_accounting
 
 ## 20_11
 
@@ -99,18 +118,6 @@
 - Odoo Documentation Builder / documentation_builder
 - KnowSystem: eCommerce / knowsystem_eshop
 
-## 20_suite
-
-- Message/Note Editing / message_edit
-- Lost Messages Routing / mail_manual_routing
-- Message Citing / message_citing
-- Odoo Messaging Suite / email_suite
-- Private Thread / internal_thread
-- Private Thread: Invoices / internal_thread_accounting
-- Odoo Email From / odoo_email_from
-- Odoo Messaging Suite: Invoices / email_suite_accounting
-- Odoo Email From: Invoices / odoo_email_from_accounting
-
 ## 20_3
 
 - Product Management Interface / product_management
@@ -118,13 +125,6 @@
 - Product Management Interface: eCommerce / product_management_website_sale
 - Product Management Interface: Purchases / product_management_purchase
 - Product Management Interface: Warehouse / product_management_stock
-
-## 20_4
-
-- Password Manager / odoo_password_manager
-- Security User Roles / security_user_roles
-- Task Auto Numbering and Search / task_numbers
-- Password Manager: Custom Fields / odoo_password_manager_custom_fields
 
 ## 20_13
 

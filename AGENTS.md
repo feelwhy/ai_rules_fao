@@ -1742,7 +1742,8 @@ master promotion.
 - **Learned-successor replay (every `Gx.3`).** Before the checker is called green, apply
   the successors already named in rule 22 and this rule — do not wait for the owner to
   hit the same crash again. Minimum replay (grows when the owner asks to fix something):
-  `ir.access`; empty grouped ACL (`access-or` — put the domain on the CSV
+  `ir.access`; operation letters in `crud` order (`cr` not `rc`;
+  `access-op`); empty grouped ACL (`access-or` — put the domain on the CSV
   row, or write explicit `[(1, '=', 1)]`; a core sibling empty permission
   such as `sale_stock` location must AND in `_access_domain` unless Super);
   grouped `ir.rule` on
@@ -1755,7 +1756,10 @@ master promotion.
   `t-esc` → `t-out` in `ir.ui.view`; drop calendar `date_delay`; `@api.ormcache`;
   portal cards as `portal.entry`; `website.default_website` →
   `base.default_website` (tests included); `request.website` →
-  `request.env.website`. A group that still has any of these in *its* tree
+  `request.env.website`; `StaticList._replaceWith` → `list.set(ids)`;
+  kanban `card_id` shells (`project.view_task_kanban` → inherit
+  `project.view_task_card`; parent-bound `view-anchor`).
+  A group that still has any of these in *its* tree
   has not finished `Gx.3`.
 - **First-click OWL.** Before calling `Gx.8` ready, open every group menu and the first tab of
   every designer the contract names, **including formula search, PDF preview, and the
