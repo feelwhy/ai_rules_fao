@@ -28,10 +28,13 @@ live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-po
 4. **Compare trees, not ancestry.** `saas-x.y` branches are independent forks; a fix on the stable
    serie may be absent from the target (measured: 8638 such commits for 19.0 → saas-19.4).
 5. **After the pilot, `Gx.0`–`Gx.7` is one authorized batch** (including Layer-1 and
-   Layer-2). The owner reviews the `Gx.8` database; `Gx.9` waits for that confirmation.
-   A completed test inside the batch does not end the turn. Hard stops still apply:
-   a failing check, a current-serie bug, a live write, a push, or a merge. The pilot
-   stayed per-stage so the loop could be calibrated.
+   Layer-2). **`Gx.7` is not done without the review-DB URL.** Launch `gx8_<group>`
+   in that same batch and put the login link in the reply. Do not stop after tests
+   to ask “proceed with Gx.8?”. The owner walks that already-running database
+   (`Gx.8`); `Gx.9` waits for that confirmation. A completed test inside the batch
+   does not end the turn. Hard stops still apply: a failing check, a current-serie
+   bug, a live write, a push, or a merge. The pilot stayed per-stage so the loop
+   could be calibrated.
 6. **Nothing enters the technical rule as fact unless source-confirmed** against a stated pin.
    Hypotheses carry their named check and stay out of porting instructions.
 7. **Feature review is `en_US` until the translation stages.** `Gx.6`–`Gx.9` (and later
@@ -114,9 +117,9 @@ no confirmed finding is false: `ir.access` already hits both, and `20_c` Gx.8 fo
 ## Per-group loop
 
 `Gx` runs on the pre-release serie, `Fx` on the released serie, `Px` publishes.
-After the pilot, `Gx.0`–`Gx.7` is one chunk; `Gx.8` is the owner review; `Gx.9` is
-acceptance. Each stage still has its own gate — do not mark a stage done whose
-check has not passed.
+After the pilot, `Gx.0`–`Gx.7` is one chunk; that chunk **ends with the review-DB
+URL**. `Gx.8` is the owner walk of that URL; `Gx.9` is acceptance. Each stage
+still has its own gate — do not mark a stage done whose check has not passed.
 
 | Stage | Gate |
 |---|---|
@@ -127,8 +130,8 @@ check has not passed.
 | `Gx.4` Layer-1 demo | `tools` XML/assets for **this group's modules**, same bar as 19.0 (`34-demo-data`): no plugs, licenses, topicality, editor re-capture where the body is editor-produced. `"demo": []` is valid only when 19.0 also ships empty **and** Layer 2 owns the family. |
 | `Gx.5` Layer-2 demo | **Run** the 19.0 loaders for the touched modules (`env-demo-reload.sh` / `_reload_tools_demo_data` / `_load_demo_<family>`). Grep-for-`get_param` is not a check. If `odootools_demo` cannot install, fix its depends/loaders in `system@20.0` in the same group — do not mark green. Improve the generator when the stand-in needs it (commit on saas shell, create `base.user_demo`, typed ICP, `raw`, source rows when core demo is absent). **Prove it with counts**, not a seed script: every family the 19.0 loader creates must exist (2 joint calendars with events, 3 reminders, KPI categories + periods + targets + items — whatever that group ships). Never combined with `Gx.4`. A `/tmp` seed does not close this stage. |
 | `Gx.6` install matrix | fresh install per closure, with and without demo, one update, community + enterprise as applicable |
-| `Gx.7` behavior | module + group tests, warning gate, browser/console smoke, each its own run. Smoke is **first-click every group menu** and the first tab of every designer/wizard the contract names (calendar, kanban, Filters). A compile-time inherit miss or `undefined.bind` / `undefined.collapsed` is a Gx.3 miss, not a walk finding. |
-| `Gx.8` review DB | cumulative base + active group, **demo reloaded the 19.0 way** for touched modules **and Gx.5 counts green**, **en_US** active and admin in English, `demo`/`demo` from `base.user_demo` / the loader (not a leftover `/tmp` user), URL handed over; first-click every group menu **and** the formula / PDF / scorecard / Filters surfaces the contract names; portal `get_views` on the **running** worker for generated sharing fields (see Quality gates). `/tmp` compose+seed is a walk aid only while `Gx.5` is still open — then `Gx.5` stays open and Gx.8 is **not** ready. Do not hand over admin-only. |
+| `Gx.7` behavior | module + group tests, warning gate, browser/console smoke, each its own run. Smoke is **first-click every group menu** and the first tab of every designer/wizard the contract names (calendar, kanban, Filters). A compile-time inherit miss or `undefined.bind` / `undefined.collapsed` is a Gx.3 miss, not a walk finding. **Then launch the review DB** (`gx8_<group>`, 19.0 loader counts, `en_US`, `admin`/`admin` + `demo`/`demo`) and **hand over the URL**. A Gx.7 that only has test logs has not finished. |
+| `Gx.8` review DB | owner walk of the URL `Gx.7` already handed over. Do not relaunch unless the walk found a defect that needs a rebuild. Cumulative base + active group, **demo reloaded the 19.0 way** for touched modules **and Gx.5 counts green**, **en_US** active and admin in English, `demo`/`demo` from `base.user_demo` / the loader (not a leftover `/tmp` user); first-click every group menu **and** the formula / PDF / scorecard / Filters surfaces the contract names; portal `get_views` on the **running** worker for generated sharing fields (see Quality gates). `/tmp` compose+seed is a walk aid only while `Gx.5` is still open — then `Gx.5` stays open and the Gx.7 URL is **not** ready. Do not hand over admin-only. |
 | `Gx.9` acceptance | on owner confirmation merge to `_port` (worktree only; do not switch shared `tools`), reconcile requirements, cumulative checker smoke. Push only if asked. |
 
 `Fx` repeats the port against the released serie and adds translations
@@ -172,9 +175,11 @@ pre-apply snapshot is still worth writing for the origin-linked case, and is not
 
 Strict per-chunk confirmation through the pilot. After that, the default authorized
 batch is **`Gx.0`–`Gx.7`**. Declare that sequence, then execute without asking between
-stages. The owner reviews the `Gx.8` database; `Gx.9` waits for that confirmation.
-Batching never removes a hard stop — stop and report immediately on any failing
-check, and before any live write, push, merge, or master promotion.
+stages. The batch ends with the review-DB URL. The owner reviews that already-running
+database (`Gx.8`); `Gx.9` waits for that confirmation. Do not ask “proceed with
+Gx.8?” after a green Gx.7. Batching never removes a hard stop — stop and report
+immediately on any failing check, and before any live write, push, merge, or
+master promotion.
 
 ## Quality gates
 
@@ -209,7 +214,9 @@ check, and before any live write, push, merge, or master promotion.
   getters / `t-on-*` arrows; exact `class="…"` inherit (calendar rail vs `o_calendar_sidepanel_content`);
   New button on `web.KanbanView.Buttons`; vendored jquery + jstree off-proxy;
   `t-esc` → `t-out` in `ir.ui.view`; drop calendar `date_delay`; `@api.ormcache`;
-  portal cards as `portal.entry`. A group that still has any of these in *its* tree
+  portal cards as `portal.entry`; `website.default_website` →
+  `base.default_website` (tests included); `request.website` →
+  `request.env.website`. A group that still has any of these in *its* tree
   has not finished `Gx.3`.
 - **First-click OWL.** Before calling `Gx.8` ready, open every group menu and the first tab of
   every designer the contract names, **including formula search, PDF preview, and the

@@ -19,6 +19,22 @@ fail_patterns:
     rationale: "silent write drop; ai_rules 22-migrate-v19-to-v20"
 
 allowlist:
+  # odoo_typo_reporter HttpCase submits invalid recaptcha / Turnstile tokens
+  # on purpose (is_bot, invalid-input-response, timeout). The controller
+  # logs WARNING then returns success=False. 19.0 Gx.2 and saas Gx.7 both
+  # pass 19 tests with these four lines.
+  - logger_prefix: odoo.addons.odoo_typo_reporter.controllers.main
+    message_regex: "CAPTCHA verification failed"
+    expiry: "2027-03-16"
+    rationale: >
+      TestTypoReporterController deliberately fails recaptcha/Turnstile.
+      The four WARNINGs are the assertion path, not a product defect.
+  - logger_prefix: odoo.addons.odoo_typo_reporter.controllers.main
+    message_regex: "Turnstile verification failed"
+    expiry: "2027-03-16"
+    rationale: >
+      Same suite: invalid-input-response is asserted in
+      test_submit_public_turnstile_invalid_token_rejects_report.
   # complementary_contact_data asserts that reading a translated `comment` still
   # stored as varchar raises, then that its healer converts the column to jsonb and
   # the read succeeds. The raise is the point of the test, so the ERROR is expected

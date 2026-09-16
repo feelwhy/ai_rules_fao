@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-16 (`20_6` Gx.9 green, merged to `20_port` `ee875344a0a`.)
+**Last updated:** 2026-09-16 (`20_9` Gx.9 green, merged to `20_port` `e30b8df77fa`. Next: `20_10` Gx.0–Gx.7.)
 
 ## Where we are
 
@@ -19,7 +19,7 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **in progress** — `20_2` / `20_c` / `20_14` / `20_5` / `20_6` **Gx.9 green**. Next `20_9`. Shared `tools` / `enterprise` stay `19.0`. |
+| 5 — per-group loops on saas-19.4 | **in progress** — `20_2` / `20_c` / `20_14` / `20_5` / `20_6` / `20_9` **Gx.9 green**. Next `20_10`. Shared `tools` / `enterprise` stay `19.0`. |
 | 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
 | 7 — master infrastructure + faotools.com enablement | pending |
 | 8 — per-group loops on 20.0 | pending |
@@ -172,7 +172,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 3 | `20_14` | 9 | `Gx.9` **green** | merged to `20_port` `2be60303496` |
 | 4 | `20_5` | 4 | `Gx.9` **green** | B1; http://localhost:18202; access-or + access-grant |
 | 5 | `20_6` | 3 | `Gx.9` **green** | B1; http://localhost:18203; `_access_domain` AND for `sale_stock` empty ACL |
-| 6 | `20_9` | 5 | — | `useState`; `t-ref`; `WebsiteRoot` → Interaction, `datas` |
+| 6 | `20_9` | 5 | `Gx.9` **green** | B1; http://localhost:18204; LangChange; `request.env.website`; typo 19/19 |
 | 7 | `20_10` | 4 | — | `useState` (all four checklists) |
 | 8 | `20_12` | 3 | — | `useState`; `SELF_*_FIELDS` |
 | 9 | `20_11` | 3 | — | `useState`; `stock.move.product_uom`, `datas` |

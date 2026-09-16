@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-16T13:45:00+01:00
-updated_by: agent/20_6-gx9-b1
+updated_at: 2026-09-16T16:10:00+01:00
+updated_by: agent/20_9-gx9-b1
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -947,9 +947,124 @@ groups:
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
               odoo_typo_reporter]
-    stage: null
-    stage_status: pending
-    known_breaks: [website_root_interaction, ir_attachment_datas]
+    stage: Gx.9
+    stage_status: green
+    known_breaks: [website_root_interaction, ir_attachment_datas, request_website,
+                   website_default_website]
+    enterprise_required: false
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_9
+    shared_tools_left_on: "19.0"
+    shared_enterprise_left_on: "19.0"
+    contract: migration/contracts/20_9.md
+    seed:
+      commit: 00701e1fca6
+      from_pin: 3270c4fcaf8
+      verified: "5 module subtrees from pin"
+    gx1:
+      stage_status: green
+      live_ids: {crm_duplicates: 1068, partner_duplicates: 1070,
+                 website_url_translations: 1066, short_urls: 1067,
+                 odoo_typo_reporter: 1099}
+      exact_versions: {crm_duplicates: 1.0.4, partner_duplicates: 1.0.5,
+                       website_url_translations: 1.0.5, short_urls: 1.0.14,
+                       odoo_typo_reporter: 1.0.3}
+    gx2:
+      stage_status: green
+      community: >
+        PREFIX gx219_174666 no-demo / with-demo / -u green. Typo suite
+        0 failed, 0 error(s) of 17. Script false-failed on CAPTCHA WARNING
+        grep; tests themselves passed.
+      pin: 3270c4fcaf8
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      manifests_unprefixed:
+        crm_duplicates: {from: 19.0.1.0.4, to: 1.0.4}
+        partner_duplicates: {from: 19.0.1.0.5, to: 1.0.5}
+        website_url_translations: {from: 19.0.1.0.5, to: 1.0.5}
+        short_urls: {from: 19.0.1.0.14, to: 1.0.14}
+        odoo_typo_reporter: {from: 19.0.1.0.3, to: 1.0.3}
+      ports:
+        - "ir.model.access.csv -> ir.access.csv (5)"
+        - "get_param/set_param -> typed ICP"
+        - "content_disposition from odoo.http.stream"
+        - "website_root include -> LangChange patch"
+        - "useState -> proxy; t-custom-ref; this."
+        - "type_person search -> inactive"
+        - "typo JSON datas -> raw"
+        - "website.default_website -> base.default_website"
+        - "request.website -> request.env.website"
+      commit: b34affe3ffc
+    gx4:
+      stage_status: green
+      layer1: none
+      layer1_changed: false
+      verified: 'all five ship "demo": []'
+    gx5:
+      stage_status: green
+      layer2_changed: true
+      loaders: [demo_duplicates]
+      verified: true
+      counts:
+        partners: 2
+        leads: 2
+        short_urls: 3
+        typo_reports: 3
+        url_translations: 0
+        partner_duplicates: uninstalled
+        demo_user: true
+      note: >
+        PREFIX gx95_215109. odootools_demo + four allowed modules (not
+        partner_duplicates). demo_duplicates 0 failed of 2. Loader prefers
+        base.default_website.
+    gx6:
+      stage_status: green
+      community_log: /tmp/gx9_567c.log
+      result: >
+        Community no-demo PREFIX gx967_189930 green. with-demo / -u
+        PREFIX gx967_214333 green. No enterprise lane.
+    gx7:
+      stage_status: green
+      community: "0 failed, 0 error(s) of 19 tests; log-gate FAIL 0 RECORD 2 ALLOW 4"
+      languages: en_US
+      review_url: http://localhost:18204/web/login
+      caveat: >
+        CAPTCHA WARNINGs are test-provoked (allowlist). saas shutdown logger
+        is odoo.service.server.ThreadedServer — gate regex updated.
+        Process: Gx.7 now hands over the review URL (2026-09-16 owner command).
+    gx8:
+      stage_status: green
+      url: http://localhost:18204/web/login
+      db: gx8_20_9
+      compose: faotools_env/local/run/gx8_20_9/compose.yml
+      ports: {http: 18204, longpolling: 19204}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_9, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      counts:
+        partners: 2
+        leads: 2
+        short_urls: 3
+        typo_reports: 3
+        url_translations: 0
+        partner_duplicates: uninstalled
+        demo_user: true
+      walk_finding: "none reported; owner asked to finalize"
+      note: owner walk accepted; do not --test this DB; do not restart gx8_20_6/5/14
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-16
+      command: "finalize the current modules' group. then, commit (b1) all the local branches and changes of the repos tools, ai_rules, ai_rules_fao, support, system then, move to the next module's group (again Gx0-Gx7 in a single chunk)"
+      tests: >
+        PREFIX b19_267057 typo 0 failed, 0 error(s) of 19; log-gate FAIL 0
+        RECORD 5 ALLOW 4. demo_duplicates 0 failed of 2.
+      checker: {findings: 0}
+      merge_to_20_port: e30b8df77fa
+      reviews:
+        bugbot: "no bugs"
+        security: "no medium+; ir.access preserves 19.0 ops; no access-or/grant"
   "20_10":
     order: 7
     modules: [task_checklist, crm_checklist, sale_order_checklist, purchase_order_checklist]
