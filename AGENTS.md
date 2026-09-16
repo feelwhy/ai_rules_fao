@@ -1748,8 +1748,11 @@ master promotion.
   such as `sale_stock` location must AND in `_access_domain` unless Super);
   grouped `ir.rule` on
   `base.group_user` must not become a write permission (`access-grant` —
-  product-group + 19.0 ACL ops); `_check_access` → `_access_domain` + `res_access_*`; typed ICP;
-  `datas` → `raw`; `Stream` from `odoo.http.stream`; `invalidate_ormcache`;
+  product-group + 19.0 ACL ops; keep Internal User write when 19.0
+  `ir.model.access` already granted it — `20_4` portal vaults);
+  `_check_access` → `_access_domain` + `res_access_*`; typed ICP;
+  `datas` → `raw` (leave `export_data` `datas` — still the export matrix);
+  `Stream` from `odoo.http.stream`; `invalidate_ormcache`;
   `useState` / `reactive` → `proxy`; `t-custom-ref`; `this.` on OWL scope / bind /
   getters / `t-on-*` arrows; exact `class="…"` inherit (calendar rail vs `o_calendar_sidepanel_content`);
   New button on `web.KanbanView.Buttons`; vendored jquery + jstree off-proxy;
@@ -1758,7 +1761,14 @@ master promotion.
   `base.default_website` (tests included); `request.website` →
   `request.env.website`; `StaticList._replaceWith` → `list.set(ids)`;
   kanban `card_id` shells (`project.view_task_kanban` → inherit
-  `project.view_task_card`; parent-bound `view-anchor`).
+  `project.view_task_card`; parent-bound `view-anchor`);
+  `_order_field_to_sql` drop `query` (`table, field_expr, direction, nulls`;
+  `_order_to_sql(table, order)` — 19.0 five-arg form dies at install,
+  `20_4` Gx.6);
+  19.0 `groups=base.group_portal` partner rules stay on
+  `base.group_portal`, not a product group internals also get (`20_4`
+  vaults OR leak);
+  `t-out="title"` / `#{id}` → `this.` (`owl-this`).
   A group that still has any of these in *its* tree
   has not finished `Gx.3`.
 - **First-click OWL.** Before calling `Gx.8` ready, open every group menu and the first tab of
