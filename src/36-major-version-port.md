@@ -200,7 +200,9 @@ check, and before any live write, push, merge, or master promotion.
   the successors already named in rule 22 and this rule — do not wait for the owner to
   hit the same crash again. Minimum replay (grows when the owner asks to fix something):
   `ir.access`; empty grouped ACL (`access-or` — put the domain on the CSV
-  row, or write explicit `[(1, '=', 1)]`); grouped `ir.rule` on
+  row, or write explicit `[(1, '=', 1)]`; a core sibling empty permission
+  such as `sale_stock` location must AND in `_access_domain` unless Super);
+  grouped `ir.rule` on
   `base.group_user` must not become a write permission (`access-grant` —
   product-group + 19.0 ACL ops); `_check_access` → `_access_domain` + `res_access_*`; typed ICP;
   `datas` → `raw`; `Stream` from `odoo.http.stream`; `invalidate_ormcache`;

@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-16T12:20:00+01:00
-updated_by: agent/20_5-gx9
+updated_at: 2026-09-16T13:45:00+01:00
+updated_by: agent/20_6-gx9-b1
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -829,9 +829,120 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: null
-    stage_status: pending
-    known_breaks: [product_variant_easy_edit_view, ir_attachment_datas]
+    stage: Gx.9
+    stage_status: green
+    known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
+    enterprise_required: false
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_6
+    shared_tools_left_on: "19.0"
+    shared_enterprise_left_on: "19.0"
+    contract: migration/contracts/20_6.md
+    seed:
+      commit: b7c9051a02a
+      from_pin: 3270c4fcaf8
+      verified: "3 module subtrees from pin"
+    gx1:
+      stage_status: green
+      live_ids: {product_stock_balance: 1078, stock_limitation: 1079,
+                 product_dynamic_code: 1080}
+      exact_versions: {product_stock_balance: 1.1.9, stock_limitation: 1.0.4,
+                       product_dynamic_code: 1.0.5}
+      pre_port_checker: >
+        48 findings (js-symbol useState; 8 owl-tref; 14 owl-this; 4 python-api
+        get_param; 2 view-xmlid easy_edit; 15 security-model; 1 field-lit datas;
+        3 manifest-version)
+    gx2:
+      stage_status: green
+      community: "env-test.sh demo19; 0 failed, 0 error(s) of 0 tests; log-gate FAIL 0"
+      pin: 3270c4fcaf8
+      note: "No tests/ in any of the three modules. Baseline is install + -u only."
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      manifests_unprefixed:
+        product_stock_balance: {from: 19.0.1.1.9, to: 1.1.9}
+        stock_limitation: {from: 19.0.1.0.4, to: 1.0.4}
+        product_dynamic_code: {from: 19.0.1.0.5, to: 1.0.5}
+      ports:
+        - "ir.model.access.csv -> ir.access.csv (3; two header-only)"
+        - "stock_limitation: narrow saas stock empty ir.access; Super wide OR; user rows operation=r"
+        - "get_param -> get_int/get_bool; datas -> raw bytes"
+        - "useState -> proxy; t-custom-ref; this. on OWL scope"
+        - "product.product_variant_easy_edit_view -> product.product_product_view_form_normalized"
+        - "forecast button xpath o_stat_info columns"
+        - "_access_domain AND of 19.0 user_ids; skip Super / env.su (sale_stock empty ACL)"
+      wip: ""
+    gx4:
+      stage_status: green
+      layer1: none
+      layer1_changed: false
+      verified: 'all three ship "demo": []'
+    gx5:
+      stage_status: green
+      layer2_changed: true
+      loaders: [demo_stock]
+      verified: true
+      counts:
+        warehouses: 5
+        extra_xmlids: 10
+        white_pos_quants: 10
+        black_pos_quants: 7
+        demo_super: true
+        icp_levels: 3
+      note: >
+        Dropped odootools_demo hard depends on joint_calendar/total_notify;
+        those inherit files sit behind _addon_loaded. saas --without-demo=
+        means no demo — use --with-demo. Loader now creates storable Acoustic
+        Bloc Screens when core demo xmlids are absent, stamps ICP via set_*.
+        PREFIX gx6r_101023.
+    gx6:
+      stage_status: green
+      community_log: /tmp/gx6_gx567.log
+      result: >
+        Community no-demo / -u green (PREFIX gx6_99353). --with-demo green
+        (PREFIX gx6r_101023). No enterprise lane.
+    gx7:
+      stage_status: green
+      community: "0 failed, 0 error(s) of 2 tests; log-gate FAIL 0 RECORD 0 ALLOW 0"
+      languages: en_US
+      caveat: >
+        No module tests/. The 2 counts are Odoo suite bookkeeping on install
+        tags. Feature acceptance is Gx.8 named-manual.
+    gx8:
+      stage_status: green
+      url: http://localhost:18203/web/login
+      db: gx8_20_6
+      compose: faotools_env/local/run/gx8_20_6/compose.yml
+      counts:
+        warehouses: 5
+        extra_xmlids: 10
+        white_pos_quants: 10
+        black_pos_quants: 7
+        demo_super: true
+      walk_finding: >
+        SO button restyled to qty_at_date neighbour. PDC Layer-2 loader added
+        on system-20.0. Own users internal-only (19.0 + 20.0 generators; live
+        19 templates adapted). Demo + salesman saw NY/Stock (Doris-only Own,
+        not Super) because sale_stock.access_stock_location_user is empty
+        Domain.TRUE; _access_domain AND closed it. After: DEMO_CAN_NY False.
+      note: >
+        Review URL http://localhost:18203. admin/admin; demo/demo (not Super
+        after UI); anita.oliver@example.com/faotools. Mailpit :18025.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-16
+      command: "finalize the current modules' group. then, commit (b1) all the local branches and changes of the repos tools, ai_rules, ai_rules_fao, support, system (including system 19.0 changes) then, move to the next module's group (again Gx0-Gx7 in a single chunk)"
+      tests: >
+        PREFIX b16_136705 community no-demo / with-demo / -u / install-tags
+        0 failed of 2; log-gate FAIL 0. odootools_demo demo_stock +
+        demo_product_dynamic_code 0 failed of 2. Access probe b16a_154571:
+        sale_loc present; demo_ny False; demo_ch True; admin_ny True.
+        system@19.0 PREFIX b19_136746 demo_stock 0 failed of 1.
+      checker: {findings: 0, access-or: 0}
+      merge_to_20_port: ee875344a0a
+      reviews:
+        bugbot: "no bugs"
+        security: "no medium+; _access_domain AND + Super skip + user rows r"
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
