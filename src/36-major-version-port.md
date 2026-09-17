@@ -127,7 +127,7 @@ still has its own gate — do not mark a stage done whose check has not passed.
 | `Gx.0` source seed | fetch + pin latest current-serie SHA; mechanical copy incl. `i18n/`; tree equals pin + tech files |
 | `Gx.1` feature contract | reconcile live description, docs, source; map features to automated or named-manual checks |
 | `Gx.2` current-serie baseline | test slice passes on the pinned current serie; a new bug here **blocks** (non-negotiable 2) |
-| `Gx.3` technical port | **Python + JS + XML + security**, all in this stage. Apply every successor already in rule 22 / the checker (replay list below) before claiming green. Rule-22 transforms; **drop** the manifest serie prefix (`19.0.1.3.33` → `1.3.33`); **`check_migrate_v20.py` clean** including `manifest-version`, `js-symbol` / `js-import`, `owl-xpath` exact `class="…" position=`, and `owl-this` on `panelState` / `env` / `.bind` / getter idents / `t-on-*` arrows that call a method without `this.`. First-click of every designer the contract names (formula search, PDF preview, scorecard) belongs here when the group owns those surfaces. A clean run that still lets a first-click compile error through is a checker bug — fix the checker **and** the group's JS/XML in the same job. Re-prefix to `20.0.x` at `Fx`, not here. |
+| `Gx.3` technical port | **Python + JS + XML + security**, all in this stage. Apply every successor already in rule 22 / the checker (replay list below) before claiming green. Rule-22 transforms; **drop** the manifest serie prefix (`19.0.1.3.33` → `1.3.33`); **`check_migrate_v20.py` clean** including `manifest-version`, `js-symbol` / `js-import`, `owl-xpath` exact `class="…" position=`, and `owl-this` on `panelState` / `env` / `.bind` / getter idents / `t-on-*` arrows that call a method without `this.` / a whole-expression `t-if="projectUser"` / a bare `t-props="viewProps"`, and `js-symbol` `archInfo.openAction` / `.\w+_id[0]` / `...CharField.props` / `config.orderBy = []` (successor `list.load({ orderBy })`) / `asc: !this.asc` (19.0 sortBy-toggle leftover; successor `this.asc` on jstree notify too) / `getRecordClasses(` (successor `getCardClasses`) / `(jstreeData || [])` (keep `False`/`None`; do not coerce), `python-api` `safe_eval(get_str` without `or` (successor `get_str(...) or "[]"`), and `owl-xpath` `contains(@class, 'o_form_button_save')` on `web.FormView.Buttons` (successor `DialogButtons` + `buttonDialogTemplate`). First-click of every designer the contract names (formula search, PDF preview, scorecard) **and** every group kanban / login dialog belongs here when the group owns those surfaces. A clean run that still lets a first-click compile error through is a checker bug — fix the checker **and** the group's JS/XML in the same job. Re-prefix to `20.0.x` at `Fx`, not here. |
 | `Gx.4` Layer-1 demo | `tools` XML/assets for **this group's modules**, same bar as 19.0 (`34-demo-data`): no plugs, licenses, topicality, editor re-capture where the body is editor-produced. `"demo": []` is valid only when 19.0 also ships empty **and** Layer 2 owns the family. |
 | `Gx.5` Layer-2 demo | **Run** the 19.0 loaders for the touched modules (`env-demo-reload.sh` / `_reload_tools_demo_data` / `_load_demo_<family>`). Grep-for-`get_param` is not a check. If `odootools_demo` cannot install, fix its depends/loaders in `system@20.0` in the same group — do not mark green. Improve the generator when the stand-in needs it (commit on saas shell, create `base.user_demo`, typed ICP, `raw`, source rows when core demo is absent). **Prove it with counts**, not a seed script: every family the 19.0 loader creates must exist (2 joint calendars with events, 3 reminders, KPI categories + periods + targets + items — whatever that group ships). Never combined with `Gx.4`. A `/tmp` seed does not close this stage. |
 | `Gx.6` install matrix | fresh install per closure, with and without demo, one update, community + enterprise as applicable |
@@ -230,7 +230,34 @@ master promotion.
   19.0 `groups=base.group_portal` partner rules stay on
   `base.group_portal`, not a product group internals also get (`20_4`
   vaults OR leak);
-  `t-out="title"` / `#{id}` → `this.` (`owl-this`).
+  `t-out="title"` / `#{id}` → `this.` (`owl-this`);
+  `t-if="projectUser"` → `this.projectUser` (`owl-this` —
+  `20_4` Gx.8 systray);
+  `archInfo.openAction` → `this.props.openAction` (`js-symbol` —
+  `20_4` Gx.8 bundle card);
+  `t-props="viewProps"` / `modalRef="modalRef"` → `this.` (`owl-this` —
+  `20_4` Gx.8 login dialog);
+  dialog Save inherit `web.FormView.DialogButtons` +
+  `buttonDialogTemplate` (`owl-xpath` `contains(@class)` —
+  `20_4` Gx.8 login footer);
+  `record.data.<m2o>[0]` → `.id` (`js-symbol` —
+  `20_4` Gx.8 eye/copy `Invalid falsy real id`);
+  `static props = { ...CharField.props }` → instance
+  `props = props({ ...charFieldProps, extra })` (`js-symbol` —
+  `20_4` Gx.8 login regenerate / Enter);
+  writing `config.orderBy` then `sortBy(fieldName)` →
+  `list.load({ orderBy })` (`js-symbol` `config.orderBy = []` —
+  `20_4` Gx.8 Sort by cleared to name);
+  leftover `asc: !this.asc` on jstree notify → `this.asc`
+  (`js-symbol` — `20_4` Gx.9 Bugbot after Sort by used `this.asc`);
+  `getRecordClasses()` → `getCardClasses()` (`js-symbol` —
+  `20_4` Gx.8 PWM / `20_14` File Manager selected checkbox);
+  `safe_eval(get_str(...))` without `or` → `get_str(...) or "[]"`
+  (`python-api` — `20_4` Gx.8 portal vault 500 on stored empty);
+  `(jstreeData || [])` → copy only arrays, keep `False`/`None`
+  (`js-symbol` — `20_4` Gx.8 Portal Vaults header with the
+  setting off). File Manager `NodeJsTree` already keeps the
+  sentinel.
   A group that still has any of these in *its* tree
   has not finished `Gx.3`.
 - **First-click OWL.** Before calling `Gx.8` ready, open every group menu and the first tab of
@@ -239,7 +266,18 @@ master promotion.
   `undefined.collapsed`, and `Invalid handler expression` / `Invalid falsy real id`
   are Gx.3 / checker misses (incident 2026-09-16, `20_5` Gx.8: `o_calendar_sidebar`,
   `panelState`, `update.bind="handleChange"`, then formula
-  `_onSearchNavigation` without `this.` + `browse([False])`). Do not excuse them
+  `_onSearchNavigation` without `this.` + `browse([False])`;
+  `20_4` Gx.8: `t-if="projectUser"` hid the Task Numbers systray;
+  then Password Manager `archInfo.openAction` / `t-props="viewProps"`;
+  then login Save / `bundle_id[0]` / leftover
+  `...CharField.props`; then Sort by `config.orderBy` +
+  `sortBy` cleared the list;   then selected cards had no
+  checkbox because leftover `getRecordClasses` never ran;
+  then portal vault login 500 because `safe_eval(get_str(..., "[]"))`
+  of a stored empty ICP;
+  then Portal Vaults header stayed on All Passwords because
+  `(jstreeData || [])` made `False` truthy and admin `canUpdate`
+  painted the section). Do not excuse them
   with a green checker — extend the checker in the same job.
 - **Demo parity (touched modules).** `Gx.5` / `Gx.8` prove the 19.0 loaders ran: `demo`/`demo`
   authenticates (`base.user_demo`), and the family's **19.0 record counts** exist (2

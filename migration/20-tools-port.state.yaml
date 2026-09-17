@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-16T18:00:00+01:00
-updated_by: agent/20_4-gx7
+updated_at: 2026-09-17T15:35:00+01:00
+updated_by: agent/20_4-gx9
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -1174,7 +1174,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Gx.7
+    stage: Gx.9
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -1213,18 +1213,40 @@ groups:
         - "typed ICP get_str/set_str/get_bool"
         - "_order_field_to_sql four-arg (table, field_expr, direction, nulls); tests _sql_tuple[0]"
         - "task_numbers inherit project.view_task_card + sharing card (hollow kanban)"
+        - "task_numbers t-if=this.projectUser (Gx.8 systray; owl-this bare t-if ident)"
+        - "pwm BundleKanbanRecord this.props.openAction (Gx.8; js-symbol archInfo.openAction)"
+        - "pwm PasswordLoginDialog t-props=this.viewProps (Gx.8; owl-this bare t-props)"
+        - "pwm login inherit FormView.DialogButtons + buttonDialogTemplate (Gx.8 Save leftover)"
+        - "pwm many2oneId(.id) + logIn from activeFields (Gx.8 eye/copy falsy id)"
+        - "pwm PasswordCopy instance props(charFieldProps)+logIn (Gx.8 leftover ...CharField.props)"
+        - "pwm Sort by load({orderBy}) (Gx.8 leftover config.orderBy=[] then sortBy)"
+        - "pwm getCardClasses + jstr-kanban-selected (Gx.8 leftover getRecordClasses)"
+        - "pwm jstree toggleJSTreeDomain asc: this.asc (Gx.9 Bugbot leftover !this.asc)"
       note: >
         Gx.6 no-demo 1: TypeError missing query on _order_field_to_sql.
         Gx.6 no-demo 2: //main/field[@name='name'] not on hollow view_task_kanban.
         Checker: stop walking card_id; ORDER_FIELD_QUERY_DEF_RE.
         export_data datas is not attachment datas (EXPORT_DATAS_RE).
         access-grant: 19.0 Internal User write stays group_user crud.
+        Gx.8: t-if="projectUser" hid systray; owl-this now flags bare t-if ident.
+        Gx.8: bundle click archInfo.openAction + login t-props=viewProps;
+        js-symbol + owl-this now flag both.
+        Gx.8: login Save / Enter / copy+regen + eye Invalid falsy real id;
+        DialogButtons + many2one .id.
+        Gx.8: Sort by config.orderBy + sortBy cleared to name; load({orderBy}).
+        Gx.8: leftover getRecordClasses hid the selected checkbox;
+        getCardClasses. Same leftover on 20_14 / 20_port File Manager.
+        Do not mark Gx.8/Gx.9.
     gx4:
       stage_status: green
       layer1: [odoo_password_manager/demo/demo_catalog.xml,
-               odoo_password_manager_custom_fields/demo/demo_types.xml]
-      layer1_changed: false
-      note: 'roles and task_numbers ship "demo": [] on 19.0 too.'
+               odoo_password_manager_custom_fields/demo/demo_types.xml,
+               security_user_roles/demo/demo_roles.xml]
+      layer1_changed: true
+      note: >
+        19.0 roles shipped "demo": []. Gx.8 added Layer-1 demo_roles.xml
+        (base.user_demo; Layer 2 replaces the cast). task_numbers still
+        ships "demo": [].
     gx5:
       stage_status: green
       layer2_changed: true
@@ -1242,6 +1264,16 @@ groups:
         PREFIX gx4_664669 GX8_OK. First gx8 install used --without-demo=
         (saas empty = skip demo; keys=0). Successor --with-demo.
         system set_param in _demo_pwm_stamp_settings / last_call -> set_str.
+        Gx.8: 2 vault xmlids present; tree empty until wiring implies
+        group_portal_password_vaults on group_user + group_portal.
+        Gx.8: demo saw Sales Google Adsense with Access Groups
+        Administrator because 0user was bundle creator + (was) admin.
+        Restriction is green for a non-creator readonly user.
+        Stamp: Sales 0user readonly, Sales create_uid admin,
+        demo_key_adsense_sales Access Groups = sales_team.group_sale_manager
+        (not base.group_system — that group is implied onto demo).
+        Gx.8: role users + employee avatars (BinaryBytes via file_open
+        of hr/static/img when hr is absent). B1 avatars=16.
     gx6:
       stage_status: green
       result: >
@@ -1252,9 +1284,9 @@ groups:
       community: "0 failed, 0 error(s) of 6; log-gate FAIL 0 RECORD 0 ALLOW 0"
       languages: en_US
       review_url: http://localhost:18206/web/login
-      note: Gx.8 is the owner walk of that URL. Do not mark Gx.8/Gx.9.
+      note: Gx.8 walk accepted; Gx.9 merge 18ee0d5a1d0.
     gx8:
-      stage_status: pending
+      stage_status: green
       url: http://localhost:18206/web/login
       db: gx8_20_4
       compose: faotools_env/local/run/gx8_20_4/compose.yml
@@ -1264,7 +1296,26 @@ groups:
       languages: en_US
       logins: {admin: admin, demo: demo}
       mailpit: http://localhost:18025
-      note: launched from Gx.7. Owner walk is Gx.8.
+      note: >
+        owner walk accepted (finalize 2026-09-17). OWL leftovers,
+        Extra Security / Access Levels hints, role avatars, portal
+        title, Sort by this.asc (incl. jstree notify).
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-17
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        PREFIX b14_35719 B1_20_4_OK. no tests-prep on 20_4.
+        B1_COUNTS keys=15 bundles=2 vaults=2 tags=6 roles=7 types=2
+        demo=True avatars=16. --test 0 failed, 0 error(s) of 6.
+        log-gate FAIL 0 RECORD 7.
+      checker: {findings: 0}
+      merge_to_20_port: 18ee0d5a1d0
+      reviews:
+        bugbot: "medium: jstree onUpdateSearch leftover asc:!this.asc — fixed"
+        security: "no medium+; Extra Security hints do not grant write; portal title is vault name only"
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
