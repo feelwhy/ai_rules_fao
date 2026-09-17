@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-17T15:35:00+01:00
-updated_by: agent/20_4-gx9
+updated_at: 2026-09-17T17:05:00+01:00
+updated_by: agent/20_12-gx09-b1
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -1319,9 +1319,127 @@ groups:
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
-    stage: null
-    stage_status: pending
-    known_breaks: [self_readable_fields, self_writeable_fields]
+    stage: Gx.9
+    stage_status: green
+    known_breaks: [self_readable_fields, self_writeable_fields, useState]
+    enterprise_required: false
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_12
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_12.md
+    seed:
+      commit: 4c9fdc6a2fc
+      from_pin: c06d7622722
+      verified: "3 module subtrees from origin/19.0 c06d7622722 (auto images only vs prior pin)"
+    gx0:
+      stage_status: green
+      pin: c06d76227225398edd16957c9981f7c6d4ff5118
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_12
+      note: "checkout origin/19.0 -- the three modules onto scaffold 971c21a311e"
+    gx1:
+      stage_status: green
+      live_ids: {partner_color_codes: 1074, recurrent_activities: 1075,
+                 activities_todo: 1076}
+      exact_versions: {partner_color_codes: 1.0.10, recurrent_activities: 1.0.7,
+                       activities_todo: 1.0.4}
+      pre_port_checker: >
+        21 findings (SELF_*; useState; owl-this; view-anchor company_type /
+        complete_name; ir.rule / ir.model.access; manifest-version)
+    gx2:
+      stage_status: green
+      community: "no tests/ in any of the three; 19.0 source unchanged vs pin except auto images"
+      pin: c06d7622722
+      note: "Baseline is install + -u only."
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      commit: ca5f4584636
+      manifests_unprefixed:
+        partner_color_codes: {from: 19.0.1.0.10, to: 1.0.10}
+        activities_todo: {from: 19.0.1.0.4, to: 1.0.4}
+        recurrent_activities: {from: 19.0.1.0.7, to: 1.0.7}
+      ports:
+        - "ir.model.access.csv -> ir.access.csv (3); recurrent rules on product groups"
+        - "SELF_* deleted; act_type_ids / only_old_activities user_writeable=True"
+        - "useState -> proxy; ColorCodesToolTip Component (Tooltip info is compile-scope)"
+        - "partner form h1/name; list display_name; kanban name; no company_type / child form"
+        - "activity_menu_view onWillStart from @odoo/owl"
+        - "safe_eval(todo.activities or '[]') — empty Char is False (app menu /new)"
+    gx4:
+      stage_status: green
+      layer1: [recurrent_activities/demo/demo_templates.xml]
+      layer1_changed: false
+      note: >
+        Recurrent ships 2 templates. partner_color_codes and activities_todo
+        ship "demo": [] as on 19.0.
+    gx5:
+      stage_status: green
+      layer2_changed: false
+      loaders: [_demo_ca_refresh, _load_demo_contacts_activities]
+      verified: true
+      counts:
+        color_code: 5
+        color_code_rule: 4
+        color_code_partner: 2
+        recurrent_activity_template: 2
+        mail_activity: 19
+        demo_user: true
+      note: >
+        PREFIX g12_130141 GX5_OK. notes=2 because 2 of 4 PARTNER_NOTES
+        need hr (absent on this community install).
+    gx6:
+      stage_status: green
+      result: >
+        Community no-demo / with-demo / -u green (PREFIX g12_130141).
+        log-gate FAIL 0 RECORD 5 ALLOW 0. No enterprise lane.
+    gx7:
+      stage_status: green
+      community: "0 failed, 0 error(s) of 2 tests; log-gate FAIL 0 RECORD 5"
+      languages: en_US
+      review_url: http://127.0.0.1:18207/web/login
+      note: >
+        No module tests/. The 2 counts are Odoo suite bookkeeping.
+        Color Codes first-click showed 5 Layer-2 colors. Recurrent
+        list 2 templates. To-Do action_start_todo opened
+        "Send Email to Alfred" (res_id 3). Empty /new no longer
+        500s (safe_eval or "[]").
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18207/web/login
+      db: gx8_20_12
+      compose: faotools_env/local/run/gx8_20_12/compose.yml
+      ports: {http: 18207, longpolling: 19207}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_12, tools-20_port, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      shared_tools_left_on: "19.0"
+      note: >
+        owner walk accepted (finalize 2026-09-17). child_ids kanban+form
+        color chips restored; tooltip close is 11px muted fa-times
+        (not saas btn-close).
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-17
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        PREFIX b12_190810 B1_20_12_OK. 0 failed, 0 error(s) of 2.
+        log-gate FAIL 0 RECORD 5. B1_COUNTS colors=5 rules=4 notes=2
+        tmpls=2 demo=True child_widgets=3. no tests-prep on 20_12
+        or in the 20_port merge.
+      checker: {findings: 0}
+      merge_to_20_port: 1cb1794876c
+      walk_commit: 266d1969ceb
+      reviews:
+        bugbot: >
+          false missing-ACL on activities_todo — scanned shared tools@19.0,
+          not tools-20_12. Worktree has security/ir.access.csv; B1 -i loaded it.
+        security: >
+          no medium+ on the walk diff. Recurrent write stays on product
+          groups (group_recurrent_only_own / erp_manager / group_recurrent_admin),
+          not base.group_user. To-Do prefs user_writeable=True.
   "20_suite":
     order: 10
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
