@@ -261,7 +261,9 @@ improves those generators when the stand-in needs it. There is no third demo pat
 - **Improve the loader in the same group** when saas-19.4 breaks it: typed ICP,
   `datas` → `raw`, `env.cr.commit()` on a piped saas `odoo shell` (stdin rolls back
   otherwise), create `base.user_demo` / `demo`/`demo` if core `--without-demo=` did
-  not, topicality. Do not invent a parallel `/tmp/*_seed.py` as the resting generator.
+  not, create `faotools-mailpit` `ir.mail_server` when the stand-in has none
+  (`20_suite` Gx.5 From addresses skipped), topicality. Do not invent a
+  parallel `/tmp/*_seed.py` as the resting generator.
 - **`Gx.8` refresh** is `env-demo-reload.sh <target> <touched-modules>` (or
   `Company._reload_tools_demo_data()`), same as 19.0. A one-off seed is a walk aid
   only while `Gx.5` is still open.

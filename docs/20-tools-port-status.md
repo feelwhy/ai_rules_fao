@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-17 (`20_12` Gx.9 green, merged `1cb1794876c`. Next: `20_suite` Gx.0–Gx.7.)
+**Last updated:** 2026-09-18 (`20_suite` Gx.9 green; B1 0/112)
 
 ## Where we are
 
@@ -19,7 +19,7 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **in progress** — `20_2` / `20_c` / `20_14` / `20_5` / `20_6` / `20_9` / `20_10` / `20_4` / `20_12` **Gx.9 green**. Next `20_suite`. Shared `tools` / `enterprise` stay `19.0`. |
+| 5 — per-group loops on saas-19.4 | **in progress** — `20_2` / `20_c` / `20_14` / `20_5` / `20_6` / `20_9` / `20_10` / `20_4` / `20_12` / `20_suite` **Gx.9 green**. Next `20_11`. Shared `tools` / `enterprise` stay `19.0`. |
 | 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
 | 7 — master infrastructure + faotools.com enablement | pending |
 | 8 — per-group loops on 20.0 | pending |
@@ -176,7 +176,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 7 | `20_10` | 4 | `Gx.9` **green** | B1; http://localhost:18205; `list.set`; `view_task_card`; `cr` not `rc` |
 | 8 | `20_4` | 4 | `Gx.9` **green** | B1; http://localhost:18206; merged `18ee0d5a1d0`; OWL leftovers; Extra Security hints; role avatars |
 | 9 | `20_12` | 3 | `Gx.9` **green** | B1 `b12_190810`; http://127.0.0.1:18207; merged `1cb1794876c`; child chips + small tooltip close |
-| 10 | `20_suite` | 9 | — | OWL 3 (`t-model`, `@t-ref` Message); **full Store API rewrite**, mail imports, Chatter, `loadEmoji` |
+| 10 | `20_suite` | 9 | `Gx.9` **green** | B1 `bsu_26732` 0/112; :18208; `msg_vals` / `history.commit`; lost form no suite Route |
 | 11 | `20_11` | 3 | — | `useState`; `stock.move.product_uom`, `datas` |
 | 12 | `20_7` | 3 | — | `useState`; `_track_subtype`, `SELF_*_FIELDS`, attendance runtime |
 | 13 | `20_16` | 9 | — | `useState`; `BaseOptionComponent`; `_track_subtype`, `x2ManyCommands` |
@@ -230,6 +230,8 @@ pin is refreshed. Defects 3–5 were fixed on the owner's command (2026-09-12) a
 | 6 | `task_custom_fields` | `20_c` | `project.task._portal_accessible_fields` `@ormcache(cache='stable')` not invalidated when a portal-editable custom field is written; sharing form OWL `field is undefined` | fixed on 19.0 `a9154df3008`, ported to `20_c` `47d58c3ad8a` |
 | 7 | `cloud_base` | `20_14` | `test1_general_cron_triggering` Case 6: after deactivate/reactivate, `COMPANY 1` has 0 child folders (expected 1) | **fixed** `51543980c6c` (`active_test=False`) |
 | 8 | `owncloud_odoo` | `20_14` | a handled 429 retry logged WARNING, and the one real degradation (share URL missing) went to the server log instead of `clouds.log` | **fixed** `57ca6ad2d41` |
+| 9 | `email_suite` | `20_suite` | `test_schedule_option_computes_future_datetime` asserts UTC hour 9; product stores user-tz 09:30 as 07:30 UTC | **fixed_on_working_tree** — Gx.2 `g2s_221553` |
+| 10 | `message_edit` | `20_suite` | `test_delete_message_keeps_removed_content_history` uses `message.sudo()` in the admin test env; author check fails | **fixed_on_working_tree** — Gx.2 `g2s_221553` |
 
 Only #4's first site came from the checker; `portal.password.key` names no core parent in its own
 class, so the chain check skipped it and a grep found it. That gap is now closed — see below.

@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-17T17:05:00+01:00
-updated_by: agent/20_12-gx09-b1
+updated_at: 2026-09-18T10:55:00+01:00
+updated_by: agent/20_suite-gx9-b1
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -1445,13 +1445,119 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
-                   store_get_result, message_model_edit_signature]
-    blocked_by: []                      # defect 5 committed in 84e7d1c4840
-    note: Full Store-API rewrite, not renames.
+                   store_get_result, message_model_edit_signature, recipients_input,
+                   store_self_partner, field_depends_string, store_emoji_loader,
+                   notify_msg_vals, history_add_step]
+    blocked_by: []
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_suite
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_suite.md
+    seed:
+      commit: 80ed2b25212
+      from_pin: c06d7622722
+      verified: "9 module subtrees from origin/19.0 c06d7622722"
+    gx0:
+      stage_status: green
+      pin: c06d76227225398edd16957c9981f7c6d4ff5118
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_suite
+      note: "checkout origin/19.0 -- the nine modules onto scaffold 971c21a311e"
+    gx1:
+      stage_status: green
+      live_ids: {mail_manual_routing: 1037, message_citing: 1077, message_edit: 1105,
+                 odoo_email_from: 1162, odoo_email_from_accounting: 1168, email_suite: 1155,
+                 email_suite_accounting: 1164, internal_thread: 1103,
+                 internal_thread_accounting: 1104}
+      exact_versions: {mail_manual_routing: 1.2.18, message_citing: 1.0.8, message_edit: 1.2.4,
+                       odoo_email_from: 1.0.3, odoo_email_from_accounting: 1.0.3,
+                       email_suite: 1.0.4, email_suite_accounting: 1.0.2, internal_thread: 1.0.4,
+                       internal_thread_accounting: 1.0.3}
+      pre_port_checker: 98
+    gx2:
+      stage_status: green
+      prefix: g2s_221553
+      result: "0 failed, 0 error(s) of 107"
+      log: /tmp/g2s_221553_wd_t.log
+      note: >
+        Re-run after owner "fix 19.0" on the two tests. Shared tools@19.0 still
+        dirty (parallel release chat commits). First run g2s_201486 was 1/107.
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      manifests_unprefixed: true
+      ports:
+        - "Store hooks: _store_extra_fields / _store_message_fields / _store_init_global_fields"
+        - "ir.access.csv; typed ICP; @api.ormcache; invalidate_ormcache"
+        - "history _access_domain + named _compute_res_access_* (not lambda / depends=str)"
+        - "JS: @mail/model/export, Chatter web_portal_project, x2ManyCommands orm_plugin"
+        - "RecipientsInput on mail.ChatterComposer; Composer onChangeSendPrivately; store.self; recipient_type to"
+        - "message.xml hasclass shadowBody / text-muted opacity-75 (not @t-ref / @t-if)"
+        - "datas -> raw in message_edit tests; copied 19.0 schedule + delete-history hunks"
+    gx4:
+      stage_status: green
+      layer1: [email_suite/demo/demo_drafts.xml]
+      layer1_changed: false
+      note: "3 drafts unchanged. Other suite modules ship empty demo as on 19.0."
+    gx5:
+      stage_status: green
+      layer2_changed: true
+      loaders: [_load_demo_email_suite_wiring, _demo_es_refresh]
+      verified: true
+      counts: {addrs: 2, rules: 1, lost: 2, hist: 1, drafts: 4, brandon: true,
+               edited: true, layer1: true, demo_user: true}
+      note: >
+        PREFIX gsu_284241 GX5_OK. First stamp addrs=0 — saas -i has no
+        ir.mail_server; _demo_es_mail_server now creates faotools-mailpit.
+    gx6:
+      stage_status: green
+      result: >
+        Community no-demo / with-demo / -u green (PREFIX gsu_284241).
+        log-gate FAIL 0 RECORD 5 ALLOW 0. No enterprise lane.
+    gx7:
+      stage_status: green
+      community: "0 failed, 0 error(s) of 109 tests; log-gate FAIL 0 RECORD 5"
+      languages: en_US
+      review_url: http://127.0.0.1:18208/web/login
+      prefix: gsu_284241
+      note: "109 = 107 pin + 2 owner 19.0 test hunks copied onto 20_suite."
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18208/web/login
+      db: gx8_20_suite
+      compose: faotools_env/local/run/gx8_20_suite/compose.yml
+      ports: {http: 18208, longpolling: 19208}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_suite, tools-20_port, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      note: >
+        Owner finalize 2026-09-18. Walk: Discuss emojiLoader.load();
+        --with-demo + /var/lib/odoo filestore; suite settings =
+        demo19; Route leftover msg_vals; Cite history.commit();
+        lost form has no suite Route Message; wizard domain is
+        computed Json (not get_views lost-only).
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-18
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        PREFIX bsu_26732 B1_20_SUITE_OK. 0 failed, 0 error(s) of 112.
+        log-gate FAIL 0 RECORD 5. B1_COUNTS addrs=2 rules=1 lost=2
+        hist=1 drafts=3 demo=True no_suite_route=True.
+      checker: {findings: 0}
+      merge_to_20_port: fd90aa47bcc
+      reviews:
+        bugbot: "no bugs"
+        security: "no medium+; notify restore and ir.access match 19.0"
+    note: >
+      19.0 defects 9/10 committed on shared tools as 5931ff03a19
+      (parallel release chat). tests-prep excluded. support TM is
+      foreign — not committed.
   "20_11":
     order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
@@ -1691,6 +1797,23 @@ source_serie_defects:
            clouds.log entry. Test asserts the flag both ways (fallback + happy path).",
      fixed_in: 57ca6ad2d412f8c49f4bb36e1eb61ffb57418620,
      ported_to: {20_14: 43082e6873b}}
+  - {id: 9, module: email_suite, group: 20_suite, status: fixed_on_working_tree,
+     issue: "Gx.2 TestEmailSuite.test_schedule_option_computes_future_datetime
+             AssertionError: 7 != 9. _compute_scheduled_datetime returns naive UTC
+             in the acting user's timezone; the test asserts scheduled.hour == 9
+             with no tz pin. Demo admin Europe/Brussels (UTC+2) stores 09:30 as 07:30 UTC.",
+     evidence: "g2s_201486 one-off 19.0 image, pin c06d762, email_suite/tests/test_email_suite.py:336.
+                Sibling test_schedule_option_respects_user_timezone (explicit tz context) passed.",
+     fix: "On 19.0: assert fields.Datetime.context_timestamp(...).hour/minute (copied onto 20_suite). Parallel chat commits shared tools."}
+  - {id: 10, module: message_edit, group: 20_suite, status: fixed_on_working_tree,
+     issue: "Gx.2 TestMessageEdit.test_delete_message_keeps_removed_content_history
+             UserError: Only the author and a user with 'Can edit and delete any messages'
+             rights can edit this message. The test passes message.sudo() from the
+             TransactionCase env (admin), so is_current_user_or_guest_author is false.
+             _update_message already does message.with_user(user).sudo().",
+     evidence: "g2s_201486, message_edit/tests/test_message_edit.py:255-258.
+                Other edit tests that use _update_message passed (18 tests, this one error).",
+     fix: "On 19.0: message.with_user(self.user_own).sudo().with_context(message_edit_history_registered=True). Parallel chat commits shared tools."}
 
 # Port work (not 19.0 defects): these work today and break only on the target serie. Recorded
 # here because neither was in the ledger, the tracker, or rule 22 - and neither is reachable by
