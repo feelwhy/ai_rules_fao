@@ -1561,9 +1561,128 @@ groups:
   "20_11":
     order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
-    stage: null
-    stage_status: pending
-    known_breaks: [stock_move_product_uom, ir_attachment_datas]
+    stage: Gx.9
+    stage_status: green
+    known_breaks: [stock_move_product_uom, ir_attachment_datas, useState, chartjs_v4,
+                   form_controller_props]
+    enterprise_required: false
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_11
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_11.md
+    seed:
+      commit: f0968b475be
+      from_pin: d7235473f3a
+      verified: "3 module subtrees from origin/19.0 d7235473f3a"
+    gx0:
+      stage_status: green
+      pin: d7235473f3a
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_11
+      note: "checkout origin/19.0 -- the three modules onto scaffold 971c21a311e"
+    gx1:
+      stage_status: green
+      live_ids: {low_sales_report: 1014, sales_forecast_by_periods: 1012,
+                 stock_qty_forecast: 1013}
+      exact_versions: {low_sales_report: 1.0.5, sales_forecast_by_periods: 1.0.10,
+                       stock_qty_forecast: 1.0.10}
+      pre_port_checker: >
+        72 findings (useState; owl-this state./reportWarning/groupColumn;
+        get_param; ir.model.access.csv; datas; product_uom; manifest-version)
+    gx2:
+      stage_status: green
+      community: "no tests/ in any of the three; 19.0 source = pin"
+      pin: d7235473f3a
+      note: "Baseline is install + -u only. Do not --test demo19."
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      manifests_unprefixed:
+        low_sales_report: {from: 19.0.1.0.5, to: 1.0.5}
+        sales_forecast_by_periods: {from: 19.0.1.0.10, to: 1.0.10}
+        stock_qty_forecast: {from: 19.0.1.0.10, to: 1.0.10}
+      ports:
+        - "ir.model.access.csv -> ir.access.csv (3); product-group crud"
+        - "useState -> proxy; this.state.; FormView this.props.Renderer"
+        - "owl-this skips t-as / t-set locals (groupColumn / reportWarning)"
+        - "Chart.js v4: destroy/recreate; scales.x not xAxes"
+        - "typed ICP on Low Sales defaults"
+        - "datas + base64 -> raw bytes"
+        - "stock.move product_uom -> uom_id (leave sale.order.line product_uom_id)"
+        - "leftover stored group_by product_uom remaps to uom_id in _get_report_settings"
+        - "FormController extras via formControllerProps (Refresh/Save/Export)"
+    gx4:
+      stage_status: green
+      layer1:
+        - sales_forecast_by_periods/demo/demo_forecast.xml
+        - stock_qty_forecast/demo/demo_forecast.xml
+      layer1_changed: false
+      note: >
+        Each forecast ships 3 models + 2 series. low_sales_report ships
+        "demo": [] as on 19.0.
+    gx5:
+      stage_status: green
+      layer2_changed: true
+      loaders: [_load_demo_forecasts, _demo_fc_refresh]
+      verified: true
+      counts:
+        sale_series: 2
+        sale_models: 3
+        stock_series: 2
+        stock_models: 3
+        series_products: 6
+        xxtools: 726
+        y1tools: 2184
+        partners: 41
+        demo_user: true
+        demo_groups: true
+      note: >
+        First stamp series_products=0 — DEMO_PRODUCTS xmlids/codes are
+        created by _setup_demo_products, which the family loader now
+        calls. PREFIX g11_93702 install; stamp /tmp/gx8_20_11_stamp.log.
+    gx6:
+      stage_status: green
+      result: >
+        Community no-demo / with-demo / -u green (PREFIX g11_93702).
+        log-gate FAIL 0 RECORD 5 ALLOW 0. No enterprise lane.
+    gx7:
+      stage_status: green
+      community: "no tests/; install + -u is the suite. log-gate FAIL 0 RECORD 5"
+      languages: en_US
+      review_url: http://127.0.0.1:18209/web/login
+      prefix: g11_93702
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18209/web/login
+      db: gx8_20_11
+      compose: faotools_env/local/run/gx8_20_11/compose.yml
+      ports: {http: 18209, longpolling: 19209}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_11, tools-20_port, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      note: >
+        Owner finalize 2026-09-18. Walk: leftover ...FormController.props
+        stripped refreshReport / reloadReports. Successor instance
+        props(formControllerProps). Stack restarted. Stored
+        product_uom group-by remaps to uom_id.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-18
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        PREFIX b11_97476 B1_20_11_OK. 0 failed, 0 error(s) of 2.
+        log-gate FAIL 0 RECORD 5. B1_COUNTS sale_s=2 sale_m=3
+        stock_s=2 stock_m=3 prods=6 demo=True.
+      checker: {findings: 0}
+      merge_to_20_port: 8aeec561963
+      reviews:
+        bugbot: "stored product_uom group-by; remapped in _get_report_settings"
+        security: "no medium+; ir.access 1:1 of 19.0 product-group crud"
+    note: >
+      tests-prep already on origin/19.0 (5931ff03a19). Shared tools
+      left on 19.0, not pulled. support TM is foreign — not committed.
   "20_7":
     order: 12
     modules: [itlibertas_timesheet, itlibertas_timesheet_gantt, odoo_menu_management]
