@@ -307,6 +307,24 @@ master promotion.
   `t-call` → `t-call` attributes (`qweb-tcall` —
   `20_15` Gx.7 `10 - size` None during
   `html_builder` palette render);
+  inner `t-set` of `service` / `entries` / `card_href` /
+  `card_records` / `_classes` / `no_breadcrumbs` /
+  `additional_title` → `t-call` attributes or sibling
+  `t-set` (`qweb-tcall` — `20_16` Gx.7 Appointments
+  `KeyError: service`, empty card links, missing
+  `#ba_functional_buttons`);
+  Char `update_field_translations` in `lang=en_US` →
+  `record.write({fname: {"en_US": current, **mapping}})`
+  then `flush_recordset` (`20_16` Gx.7 stepper stays
+  English — saas write-back drops other JSON keys;
+  dict write is cache-only until flush; `cr.commit()`
+  is forbidden; `prefetch_langs=True` dies
+  `StoredTranslations`); leftover QWeb
+  `website.ba_stepN` → `website._ba_frontend_text`
+  / `_ba_step_labels()` (`qweb-tcall` — `20_16`
+  HttpCase page chrome was ru, stepper/`<title>`
+  stayed English after flush; maps when stored
+  lang equals English source);
   leftover `o_editable_selectors` →
   `savable_selectors` (`js-symbol` —
   `20_15` Gx.7 iframe never contenteditable;
@@ -347,7 +365,19 @@ master promotion.
   docs / website `t-field` that only matches
   `editor_type == 'website_editor'` → also
   `backend_editor` and `html` (`20_15` in-page
-  article edit).
+  article edit);
+  leftover `resource_calendar_id.tz` / a `tz` field
+  on `resource.calendar` / leftover `timezone(self.tz)`
+  on a calendar method → `resource.tz` or
+  context/user/`UTC` (`field-lit` — `20_16` Layer-1
+  demo died `Invalid field 'tz'`; Gx.5
+  `_ba_attendance_intervals` then died
+  `AttributeError`; saas attendance also dropped
+  `name`);
+  leftover `base64.b64encode(...)` into Image/Binary
+  → `BinaryBytes(raw)` (`python-api` — `20_16` Gx.5
+  car-rent variant `TypeError: use BinaryValue
+  instead of bytes`).
   A group that still has any of these in *its* tree
   has not finished `Gx.3`.
 - **First-click OWL.** Before calling `Gx.8` ready, open every group menu and the first tab of

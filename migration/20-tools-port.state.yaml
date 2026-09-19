@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "20_16"
+    active_group: "20_3"
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -1793,11 +1793,94 @@ groups:
               business_appointment_website_sale, business_appointment_custom_fields,
               business_appointment_custom_fields_website, business_appointment_time_tracking,
               business_appointment_hr, business_appointment_gantt]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
     known_breaks: [_track_subtype, x2many_commands, resource_attendance_onchange_hours]
     enterprise_required: true
     blocked_by: []                      # defect 1 fixed by owner in the current pin
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_16
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_16.md
+    note: >
+      Gx.0–Gx.7 green 2026-09-19; review DB handed; Gx.8/Gx.9 accepted 2026-09-19.
+      Merged to 20_port ba6e3bd96b7. SaaS Char jsonb flush is not HTTP proof —
+      maps-at-render website._ba_frontend_text / _ba_step_labels.
+    seed:
+      commit: d0badbb2c43
+      from_pin: 6dcca1190cc
+      verified: "9 module subtrees from origin/19.0 6dcca1190cc"
+    gx0:
+      stage_status: green
+      pin: 6dcca1190cc
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_16
+      note: "checkout origin/19.0 -- the nine modules onto scaffold"
+    gx1:
+      stage_status: green
+      note: "feature contract from live descriptions + source; stepper/calendar/portal first-click"
+    gx2:
+      stage_status: green
+      note: "current-serie pin 6dcca1190cc accepted as baseline (defect 1 already fixed)"
+    gx3:
+      stage_status: green
+      checker: qweb-tcall clean after leftover website.ba_step* rewrite
+      note: >
+        ir.access.csv only; portal.entry; website-options; Form/List
+        buttonTemplate; calendar standalone; maps-at-render ba_step*.
+    gx4:
+      stage_status: green
+      note: "Layer 1 demo XML ported (24/7 calendar without tz/attendance name)"
+    gx5:
+      stage_status: green
+      note: >
+        _reload_tools_demo_data on gx8_20_16. BinaryBytes image writes;
+        knowsystem.article guard in custom-fields loader.
+    gx6:
+      stage_status: green
+      note: "community with-demo -i group + odootools_demo OK (gx8 install)"
+    gx7:
+      stage_status: green
+      url: http://127.0.0.1:18212/web/login
+      tests: /tmp/gx8_20_16_t_t.log
+      note: >
+        0 failed / 52, gate FAIL 0 RECORD 14. gx8_20_16 community bind 18212;
+        login HTTP 200; ru_step True after -u. GX8_FILESTORE_OK (467)
+        GX8_REPORT_URL_OK.
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18212/web/login
+      db: gx8_20_16
+      compose: faotools_env/local/run/gx8_20_16/compose.yml
+      ports: {http: 18212, longpolling: 19212}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_16, tools-20_port, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      filestore: GX8_FILESTORE_OK
+      report_url: GX8_REPORT_URL_OK
+      rebuilt: 2026-09-19
+      note: >
+        Owner walk of the Gx.7 URL. After -u business_appointment_website,
+        /ru/appointments/1 stepper is Russian (ru_step True, en_step False).
+        Walk accepted via finalize 2026-09-19.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-19
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        Gx.7 /tmp/gx8_20_16_t_t.log 0 failed / 52. i18n 0/8.
+      checker: {findings: 0}
+      merge_to_20_port: ba6e3bd96b7
+      port_commit: 2f09e2194f6
+      reviews:
+        bugbot: >
+          one high on leftover website.ba_step* — false: templates already
+          use _ba_step_labels / _ba_frontend_text; live ru_step True.
+    note_b1: >
+      Shared tools left on 19.0 (parallel chat). support TM is foreign —
+      not committed. system-20.0 demo BinaryBytes + knowsystem guard.
   "20_15":
     order: 13
     modules: [knowsystem, knowsystem_website, knowsystem_multilang,
