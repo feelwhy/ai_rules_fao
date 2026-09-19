@@ -1667,7 +1667,7 @@ still has its own gate — do not mark a stage done whose check has not passed.
 | `Gx.0` source seed | fetch + pin latest current-serie SHA; mechanical copy incl. `i18n/`; tree equals pin + tech files |
 | `Gx.1` feature contract | reconcile live description, docs, source; map features to automated or named-manual checks |
 | `Gx.2` current-serie baseline | test slice passes on the pinned current serie; a new bug here **blocks** (non-negotiable 2) |
-| `Gx.3` technical port | **Python + JS + XML + security**, all in this stage. Apply every successor already in rule 22 / the checker (replay list below) before claiming green. Rule-22 transforms; **drop** the manifest serie prefix (`19.0.1.3.33` → `1.3.33`); **`check_migrate_v20.py` clean** including `manifest-version`, `js-symbol` / `js-import`, `owl-xpath` exact `class="…" position=`, and `owl-this` on `panelState` / `env` / `.bind` / getter idents / `t-on-*` arrows that call a method without `this.` / a whole-expression `t-if="projectUser"` / a bare `t-props="viewProps"`, and `js-symbol` `archInfo.openAction` / `.\w+_id[0]` / `...CharField.props` / `...FormController.props` (successor `props = props({ ...formControllerProps, extra })`) / `config.orderBy = []` (successor `list.load({ orderBy })`) / `asc: !this.asc` (19.0 sortBy-toggle leftover; successor `this.asc` on jstree notify too) / `getRecordClasses(` (successor `getCardClasses`) / `(jstreeData || [])` (keep `False`/`None`; do not coerce) / `store.emojiLoader` (successor `emojiLoader.load()`; leftover `this.store.emojiLoader.loaded` is `undefined.loaded`) / `history.addStep` (successor `history.commit()`), `python-api` `safe_eval(get_str` without `or` (successor `get_str(...) or "[]"`) / leftover `_notify_thread(..., msg_vals=)` (successor write `message.partner_ids` + `notify_skip_followers`), and `owl-xpath` `contains(@class, 'o_form_button_save')` on `web.FormView.Buttons` (successor `DialogButtons` + `buttonDialogTemplate`), `js-symbol` `record.data.id` (successor `record.resId`), `owl-this` PascalCase `prop="prop"` (successor `this.prop`; `20_7` TimeTableTable), and `python-api` `"web_icon_data": self.web_icon_data` (successor `bool(icon)`). First-click of every designer the contract names (formula search, PDF preview, scorecard) **and** every group kanban / login dialog **and Discuss when the group patches `mail.message`** belongs here when the group owns those surfaces. A clean run that still lets a first-click compile error through is a checker bug — fix the checker **and** the group's JS/XML in the same job. Re-prefix to `20.0.x` at `Fx`, not here. |
+| `Gx.3` technical port | **Python + JS + XML + security**, all in this stage. Apply every successor already in rule 22 / the checker (replay list below) before claiming green. Rule-22 transforms; **drop** the manifest serie prefix (`19.0.1.3.33` → `1.3.33`); **`check_migrate_v20.py` clean** including `manifest-version`, `js-symbol` / `js-import`, `owl-xpath` exact `class="…" position=`, and `owl-this` on `panelState` / `env` / `.bind` / getter idents / `t-on-*` arrows that call a method without `this.` / a whole-expression `t-if="projectUser"` / a bare `t-props="viewProps"`, and `js-symbol` `archInfo.openAction` / `.\w+_id[0]` / `...CharField.props` / `...FormController.props` (successor `props = props({ ...formControllerProps, extra })`) / `config.orderBy = []` (successor `list.load({ orderBy })`) / `asc: !this.asc` (19.0 sortBy-toggle leftover; successor `this.asc` on jstree notify too) / `getRecordClasses(` (successor `getCardClasses`) / `(jstreeData || [])` (keep `False`/`None`; do not coerce) / `store.emojiLoader` (successor `emojiLoader.load()`; leftover `this.store.emojiLoader.loaded` is `undefined.loaded`) / `history.addStep` (successor `history.commit()`), `python-api` `safe_eval(get_str` without `or` (successor `get_str(...) or "[]"`) / leftover `_notify_thread(..., msg_vals=)` (successor write `message.partner_ids` + `notify_skip_followers`), and `owl-xpath` `contains(@class, 'o_form_button_save')` on `web.FormView.Buttons` (successor `DialogButtons` + `buttonDialogTemplate`), `js-symbol` `record.data.id` (successor `record.resId`), `owl-this` PascalCase `prop="prop"` (successor `this.prop`; `20_7` TimeTableTable), and `python-api` `"web_icon_data": self.web_icon_data` (successor `bool(icon)`), and `js-symbol` FormController `static template` that is not `web.FormView` (successor drop it; keep `buttonTemplate` on the view — `20_15` `.knowsystem-editor` timeout), leftover `o_editable_selectors` (successor `savable_selectors`), leftover `clean_for_save_handlers` (successor `clean_for_save_processors`), and a custom HtmlBuilder with no `builderOptionsTemplate` (successor `"<module>.BuilderOptions"` — `20_15` `Missing template: "undefined"`). First-click of every designer the contract names (formula search, PDF preview, scorecard) **and** every group kanban / login dialog **and Discuss when the group patches `mail.message`** belongs here when the group owns those surfaces. A clean run that still lets a first-click compile error through is a checker bug — fix the checker **and** the group's JS/XML in the same job. Re-prefix to `20.0.x` at `Fx`, not here. |
 | `Gx.4` Layer-1 demo | `tools` XML/assets for **this group's modules**, same bar as 19.0 (`34-demo-data`): no plugs, licenses, topicality, editor re-capture where the body is editor-produced. `"demo": []` is valid only when 19.0 also ships empty **and** Layer 2 owns the family. |
 | `Gx.5` Layer-2 demo | **Run** the 19.0 loaders for the touched modules (`env-demo-reload.sh` / `_reload_tools_demo_data` / `_load_demo_<family>`). Grep-for-`get_param` is not a check. If `odootools_demo` cannot install, fix its depends/loaders in `system@20.0` in the same group — do not mark green. Improve the generator when the stand-in needs it (commit on saas shell, create `base.user_demo`, typed ICP, `raw`, source rows when core demo is absent). **Prove it with counts**, not a seed script: every family the 19.0 loader creates must exist (2 joint calendars with events, 3 reminders, KPI categories + periods + targets + items — whatever that group ships). Never combined with `Gx.4`. A `/tmp` seed does not close this stage. |
 | `Gx.6` install matrix | fresh install per closure, with and without demo, one update, community + enterprise as applicable |
@@ -1767,6 +1767,10 @@ master promotion.
   `_order_field_to_sql` drop `query` (`table, field_expr, direction, nulls`;
   `_order_to_sql(table, order)` — 19.0 five-arg form dies at install,
   `20_4` Gx.6);
+  leftover `_field_to_sql(table,` → `table.<field>` (`python-api` —
+  `20_15` Gx.7 article LOWER);
+  saas `get_current_website()` in tests needs `fallback=True`
+  (`20_15` Gx.7 `/knowsystem` 403);
   19.0 `groups=base.group_portal` partner rules stay on
   `base.group_portal`, not a product group internals also get (`20_4`
   vaults OR leak);
@@ -1824,7 +1828,67 @@ master promotion.
   `20_7` Gx.8 timetable open `Invalid falsy real id`);
   PascalCase child `prop="prop"` → `this.prop`
   (`owl-this` — `20_7` `<TimeTableTable
-  timeTableId="timeTableId"/>`; t-as aliases stay bare).
+  timeTableId="timeTableId"/>`; t-as aliases stay bare);
+  FormController `static template` that is not
+  `web.FormView` → drop it (`js-symbol` —
+  `20_15` Gx.7 `.knowsystem-editor` timeout;
+  keep `buttonTemplate` on the view);
+  leftover `htmlFieldProps` (`js-symbol` —
+  `20_15` KnowSystemHtml);
+  inherit-only `<t t-inherit>` with no `t-name`
+  still scanned for `owl-this` (`20_15` multilang
+  `state.uniqueId` → `this.state.uniqueId`);
+  leftover `htmlFieldProps` / instance
+  `props = props({ ...htmlFieldProps, extra })` →
+  `static props = { ...HtmlField.props, extra }`
+  (`js-symbol` — `20_15` KnowSystemHtml
+  `getNoMoreCommit is not a function`; mass_mailing
+  successor);
+  inner `t-set` of `size` / `mobileSize` on a snippet
+  `t-call` → `t-call` attributes (`qweb-tcall` —
+  `20_15` Gx.7 `10 - size` None during
+  `html_builder` palette render);
+  leftover `o_editable_selectors` →
+  `savable_selectors` (`js-symbol` —
+  `20_15` Gx.7 iframe never contenteditable;
+  saas requires `.o_savable`);
+  leftover `clean_for_save_handlers` →
+  `clean_for_save_processors` (`js-symbol` —
+  `20_15` setup / customize plugins);
+  custom HtmlBuilder without
+  `builderOptionsTemplate` →
+  `"<module>.BuilderOptions"` plus
+  `builderOptionsRegistry` (`js-symbol` —
+  `20_15` `OwlError Missing template: "undefined"`;
+  mass_mailing successor);
+  `type="base64" file=` in data/demo XML →
+  `type="bytes"` (`data-base64` — saas
+  `convert.py` DeprecationWarning that the gate
+  blames on us; on `ir.attachment.raw` it is also
+  the wrong payload);
+  a 19.0 ACL + `ir.rule` pair folded into **both**
+  `ir.access.csv` and a converted `security.xml` →
+  keep the CSV only (`20_15`: 14 duplicate
+  public/portal permissions; `Domain.OR` of two
+  identical domains hides it, and no checker kind
+  sees a redundant permission — read the pair);
+  a `t-set` body moved onto a `t-call` attribute →
+  `name.translate="…"`, never `name="'…'"`
+  (`20_15`: bare expressions leave the `.pot` and
+  already-translated terms revert to English);
+  leftover `...IntegerField.props` →
+  `props = props({ ...integerFieldProps, extra })`
+  (`js-symbol` — `20_15` likes showed a bare number);
+  leftover `resources.builder_options` on a
+  `website-plugins`-only file → `website-options.add`
+  plus inherit `website.BuilderOptions` at
+  `page_options_hook` (`js-symbol` — `20_15` Customize
+  empty; switchable inherit views need
+  `BuilderCheckbox action="'websiteConfig'"`);
+  docs / website `t-field` that only matches
+  `editor_type == 'website_editor'` → also
+  `backend_editor` and `html` (`20_15` in-page
+  article edit).
   A group that still has any of these in *its* tree
   has not finished `Gx.3`.
 - **First-click OWL.** Before calling `Gx.8` ready, open every group menu and the first tab of
@@ -1857,7 +1921,14 @@ master promotion.
   clicked those buttons);
   then opening a timetable died `Invalid falsy real id`
   because leftover `record.data.id` and
-  `timeTableId="timeTableId"` (`20_7` Gx.8)). Do not excuse them
+  `timeTableId="timeTableId"` (`20_7` Gx.8);
+  then KnowSystem backend editor save died
+  `OwlError Missing template: "undefined"` because
+  leftover HtmlBuilder never set
+  `builderOptionsTemplate`, then waited 30s for
+  contenteditable because leftover
+  `o_editable_selectors` never added `.o_savable`
+  (`20_15` Gx.7)). Do not excuse them
   with a green checker — extend the checker in the same job.
 - **Demo parity (touched modules).** `Gx.5` / `Gx.8` prove the 19.0 loaders ran: `demo`/`demo`
   authenticates (`base.user_demo`), and the family's **19.0 record counts** exist (2

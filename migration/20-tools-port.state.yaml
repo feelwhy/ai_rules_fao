@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-19T10:40:00+01:00
-updated_by: agent/20_7-gx9-b1
+updated_at: 2026-09-19T16:15:00+01:00
+updated_by: agent/20_15-gx9-b1
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "20_15"
+    active_group: "20_16"
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -1803,15 +1803,153 @@ groups:
     modules: [knowsystem, knowsystem_website, knowsystem_multilang,
               knowsystem_website_custom_fields, knowsystem_custom_fields, documentation_builder,
               knowsystem_eshop]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
     known_breaks: [dynamic_field_plugins, dynamic_placeholder_plugin, option_sequence,
-                   ensure_jquery, x2many_commands, website_sale_split]
+                   ensure_jquery, x2many_commands, website_sale_split,
+                   htmlFieldProps, builderOptionsTemplate, o_editable_selectors,
+                   clean_for_save_handlers, qweb_tcall_size]
     blocked_by: []                      # defect 3 committed in 84e7d1c4840
+    enterprise_required: false
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_15
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_15.md
     note: >
       Riskiest group in the program: carries 4 of the 9 JS breaks and the html_builder/html_editor
       rework, which was still moving at saas-19.4. Also needs editor re-capture for
-      backend_editor bodies. Do not schedule early.
+      backend_editor bodies. Do not schedule early. Gx.0–Gx.7 green 2026-09-19;
+      review DB handed; Gx.8/Gx.9 accepted 2026-09-19. Merged to 20_port 21995388ffe.
+    seed:
+      commit: cf72ca661ba
+      from_pin: d7235473f3a
+      verified: "7 module subtrees from origin/19.0 d7235473f3a"
+    gx0:
+      stage_status: green
+      pin: d7235473f3a
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_15
+      note: "checkout origin/19.0 -- the seven modules onto scaffold 971c21a311e"
+    gx1:
+      stage_status: green
+      note: "feature contract from live descriptions + source; editor/access/website first-click"
+    gx2:
+      stage_status: green
+      note: "current-serie pin d7235473f3a accepted as baseline (defect 3 already in 84e7d1c4840)"
+    gx3:
+      stage_status: green
+      checker: js-symbol clean on tools-20_15 after successors
+      note: >
+        FormController drop static template; HtmlField static props =
+        {...HtmlField.props, extra} (not htmlFieldProps); this. on OWL;
+        qweb-tcall size/mobileSize attributes; knowsystem.BuilderOptions +
+        builderOptionsTemplate; savable_selectors .knowsystem_wrapper_td;
+        clean_for_save_processors. Checker no js-symbol findings.
+    gx3_challenge:
+      at: 2026-09-19
+      note: >
+        Owner-requested challenge of the whole 20_15 port. Four defects, all
+        introduced by the port itself and all invisible to a green Gx.7.
+      findings:
+        - "duplicate permissions: the 19.0 ACL + ir.rule pair was folded into BOTH
+           security/ir.access.csv AND a converted security.xml, so every public/portal
+           permission existed twice — 6 in knowsystem_website, 2 in
+           knowsystem_website_custom_fields, 6 in documentation_builder.
+           Domain.OR of two identical domains hides it at runtime.
+           Fix: CSV is the single source (core saas ships 236 ir.access.csv with the
+           domain on the row); deleted the two now-empty security.xml files and the
+           <data> block in documentation_builder, dropped both manifest entries."
+        - "translation regression: the snippet t-call rewrite turned
+           <t t-set=\"name\">Title</t> into name=\"'Title'\", a Python expression, which
+           leaves the .pot. translate.py:119-121 translates only .translate keys on a
+           t-call node. Title and Comments. are shipped msgids (ru: Комментарии.) and had
+           silently reverted to English. Fix: name.translate= / description.translate=;
+           price stays an expression ($1.00 has no letters and was never extracted."
+        - "data-base64: 6 <field type=\"base64\" file=\"...\"/> loads (2 ir.attachment.raw,
+           4 image_1920). saas convert.py:145-148 warns 'Since 20.0, use type=bytes' and
+           the log gate attributes it to us; core saas has zero left. On raw it is also
+           the wrong payload. Fix: type=\"bytes\". New checker kind data-base64;
+           retro-scan of every ported group worktree: clean."
+        - "weakened test: test_eight_modules_installed was narrowed from eight modules to
+           four to pass in this group's DB. Fix: assert every module that is reachable
+           (this group always, companions as soon as they exist), so coverage returns
+           automatically when 20_16 lands."
+        - "half-fixed current-serie defect: Gx.3 repaired the translated field path in the
+           four French .po files and left the three Spanish ones. Fixed all seven on the
+           port branch; recorded as source_serie_defect 11 for the owner to fix on the
+           current serie."
+      verified: >
+        Semantic access parity, not inspection: dumped the readable record NAMES for the
+        public and the portal user across all 10 web-facing models on gx8_20_15
+        (pre-change, read only) and on a fresh install of the fixed tree —
+        ACCESS_DIFF_OK, both users identical on every model. ir_access rows 893 -> 879,
+        exactly the 14 removed duplicates. Tests 0 failed / 109, log-gate FAIL 0.
+        Checker clean on all kinds including the new data-base64.
+    gx4:
+      stage_status: green
+      note: "Layer 1 demo XML ported with the modules (same as pin)"
+    gx5:
+      stage_status: green
+      note: >
+        _reload_tools_demo_data on gx8_20_15. Counts: loaders 24,
+        articles 57, pub_articles 30, sections 16, docs 4, partners 39,
+        demo True.
+    gx6:
+      stage_status: green
+      note: "community with-demo -i group + odootools_demo OK (gx8 install)"
+    gx7:
+      stage_status: green
+      url: http://127.0.0.1:18211/web/login
+      tests: /tmp/g15e_272037_t_t.log
+      note: >
+        0 failed / 109, gate FAIL 0. gx8_20_15 community bind 18211;
+        login HTTP 200; no ERROR/CRITICAL since start.
+        GX8_FILESTORE_OK (414) GX8_REPORT_URL_OK.
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18211/web/login
+      db: gx8_20_15
+      compose: faotools_env/local/run/gx8_20_15/compose.yml
+      ports: {http: 18211, longpolling: 19211}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_15, tools-20_port, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      filestore: GX8_FILESTORE_OK
+      report_url: GX8_REPORT_URL_OK
+      rebuilt: 2026-09-19
+      note: >
+        Owner walk of the Gx.7 URL. REBUILT after gx3_challenge: the security
+        consolidation, the snippet .translate terms and type="bytes" are all
+        install-time data, so the first build carried pre-fix rows. ir_access is
+        now 879 (was 893). Same URL and port. Re-verified after the rebuild:
+        GX8_FILESTORE_OK 414, GX8_REPORT_URL_OK, login HTTP 200, no
+        ERROR/CRITICAL, counts unchanged (loaders 24, articles 57,
+        pub_articles 30, sections 16, docs 4, partners 39, demo True).
+        Walk accepted 2026-09-19 (likes IntegerField extras, website
+        Customize website-options, docs search skip style/script).
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-19
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        PREFIX b15_153856 B1_20_15_OK. browser image Chrome/153.
+        0 failed, 0 error(s) of 104 + 5 eshop. log-gate FAIL 0.
+        Gx.7 /tmp/g15e_272037_t_t.log 0 failed / 109.
+      checker: {findings: 0}
+      merge_to_20_port: 21995388ffe
+      port_commit: 18c52b29f4d
+      reviews:
+        bugbot: "no bugs"
+        security: >
+          High access-or on missing CSV was false — ir.access.csv
+          untracked at review time; domains match 19.0 rules (CSV-only).
+    note_b1: >
+      tests-prep already on origin/19.0 (5931ff03a19). Shared tools
+      left on 19.0 (docs-search backport 6dcca1190cc already on
+      origin/19.0 — parallel chat). support TM is foreign — not
+      committed. system clean.
   "20_3":
     order: 15
     modules: [product_management, product_management_accounting, product_management_website_sale,
@@ -2027,6 +2165,21 @@ source_serie_defects:
      evidence: "g2s_201486, message_edit/tests/test_message_edit.py:255-258.
                 Other edit tests that use _update_message passed (18 tests, this one error).",
      fix: "On 19.0: message.with_user(self.user_own).sudo().with_context(message_edit_history_registered=True). Parallel chat commits shared tools."}
+  - {id: 11, module: knowsystem, group: 20_15, status: fixed_on_port_branch_only,
+     issue: "The revision-notification mail body is a QWeb expression, and seven shipped
+             .po files translated the FIELD PATH inside it: fr/fr_BE/fr_CA/fr_CH say
+             object.write_révision_uid.name and es/es_419/es_CL say
+             object.write_revisión_uid.name. Rendering that template for one of those
+             languages raises instead of sending the notification. Present on the current
+             serie (origin/19.0 knowsystem/i18n/fr.po:147 at the 20_15 pin d7235473f3a) -
+             not a port break.",
+     evidence: "grep of origin/19.0 knowsystem/i18n/*.po at pin d7235473f3a: 7 files carry a
+                translated field path; the msgid at :145 has the correct write_revision_uid.",
+     fix: "On 20_15 only: restore write_revision_uid in all seven msgstr. The Gx.3 port had
+           fixed the four French files and left the three Spanish ones, so the same defect
+           was half-repaired; this closes the other half on the port branch.",
+     owner_action: "Needs the same one-line fix on the current serie (agents do not write it).
+                    Until then 19.0 keeps sending nothing to fr/es readers of a revised article."}
 
 # Port work (not 19.0 defects): these work today and break only on the target serie. Recorded
 # here because neither was in the ledger, the tracker, or rule 22 - and neither is reachable by
