@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-18T10:55:00+01:00
-updated_by: agent/20_suite-gx9-b1
+updated_at: 2026-09-19T10:40:00+01:00
+updated_by: agent/20_7-gx9-b1
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "20_5"
+    active_group: "20_15"
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -228,7 +228,7 @@ phases:
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
 aggregates:
-  20_port: {git_sha: 2be60303496, created: true, pushed: false, last_pushed: d7254425af9}
+  20_port: {git_sha: 1d2297291ea, created: true, pushed: false, last_pushed: 8aeec561963}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: a860e7a5825, created: true, pushed: true}
@@ -1686,15 +1686,109 @@ groups:
   "20_7":
     order: 12
     modules: [itlibertas_timesheet, itlibertas_timesheet_gantt, odoo_menu_management]
-    stage: null
-    stage_status: pending
-    known_breaks: [_track_subtype, self_readable_fields, self_writeable_fields]
+    stage: Gx.9
+    stage_status: green
+    known_breaks: [_track_subtype, self_readable_fields, self_writeable_fields,
+                   get_param, Registry.clear_cache, tools.ormcache, useState,
+                   ir_access, scan_barcode_geolocation, hr_attendance_context_null,
+                   record_data_id, web_icon_data_binary]
     enterprise_required: true
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_7
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_7.md
+    seed:
+      commit: ea9dc4a81db
+      from_pin: d7235473f3a
+      verified: "3 module subtrees from origin/19.0 d7235473f3a"
+    gx0:
+      stage_status: green
+      pin: d7235473f3a
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_7
+      note: "checkout origin/19.0 -- the three modules onto scaffold 971c21a311e"
+    gx1:
+      stage_status: green
+      live_ids: {itlibertas_timesheet: 1064, itlibertas_timesheet_gantt: 1065,
+                 odoo_menu_management: 1063}
+      exact_versions: {itlibertas_timesheet: 1.1.14, itlibertas_timesheet_gantt: 1.0.5,
+                       odoo_menu_management: 1.0.7}
+    gx2:
+      stage_status: green
+      note: "no tests/ in the three modules; 19.0 pin d7235473f3a accepted as baseline"
+    gx3:
+      stage_status: green
+      checker: /tmp/check_20_7.txt
+      note: >
+        ir.access; typed ICP; datas->raw; _track_log_get_default_subtype;
+        hide_menu_ids user_writeable + invalidate_ormcache; @api.ormcache;
+        proxy + this. on OWL; Form/List New via buttonTemplate on
+        web.FormView.Buttons / web.ListView.Buttons; attendance
+        scan_barcode_with_geolocation + checking + makeRpcWithGeolocation;
+        gantt t-out. Checker no findings. hr.attendance.context_id
+        required=False so saas schema does not ERROR on core demo nulls
+        (19.0 already left that SQL column nullable).
+    gx4:
+      stage_status: green
+      note: "Layer 1 demo [] on all three, same as 19.0"
+    gx5:
+      stage_status: green
+      note: >
+        system-20.0 _demo_ts_stamp_settings typed ICP (set_bool/set_str/set_int).
+        Counts: timesheets 14, samples 73, attendances 73, partners 63,
+        employees 21, demo/demo, kiosk_ctx True, demo has group_omm.
+    gx6:
+      stage_status: green
+      note: >
+        community no-demo -i hr_attendance,itlibertas_timesheet,odoo_menu_management,odootools_demo OK.
+        enterprise with-demo + web_gantt + gantt module + -u COMM OK. log-gate FAIL 0.
+    gx7:
+      stage_status: green
+      url: http://127.0.0.1:18210/web/login
+      note: "gx8_20_7 enterprise bind 18210; login HTTP 200; no tests/ in group"
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18210/web/login
+      db: gx8_20_7
+      compose: faotools_env/local/run/gx8_20_7/compose.yml
+      ports: {http: 18210, longpolling: 19210}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_7, tools-20_port, enterprise-saas-19.4, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      filestore: GX8_FILESTORE_OK
+      report_url: GX8_REPORT_URL_OK
+      note: >
+        Owner walk 2026-09-19. Timetable open died Invalid falsy real id
+        (record.data.id / timeTableId="timeTableId") — successor
+        record.resId + this.timeTableId. Menu Management
+        UnicodeDecodeError 0x89 on web_icon_data BinaryValue —
+        successor bool(icon). Work schedule CSS: stamp
+        report.url=http://127.0.0.1:8069. Empty print: UserError
+        instead of a title-only PDF.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-19
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        PREFIX b7_26873 B1_20_7_OK. with-demo -i + -u COMM green.
+        log-gate FAIL 0 RECORD 6. B1_COUNTS sheets=14 samples=73
+        demo=True. B1_EMPTY_USERERROR.
+      checker: {findings: 0}
+      merge_to_20_port: 1d2297291ea
+      port_commit: 1ea5ab48c26
+      reviews:
+        bugbot: "no bugs"
+        security: "no medium+; ir.access matches 19.0 domains; hide_menu_ids hardening"
     note: >
       Attendance patches fully replace core methods without super() while core moved to
-      makeRpcWithGeolocation and renamed searchReadEmployee. Runtime check required (H6).
+      makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
+      tests-prep already on origin/19.0 (5931ff03a19). Shared tools left on 19.0.
+      support TM is foreign — not committed. faotools_env env-gx8-filestore.sh
+      not in the named B1 repo list.
   "20_16":
-    order: 13
+    order: 14
     modules: [business_appointment, business_appointment_website, business_appointment_sale,
               business_appointment_website_sale, business_appointment_custom_fields,
               business_appointment_custom_fields_website, business_appointment_time_tracking,
@@ -1705,7 +1799,7 @@ groups:
     enterprise_required: true
     blocked_by: []                      # defect 1 fixed by owner in the current pin
   "20_15":
-    order: 14
+    order: 13
     modules: [knowsystem, knowsystem_website, knowsystem_multilang,
               knowsystem_website_custom_fields, knowsystem_custom_fields, documentation_builder,
               knowsystem_eshop]

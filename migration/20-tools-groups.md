@@ -96,6 +96,16 @@
 - Flexible Timetables and Shifts: Gantt / itlibertas_timesheet_gantt
 - Advanced Menu Management / odoo_menu_management
 
+## 20_15
+
+- KnowSystem: Knowledge Base System / knowsystem
+- KnowSystem: Website and Portal / knowsystem_website
+- KnowSystem: Multi Languages / knowsystem_multilang
+- KnowSystem: Custom Fields for Website and Portal / knowsystem_website_custom_fields
+- KnowSystem: Custom Fields / knowsystem_custom_fields
+- Odoo Documentation Builder / documentation_builder
+- KnowSystem: eCommerce / knowsystem_eshop
+
 ## 20_16
 
 - Universal Appointments and Time Reservations / business_appointment
@@ -107,16 +117,6 @@
 - Universal Appointments: Time Tracking / business_appointment_time_tracking
 - Universal Appointments: HR Bridge / business_appointment_hr
 - Universal Appointments: Gantt / business_appointment_gantt
-
-## 20_15
-
-- KnowSystem: Knowledge Base System / knowsystem
-- KnowSystem: Website and Portal / knowsystem_website
-- KnowSystem: Multi Languages / knowsystem_multilang
-- KnowSystem: Custom Fields for Website and Portal / knowsystem_website_custom_fields
-- KnowSystem: Custom Fields / knowsystem_custom_fields
-- Odoo Documentation Builder / documentation_builder
-- KnowSystem: eCommerce / knowsystem_eshop
 
 ## 20_3
 
