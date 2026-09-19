@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-19T16:15:00+01:00
-updated_by: agent/20_15-gx9-b1
+updated_at: 2026-09-19T17:45:00+01:00
+updated_by: agent/20_3-gx9-b1
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "20_3"
+    active_group: "20_13"
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -2037,8 +2037,92 @@ groups:
     order: 15
     modules: [product_management, product_management_accounting, product_management_website_sale,
               product_management_purchase, product_management_stock]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
+    blocked_by: []
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_3
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_3.md
+    note: >
+      Gx.9 accepted 2026-09-19 via finalize. Layer 1 empty (19.0 empty).
+      Layer 2 settings/tags/group via Settings.execute().
+    seed:
+      commit: 41daf969e9f
+      from_pin: 6dcca1190cc
+      verified: "5 module subtrees from origin/19.0 6dcca1190cc"
+    gx0:
+      stage_status: green
+      pin: 6dcca1190cc
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_3
+      note: "checkout origin/19.0 -- the five modules onto scaffold"
+    gx1:
+      stage_status: green
+      note: "feature contract from live descriptions + source; Product Manager first-click"
+    gx2:
+      stage_status: green
+      note: "current-serie pin 6dcca1190cc accepted as baseline (do not --test shared demo19)"
+    gx3:
+      stage_status: green
+      checker: no findings
+      note: >
+        ir.access.csv only (ir.model.access ACL -> ir.access);
+        typed ICP; jquery vendor + jstree off-proxy/guard;
+        getCardClasses; list.load({orderBy}); this. OWL.
+    gx4:
+      stage_status: green
+      note: "Layer 1 demo empty (19.0 empty); Layer 2 owns the family"
+    gx5:
+      stage_status: green
+      note: >
+        _reload_tools_demo_data on gx8_20_3. tags 2, settings True,
+        actions True, demo_group True, partners 41, demo True.
+        Loader test get_param -> get_bool/get_str.
+    gx6:
+      stage_status: green
+      note: >
+        enterprise+demo review -i/-u OK; community +demo gx8_20_3_c;
+        enterprise no-demo gx8_20_3_nd. No ERROR/CRITICAL.
+    gx7:
+      stage_status: green
+      url: http://127.0.0.1:18213/web/login
+      tests: /tmp/gx8_20_3_t_t.log
+      note: >
+        0 failed / 1 (product loader idempotent), gate FAIL 0 RECORD 8.
+        gx8_20_3 bind 18213; login HTTP 200. GX8_FILESTORE_OK (405)
+        GX8_REPORT_URL_OK. First-click /odoo/product-management: 53
+        kanban cards, 68 jstree items, no OwlError; hierarchy 200.
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18213/web/login
+      db: gx8_20_3
+      compose: faotools_env/local/run/gx8_20_3/compose.yml
+      ports: {http: 18213, longpolling: 19213}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_3, tools-20_port, enterprise-saas-19.4, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: demo}
+      mailpit: http://localhost:18025
+      filestore: GX8_FILESTORE_OK
+      report_url: GX8_REPORT_URL_OK
+      rebuilt: 2026-09-19
+      note: >
+        Owner walk accepted via finalize 2026-09-19. First-click
+        Product Management kanban + jstree rendered (53 cards).
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-19
+      command: >
+        finalize the current modules' group. then, commit (b1) ...
+        EXCLUDE only changes applied by the chat Module tests preparation
+      tests: >
+        Gx.7 /tmp/gx8_20_3_t_t.log 0 failed / 1. First-click 53 cards.
+      checker: {findings: 0}
+      merge_to_20_port: 88d59ba52df
+      port_commit: 1d9ba729c8d
+    note_b1: >
+      Shared tools left on 19.0 (parallel chat). support TM is foreign —
+      not committed (tests-prep / other chat). system-20.0 typed ICP
+      in the product loader test.
   "20_13":
     order: 16
     modules: [notification_crm, mail_activity_notification, notification_project,
