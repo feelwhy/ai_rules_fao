@@ -2172,8 +2172,8 @@ groups:
       note: >
         _reload_tools_demo_data on gx8_20_13. new_notify True, won_silent
         True, todo_notify True, stage0_notify True, three crons active,
-        partners 39, demo True. Composer is DEMO_EXTRA on the real
-        template (Send Message first-click).
+        partners 39, demo True. Composer is DEMO_FORBIDDEN on the
+        real template (never auto-installed).
     gx6:
       stage_status: green
       note: >
@@ -2196,8 +2196,8 @@ groups:
       mailpit: http://localhost:18025
       note: >
         Owner walked. Reminders were not delivered until Mailpit +
-        _prepare_mail_values / force_send. Composer is DEMO_EXTRA on
-        the real template. 6 Mailpit mails on gx8_20_13.
+        _prepare_mail_values / force_send. Composer is DEMO_FORBIDDEN
+        on the real template. 6 Mailpit mails on gx8_20_13.
     gx9:
       stage_status: green
       accepted_at: 2026-09-21T11:15:00+01:00
