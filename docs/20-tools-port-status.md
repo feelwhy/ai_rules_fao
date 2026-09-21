@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-21 (`20_13` Gx.9 green — B1 `1d07d34fbb0`; `20_16`/`20_3` still Gx.8 open; then `20_8`/`20_17`)
+**Last updated:** 2026-09-21 (`20_16` + `20_3` Gx.9 green after owner walk on demo20e; then `20_8`/`20_17`)
 
 ## Where we are
 
@@ -19,7 +19,8 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **in progress** — `20_13` **Gx.9 green**. `20_16` + `20_3` **Gx.8 open** (code already on `20_port`; walk later, lockstep). Then `20_8`, `20_17`. Shared `tools` / `enterprise` stay `19.0`. |
+| 5 — per-group loops on saas-19.4 | **in progress** — through `20_13`/`20_16`/`20_3` **Gx.9 green**. Next `20_8` + `20_17` on integrated `20_port` / demo20e. Shared `tools` / `enterprise` stay `19.0`. |
+| 5b — `_port` ↔ numeric module parity | **required after phase 5, before phase 6.** Working trees synced 2026-09-21. `20_port` HEAD still needs B1 of the 2026-09-16 Gx.2 feature-test commits (`20_2`/`20_c`/`20_14`/`20_5`/`20_6`/`20_9`/`20_10`) plus the walk lockstep. Any later mismatch is investigated and reported. |
 | 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
 | 7 — master infrastructure + faotools.com enablement | pending |
 | 8 — per-group loops on 20.0 | pending |
@@ -180,8 +181,8 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 11 | `20_11` | 3 | `Gx.9` **green** | :18209; FormController extras; Chart v4; leftover `product_uom` remap |
 | 12 | `20_7` | 3 | `Gx.9` **green** | :18210; `record.resId`; `bool(icon)`; empty-print UserError; `report.url` |
 | 13 | `20_15` | 7 | `Gx.9` **green** | :18211; B1 `b15_153856` 0/109; merged `21995388ffe`; `htmlFieldProps`; `builderOptionsTemplate`; `savable_selectors`; IntegerField extras; docs search skip |
-| 14 | `20_16` | 9 | **Gx.8 open** | :18212; 0/52; premature merge `ba6e3bd96b7` (no owner walk); maps-at-render `ba_step*`; `portal.entry`; `website-options` |
-| 15 | `20_3` | 5 | **Gx.8 open** | :18213; 0/1 loader; premature merge `88d59ba52df` (no owner walk); jquery + jstree off-proxy; `getCardClasses`; tags 2 |
+| 14 | `20_16` | 9 | `Gx.9` **green** | owner walk demo20e; B1 0/61; i18n step-5 session walk; visibility inherit dropped |
+| 15 | `20_3` | 5 | `Gx.9` **green** | owner walk demo20e; B1 0/4; mappingproxy mass action; jstree off-proxy; RFQ `uom_id` |
 | 16 | `20_13` | 4 | `Gx.9` **green** | B1 `b29ef140fd9` / merge `1d07d34fbb0`; composer FORBIDDEN; Mailpit; :18214 |
 | 17 | `20_8` | 4 | — | removed product view; `useState` |
 | 18 | `20_17` | 4 | — | `SELF_*_FIELDS`; `useState` |

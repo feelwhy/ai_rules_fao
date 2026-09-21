@@ -91,7 +91,10 @@ work and history stays usable. Do not create unrelated orphan roots.
 
 Propagation invariant:
 
-- Group accepted on the pre-release serie → merge into `_port`; later group changes re-merge there.
+- Group accepted on the pre-release serie → merge into `_port`; later group changes
+  re-merge there **the same turn**. `_port` is integration only. The family module
+  folders on the numeric branch and on `_port` stay identical (tests, i18n, JS, XML
+  included — they are the module).
 - At the final-serie transition, initialize `_final` from the complete `_port`.
 - Group accepted on the final serie → merge into **both** `_port` and `_final`.
 - At publish, merge the group into `<next>.0` and **freeze the group branch**. Later fixes originate
@@ -132,7 +135,18 @@ still has its own gate — do not mark a stage done whose check has not passed.
 | `Gx.6` install matrix | fresh install per closure, with and without demo, one update, community + enterprise as applicable |
 | `Gx.7` behavior | module + group tests, warning gate, browser/console smoke, each its own run. Smoke is **first-click every group menu** and the first tab of every designer/wizard the contract names (calendar, kanban, Filters), **including Refresh / Save / Export** on a forecast client action. A compile-time inherit miss or `undefined.bind` / `undefined.collapsed` is a Gx.3 miss, not a walk finding. **Then launch the review DB** (`gx8_<group>`, 19.0 loader counts, `en_US`, `admin`/`admin` + `demo`/`demo`) and **hand over the URL**. **Filestore + report.url are a gate:** `faotools_env/local/env-gx8-filestore.sh gx8_<group>` must print `GX8_FILESTORE_OK` and `GX8_REPORT_URL_OK` (fills from sibling volumes if `-i` wrote to `/tmp`; stamps `report.url=http://127.0.0.1:8069` so wkhtmltopdf can fetch CSS). Do not hand the URL while `store_fname` files are missing or print is unstyled (`20_7` Gx.8). A Gx.7 that only has test logs has not finished. |
 | `Gx.8` review DB | owner walk of the URL `Gx.7` already handed over. Do not relaunch unless the walk found a defect that needs a rebuild. Cumulative base + active group, **demo reloaded the 19.0 way** for touched modules **and Gx.5 counts green**, **en_US** active and admin in English, `demo`/`demo` from `base.user_demo` / the loader (not a leftover `/tmp` user); first-click every group menu **and** the formula / PDF / scorecard / Filters surfaces the contract names; portal `get_views` on the **running** worker for generated sharing fields (see Quality gates). `/tmp` compose+seed is a walk aid only while `Gx.5` is still open — then `Gx.5` stays open and the Gx.7 URL is **not** ready. Do not hand over admin-only. |
-| `Gx.9` acceptance | on owner confirmation merge to `_port` (worktree only; do not switch shared `tools`), reconcile requirements, cumulative checker smoke. Push only if asked. |
+| `Gx.9` acceptance | on owner confirmation merge to `_port` (worktree only; do not switch shared `tools`), reconcile requirements, cumulative checker smoke. **Then** `diff -rq` each group module folder on `tools-<group>` vs `tools-<next>_port` (exclude `__pycache__` / `*.pyc`). Empty diff is the gate; a mismatch is investigated and reported before the next group. Push only if asked. |
+
+## After phase 5 — `_port` ↔ numeric module-tree parity
+
+Phase 5 is the per-group `Gx` loops on the pre-release serie. **Before phase 6**
+(final-serie re-analysis), walk **every** accepted group in the owner's order
+file. For each module listed for that group, the folder on `tools-<group>` and
+the same folder on `tools-<next>_port` must be identical (`__pycache__` /
+`*.pyc` excluded). Tests, i18n, JS, and XML are the module — a numeric-only
+`tests/` tree is a missed re-merge, not "extra". Any mismatch is investigated
+and reported (what differs and why) before phase 6 starts. Repeat the same
+check after every later `Gx.9` merge and after every lockstep walk fix.
 
 `Fx` repeats the port against the released serie and adds translations
 (`Fx.3`, diff-driven) and the publication drafts (`Fx.6`, `Fx.7`). The same

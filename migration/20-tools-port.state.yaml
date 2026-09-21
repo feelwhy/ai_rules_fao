@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-21T11:15:00+01:00
-updated_by: agent/b1-20_13-gx9
+updated_at: 2026-09-21T18:10:00+01:00
+updated_by: agent/b1-20_16-20_3-gx9
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "20_13"
+    active_group: "20_8"
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -219,6 +219,15 @@ phases:
         the same target destroy each other's run: clone_test_db terminates connections to
         that name and drops it. Cost us two failed Gx.2 attempts and disrupted the parallel
         chat's knowsystem run on 2026-09-12. Fix is a per-session suffix; NOT done.
+  "5b_port_numeric_parity":
+    status: in_progress
+    note: >
+      After phase 5 and before phase 6, each accepted group's module folders on
+      the numeric worktree must match 20_port (tests/i18n/JS/XML included).
+      2026-09-16 Gx.2 feature-test commits on 20_2/20_c/20_14/20_5/20_6/20_9/20_10
+      (and 20_5 kpi cycle guard) landed on numeric after Gx.9 merge and were
+      never re-merged. Working trees synced 2026-09-21; 20_port HEAD still dirty
+      until B1. Repeat after every later Gx.9 and every lockstep walk fix.
   "6_final_serie_release": {status: pending}
   "7_master_infrastructure": {status: pending}
   "8_final_group_loops": {status: pending}
@@ -1793,8 +1802,8 @@ groups:
               business_appointment_website_sale, business_appointment_custom_fields,
               business_appointment_custom_fields_website, business_appointment_time_tracking,
               business_appointment_hr, business_appointment_gantt]
-    stage: Gx.8
-    stage_status: open
+    stage: Gx.9
+    stage_status: green
     known_breaks: [_track_subtype, x2many_commands, resource_attendance_onchange_hours]
     enterprise_required: true
     blocked_by: []                      # defect 1 fixed by owner in the current pin
@@ -1802,12 +1811,10 @@ groups:
     shared_tools_left_on: "19.0"
     contract: migration/contracts/20_16.md
     note: >
-      Gx.0–Gx.7 green 2026-09-19; review DB handed. An agent then treated the
-      2026-09-16 standing "finalize" command as Gx.8/Gx.9 and merged to
-      20_port ba6e3bd96b7 without an owner walk. Gx.8 reopened 2026-09-21.
-      Merge stays on 20_port until the owner walks or says revert. SaaS Char
-      jsonb flush is not HTTP proof — maps-at-render website._ba_frontend_text
-      / _ba_step_labels.
+      Gx.0–Gx.7 green 2026-09-19. Owner walked BA on demo20e 2026-09-21
+      (finalize 20_16 + 20_3). Prior premature merge ba6e3bd96b7 stays;
+      lockstep walk fixes committed on 20_16 and 20_port. i18n HTTP test
+      now walks steps 3–4 so session reaches contact/sign-in.
     seed:
       commit: d0badbb2c43
       from_pin: 6dcca1190cc
@@ -1849,42 +1856,39 @@ groups:
         login HTTP 200; ru_step True after -u. GX8_FILESTORE_OK (467)
         GX8_REPORT_URL_OK.
     gx8:
-      stage_status: open
-      url: http://127.0.0.1:18212/web/login
-      db: gx8_20_16
-      compose: faotools_env/local/run/gx8_20_16/compose.yml
-      ports: {http: 18212, longpolling: 19212}
+      stage_status: green
+      url: http://127.0.0.1:18201/web/login
+      db: odooallapps20e.odootools.com
+      compose: faotools_env/local/run/demo20e/compose.yml
+      ports: {http: 18201, longpolling: 19201}
       image: faotools/env-demo-20:current
-      binds: [tools-20_16, tools-20_port, system-20.0]
+      binds: [tools-20_port, enterprise-saas-19.4, system-20.0]
       languages: en_US
       logins: {admin: admin, demo: demo}
       mailpit: http://localhost:18025
       filestore: GX8_FILESTORE_OK
       report_url: GX8_REPORT_URL_OK
-      rebuilt: 2026-09-19
+      rebuilt: 2026-09-21
       note: >
-        Review DB is up. Prior "walk accepted via finalize" was not an owner
-        walk — reopened 2026-09-21. After -u business_appointment_website,
-        /ru/appointments/1 stepper is Russian (ru_step True, en_step False).
+        Owner walked BA on integrated demo20e (20_port, all installed
+        groups). gx8_20_16 :18212 remains as the group cell.
     gx9:
-      stage_status: pending
-      accepted_at: null
-      premature: true
+      stage_status: green
+      accepted_at: 2026-09-21T18:10:00+01:00
+      premature: false
       command: >
-        agent reused 2026-09-16 "finalize the current modules' group" without
-        a walk of this group
-      tests: >
-        Gx.7 /tmp/gx8_20_16_t_t.log 0 failed / 52. i18n 0/8.
+        finalize the modules' group 20_16 and 20_3 ... then commit (b1)
+      tests: /tmp/b1_20_16_rerun.log
       checker: {findings: 0}
-      merge_to_20_port: ba6e3bd96b7
-      port_commit: 2f09e2194f6
-      reviews:
-        bugbot: >
-          one high on leftover website.ba_step* — false: templates already
-          use _ba_step_labels / _ba_frontend_text; live ru_step True.
+      merge_to_20_port: 1fb07bc70bf
+      port_commit: 8c4fa4aa029
+      note: >
+        B1 0 failed / 61. i18n test_ru_stepper_and_signin_render green
+        after session walk of steps 3–4. Family trees identical on
+        20_16 and 20_port. Shared tools stayed 19.0.
     note_b1: >
-      Shared tools left on 19.0 (parallel chat). support TM is foreign —
-      not committed. system-20.0 demo BinaryBytes + knowsystem guard.
+      Shared tools left on 19.0. support TM is foreign — not committed.
+      system-20.0 stamps calendar_event_workload on dentist/beauty types.
   "20_15":
     order: 13
     modules: [knowsystem, knowsystem_website, knowsystem_multilang,
@@ -2041,18 +2045,17 @@ groups:
     order: 15
     modules: [product_management, product_management_accounting, product_management_website_sale,
               product_management_purchase, product_management_stock]
-    stage: Gx.8
-    stage_status: open
+    stage: Gx.9
+    stage_status: green
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_3
     shared_tools_left_on: "19.0"
     contract: migration/contracts/20_3.md
     note: >
-      Gx.0–Gx.7 green 2026-09-19. An agent treated the 2026-09-16 standing
-      "finalize" command as Gx.8/Gx.9 and merged to 20_port 88d59ba52df
-      without an owner walk. Gx.8 reopened 2026-09-21. Merge stays on
-      20_port until the owner walks or says revert. Layer 1 empty (19.0
-      empty). Layer 2 settings/tags/group via Settings.execute().
+      Gx.0–Gx.7 green 2026-09-19. Owner walked on demo20e 2026-09-21
+      (finalize 20_16 + 20_3). Prior premature merge 88d59ba52df stays;
+      lockstep walk fixes committed on 20_3 and 20_port. mappingproxy
+      mass-action context, jstree off-proxy, RFQ uom_id.
     seed:
       commit: 41daf969e9f
       from_pin: 6dcca1190cc
@@ -2099,39 +2102,37 @@ groups:
         GX8_REPORT_URL_OK. First-click /odoo/product-management: 53
         kanban cards, 68 jstree items, no OwlError; hierarchy 200.
     gx8:
-      stage_status: open
-      url: http://127.0.0.1:18213/web/login
-      db: gx8_20_3
-      compose: faotools_env/local/run/gx8_20_3/compose.yml
-      ports: {http: 18213, longpolling: 19213}
+      stage_status: green
+      url: http://127.0.0.1:18201/web/login
+      db: odooallapps20e.odootools.com
+      compose: faotools_env/local/run/demo20e/compose.yml
+      ports: {http: 18201, longpolling: 19201}
       image: faotools/env-demo-20:current
-      binds: [tools-20_3, tools-20_port, enterprise-saas-19.4, system-20.0]
+      binds: [tools-20_port, enterprise-saas-19.4, system-20.0]
       languages: en_US
       logins: {admin: admin, demo: demo}
       mailpit: http://localhost:18025
       filestore: GX8_FILESTORE_OK
       report_url: GX8_REPORT_URL_OK
-      rebuilt: 2026-09-19
+      rebuilt: 2026-09-21
       note: >
-        Review DB is up. Prior "walk accepted via finalize" was not an
-        owner walk — reopened 2026-09-21. First-click Product Management
-        kanban + jstree rendered (53 cards).
+        Owner walked on integrated demo20e. gx8_20_3 :18213 remains as
+        the group cell (53 kanban cards / 68 jstree items).
     gx9:
-      stage_status: pending
-      accepted_at: null
-      premature: true
+      stage_status: green
+      accepted_at: 2026-09-21T18:10:00+01:00
+      premature: false
       command: >
-        agent reused 2026-09-16 "finalize the current modules' group" without
-        a walk of this group
-      tests: >
-        Gx.7 /tmp/gx8_20_3_t_t.log 0 failed / 1. First-click 53 cards.
+        finalize the modules' group 20_16 and 20_3 ... then commit (b1)
+      tests: /tmp/b1_20_3_rerun.log
       checker: {findings: 0}
-      merge_to_20_port: 88d59ba52df
-      port_commit: 1d9ba729c8d
+      merge_to_20_port: 1fb07bc70bf
+      port_commit: 9b603ff47da
+      note: >
+        B1 0 failed / 4 (mass-action + RFQ uom). Family trees identical
+        on 20_3 and 20_port. Shared tools stayed 19.0.
     note_b1: >
-      Shared tools left on 19.0 (parallel chat). support TM is foreign —
-      not committed (tests-prep / other chat). system-20.0 typed ICP
-      in the product loader test.
+      Shared tools left on 19.0. support TM is foreign — not committed.
   "20_13":
     order: 16
     modules: [notification_crm, mail_activity_notification, notification_project,
