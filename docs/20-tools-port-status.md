@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-19 (`20_3` Gx.9 green; next `20_13`)
+**Last updated:** 2026-09-21 (`20_13` Gx.9 green — B1 `1d07d34fbb0`; `20_16`/`20_3` still Gx.8 open; then `20_8`/`20_17`)
 
 ## Where we are
 
@@ -19,7 +19,7 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **in progress** — `20_3` **Gx.9 green** (merged `88d59ba52df`); next `20_13`. Shared `tools` / `enterprise` stay `19.0`. |
+| 5 — per-group loops on saas-19.4 | **in progress** — `20_13` **Gx.9 green**. `20_16` + `20_3` **Gx.8 open** (code already on `20_port`; walk later, lockstep). Then `20_8`, `20_17`. Shared `tools` / `enterprise` stay `19.0`. |
 | 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
 | 7 — master infrastructure + faotools.com enablement | pending |
 | 8 — per-group loops on 20.0 | pending |
@@ -180,9 +180,9 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 11 | `20_11` | 3 | `Gx.9` **green** | :18209; FormController extras; Chart v4; leftover `product_uom` remap |
 | 12 | `20_7` | 3 | `Gx.9` **green** | :18210; `record.resId`; `bool(icon)`; empty-print UserError; `report.url` |
 | 13 | `20_15` | 7 | `Gx.9` **green** | :18211; B1 `b15_153856` 0/109; merged `21995388ffe`; `htmlFieldProps`; `builderOptionsTemplate`; `savable_selectors`; IntegerField extras; docs search skip |
-| 14 | `20_16` | 9 | `Gx.9` **green** | :18212; 0/52; merged `ba6e3bd96b7`; maps-at-render `ba_step*`; `portal.entry`; `website-options` |
-| 15 | `20_3` | 5 | `Gx.9` **green** | :18213; 0/1 loader; merged `88d59ba52df`; jquery + jstree off-proxy; `getCardClasses`; tags 2 |
-| 16 | `20_13` | 4 | — | Chatter |
+| 14 | `20_16` | 9 | **Gx.8 open** | :18212; 0/52; premature merge `ba6e3bd96b7` (no owner walk); maps-at-render `ba_step*`; `portal.entry`; `website-options` |
+| 15 | `20_3` | 5 | **Gx.8 open** | :18213; 0/1 loader; premature merge `88d59ba52df` (no owner walk); jquery + jstree off-proxy; `getCardClasses`; tags 2 |
+| 16 | `20_13` | 4 | `Gx.9` **green** | B1 `b29ef140fd9` / merge `1d07d34fbb0`; composer EXTRA; Mailpit; :18214 |
 | 17 | `20_8` | 4 | — | removed product view; `useState` |
 | 18 | `20_17` | 4 | — | `SELF_*_FIELDS`; `useState` |
 

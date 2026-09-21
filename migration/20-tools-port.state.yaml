@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-19T17:45:00+01:00
-updated_by: agent/20_3-gx9-b1
+updated_at: 2026-09-21T11:15:00+01:00
+updated_by: agent/b1-20_13-gx9
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -1793,8 +1793,8 @@ groups:
               business_appointment_website_sale, business_appointment_custom_fields,
               business_appointment_custom_fields_website, business_appointment_time_tracking,
               business_appointment_hr, business_appointment_gantt]
-    stage: Gx.9
-    stage_status: green
+    stage: Gx.8
+    stage_status: open
     known_breaks: [_track_subtype, x2many_commands, resource_attendance_onchange_hours]
     enterprise_required: true
     blocked_by: []                      # defect 1 fixed by owner in the current pin
@@ -1802,9 +1802,12 @@ groups:
     shared_tools_left_on: "19.0"
     contract: migration/contracts/20_16.md
     note: >
-      Gx.0–Gx.7 green 2026-09-19; review DB handed; Gx.8/Gx.9 accepted 2026-09-19.
-      Merged to 20_port ba6e3bd96b7. SaaS Char jsonb flush is not HTTP proof —
-      maps-at-render website._ba_frontend_text / _ba_step_labels.
+      Gx.0–Gx.7 green 2026-09-19; review DB handed. An agent then treated the
+      2026-09-16 standing "finalize" command as Gx.8/Gx.9 and merged to
+      20_port ba6e3bd96b7 without an owner walk. Gx.8 reopened 2026-09-21.
+      Merge stays on 20_port until the owner walks or says revert. SaaS Char
+      jsonb flush is not HTTP proof — maps-at-render website._ba_frontend_text
+      / _ba_step_labels.
     seed:
       commit: d0badbb2c43
       from_pin: 6dcca1190cc
@@ -1846,7 +1849,7 @@ groups:
         login HTTP 200; ru_step True after -u. GX8_FILESTORE_OK (467)
         GX8_REPORT_URL_OK.
     gx8:
-      stage_status: green
+      stage_status: open
       url: http://127.0.0.1:18212/web/login
       db: gx8_20_16
       compose: faotools_env/local/run/gx8_20_16/compose.yml
@@ -1860,15 +1863,16 @@ groups:
       report_url: GX8_REPORT_URL_OK
       rebuilt: 2026-09-19
       note: >
-        Owner walk of the Gx.7 URL. After -u business_appointment_website,
+        Review DB is up. Prior "walk accepted via finalize" was not an owner
+        walk — reopened 2026-09-21. After -u business_appointment_website,
         /ru/appointments/1 stepper is Russian (ru_step True, en_step False).
-        Walk accepted via finalize 2026-09-19.
     gx9:
-      stage_status: green
-      accepted_at: 2026-09-19
+      stage_status: pending
+      accepted_at: null
+      premature: true
       command: >
-        finalize the current modules' group. then, commit (b1) ...
-        EXCLUDE only changes applied by the chat Module tests preparation
+        agent reused 2026-09-16 "finalize the current modules' group" without
+        a walk of this group
       tests: >
         Gx.7 /tmp/gx8_20_16_t_t.log 0 failed / 52. i18n 0/8.
       checker: {findings: 0}
@@ -2037,15 +2041,18 @@ groups:
     order: 15
     modules: [product_management, product_management_accounting, product_management_website_sale,
               product_management_purchase, product_management_stock]
-    stage: Gx.9
-    stage_status: green
+    stage: Gx.8
+    stage_status: open
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_3
     shared_tools_left_on: "19.0"
     contract: migration/contracts/20_3.md
     note: >
-      Gx.9 accepted 2026-09-19 via finalize. Layer 1 empty (19.0 empty).
-      Layer 2 settings/tags/group via Settings.execute().
+      Gx.0–Gx.7 green 2026-09-19. An agent treated the 2026-09-16 standing
+      "finalize" command as Gx.8/Gx.9 and merged to 20_port 88d59ba52df
+      without an owner walk. Gx.8 reopened 2026-09-21. Merge stays on
+      20_port until the owner walks or says revert. Layer 1 empty (19.0
+      empty). Layer 2 settings/tags/group via Settings.execute().
     seed:
       commit: 41daf969e9f
       from_pin: 6dcca1190cc
@@ -2092,7 +2099,7 @@ groups:
         GX8_REPORT_URL_OK. First-click /odoo/product-management: 53
         kanban cards, 68 jstree items, no OwlError; hierarchy 200.
     gx8:
-      stage_status: green
+      stage_status: open
       url: http://127.0.0.1:18213/web/login
       db: gx8_20_3
       compose: faotools_env/local/run/gx8_20_3/compose.yml
@@ -2106,14 +2113,16 @@ groups:
       report_url: GX8_REPORT_URL_OK
       rebuilt: 2026-09-19
       note: >
-        Owner walk accepted via finalize 2026-09-19. First-click
-        Product Management kanban + jstree rendered (53 cards).
+        Review DB is up. Prior "walk accepted via finalize" was not an
+        owner walk — reopened 2026-09-21. First-click Product Management
+        kanban + jstree rendered (53 cards).
     gx9:
-      stage_status: green
-      accepted_at: 2026-09-19
+      stage_status: pending
+      accepted_at: null
+      premature: true
       command: >
-        finalize the current modules' group. then, commit (b1) ...
-        EXCLUDE only changes applied by the chat Module tests preparation
+        agent reused 2026-09-16 "finalize the current modules' group" without
+        a walk of this group
       tests: >
         Gx.7 /tmp/gx8_20_3_t_t.log 0 failed / 1. First-click 53 cards.
       checker: {findings: 0}
@@ -2127,9 +2136,78 @@ groups:
     order: 16
     modules: [notification_crm, mail_activity_notification, notification_project,
               mail_composer_on_send_message]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
+    blocked_by: []
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_13
+    shared_tools_left_on: "19.0"
+    contract: migration/contracts/20_13.md
     known_breaks: [chatter_import]
+    seed:
+      commit: 747870af51d
+      from_pin: b40a1d8d9bb
+      verified: "4 module subtrees from origin/19.0 b40a1d8d9bb"
+    gx0:
+      stage_status: green
+      pin: b40a1d8d9bb
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_13
+      note: "checkout origin/19.0 -- the four modules onto scaffold"
+    gx1:
+      stage_status: green
+      note: "feature contract; stage is_notify + Send Message full composer"
+    gx2:
+      stage_status: green
+      note: "current-serie pin b40a1d8d9bb accepted as baseline (do not --test shared demo19)"
+    gx3:
+      stage_status: green
+      checker: no findings
+      note: >
+        unprefixed manifests; get_str web.base.url; ir.access.csv;
+        Chatter from web_portal_project; toggleComposer(mode, options).
+    gx4:
+      stage_status: green
+      note: "Layer 1 demo empty (19.0 empty); Layer 2 owns is_notify + crons"
+    gx5:
+      stage_status: green
+      note: >
+        _reload_tools_demo_data on gx8_20_13. new_notify True, won_silent
+        True, todo_notify True, stage0_notify True, three crons active,
+        partners 39, demo True. Composer is DEMO_EXTRA on the real
+        template (Send Message first-click).
+    gx6:
+      stage_status: green
+      note: >
+        enterprise+demo review -i/-u OK; community +demo gx8_20_13_c;
+        enterprise no-demo gx8_20_13_nd. No ERROR/CRITICAL.
+    gx7:
+      stage_status: green
+      url: http://127.0.0.1:18214/web/login
+      tests: /tmp/gx8_20_13_t_t.log
+      note: >
+        0 failed / 1 (daily reminders idempotent on clone without
+        composer), gate FAIL 0 RECORD 9. gx8_20_13 bind 18214; login
+        HTTP 200. GX8_FILESTORE_OK (268) GX8_REPORT_URL_OK. First-click:
+        CRM New + activity To-Do + project New show Send notification;
+        Azure Interior Send message opens Compose Email (To/Cc/Subject);
+        no OwlError. Push-notification toast only.
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18214/web/login
+      mailpit: http://localhost:18025
+      note: >
+        Owner walked. Reminders were not delivered until Mailpit +
+        _prepare_mail_values / force_send. Composer is DEMO_EXTRA on
+        the real template. 6 Mailpit mails on gx8_20_13.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-21T11:15:00+01:00
+      port: b29ef140fd9
+      merge_to_20_port: 1d07d34fbb0
+      tests: /tmp/gx8_20_13_b1.log
+      note: >
+        B1 0 failed / 1 (demo_daily_reminders). checker no findings.
+        Composer EXTRA; Mailpit in _demo_dr_refresh. Pushed 20_13 and
+        20_port. Module trees identical on both. Shared tools stayed 19.0.
   "20_8":
     order: 17
     modules: [vendor_product_management, vendor_portal_management, product_add_suppliers,
