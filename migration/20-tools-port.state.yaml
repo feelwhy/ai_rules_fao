@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-21T18:10:00+01:00
-updated_by: agent/b1-20_16-20_3-gx9
+updated_at: 2026-09-22T13:07:00+01:00
+updated_by: agent/20_8-20_17-gx9
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "20_8"
+    active_group: "fresh-build"
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -220,14 +220,14 @@ phases:
         that name and drops it. Cost us two failed Gx.2 attempts and disrupted the parallel
         chat's knowsystem run on 2026-09-12. Fix is a per-session suffix; NOT done.
   "5b_port_numeric_parity":
-    status: in_progress
+    status: green
     note: >
       After phase 5 and before phase 6, each accepted group's module folders on
       the numeric worktree must match 20_port (tests/i18n/JS/XML included).
-      2026-09-16 Gx.2 feature-test commits on 20_2/20_c/20_14/20_5/20_6/20_9/20_10
-      (and 20_5 kpi cycle guard) landed on numeric after Gx.9 merge and were
-      never re-merged. Working trees synced 2026-09-21; 20_port HEAD still dirty
-      until B1. Repeat after every later Gx.9 and every lockstep walk fix.
+      2026-09-22 re-merged the numeric feature-test and lockstep commits into
+      20_port (HEAD 60d47c3cb79). diff -rq of every numeric module folder
+      against 20_port was empty. Repeat after every later Gx.9 and every
+      lockstep walk fix.
   "6_final_serie_release": {status: pending}
   "7_master_infrastructure": {status: pending}
   "8_final_group_loops": {status: pending}
@@ -237,10 +237,10 @@ phases:
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
 aggregates:
-  20_port: {git_sha: 1d2297291ea, created: true, pushed: false, last_pushed: 8aeec561963}
+  20_port: {git_sha: 60d47c3cb79, created: true, pushed: true, last_pushed: 60d47c3cb79}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: a860e7a5825, created: true, pushed: true}
+  system_20_0: {git_sha: 44adf61, created: true, pushed: true}
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -2213,16 +2213,178 @@ groups:
     order: 17
     modules: [vendor_product_management, vendor_portal_management, product_add_suppliers,
               variant_price_system]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
     known_breaks: [product_variant_easy_edit_view, product_lst_price_inverse_rename]
+    enterprise_required: false
     blocked_by: []                      # defect 2 fixed by owner in the current pin
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_8
+    shared_tools_left_on: "18.0"
+    contract: migration/contracts/20_8.md
+    note: >
+      Gx.0–Gx.7 lockstep with 20_17 on 20_port. Owner asked to finalize
+      on 2026-09-22 (the open pair was 20_8 and 20_17; 20_13 was already
+      Gx.9). Walk is integrated demo20e. Do not env-up demo20e
+      (on-disk compose.yml is stale vs the running binds).
+    seed:
+      commit: e7289b3349b
+      from_pin: 0ae669cafde
+      verified: "4 module subtrees from origin/19.0 0ae669cafde; seed and port are one commit"
+    gx0:
+      stage_status: green
+      pin: 0ae669cafde
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_8
+      note: "checkout origin/19.0 -- the four modules onto scaffold"
+    gx1:
+      stage_status: green
+      note: "feature contract from live descriptions + source; vendor catalog/portal first-click"
+    gx2:
+      stage_status: green
+      note: "current-serie pin 0ae669cafde accepted as baseline (do not --test shared demo19)"
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      note: >
+        ir.access.csv; portal.entry; this.title; many2oneId on price/quant
+        dialogs; _access_domain AND; product_uom_id -> uom_id on
+        product.supplierinfo (saas-19.4 rename; vendor.quant
+        supplier_product_uom_id kept); _inverse_product_lst_price;
+        product_product_view_form_normalized.
+    gx4:
+      stage_status: green
+      note: >
+        Layer 1 demo_catalog.xml / demo_prices.xml (uom_id on supplierinfo).
+        product_add_suppliers and vendor_portal_management demo empty
+        (same as 19.0).         Layer 2 _load_demo_vendor_products /
+        _load_demo_variant_prices. system-20.0 demo_vendor_products
+        vals uom_id (44adf61).
+    gx5:
+      stage_status: green
+      note: >
+        demo20e oneshot -i after uom_id fix (leftover Many2one
+        product_uom_id had comodel ???). All 4 installed demo=t.
+        vendor.location 3, vendor.product 55 (14 Layer-1 + 14 Layer-2
+        xmlids + sale-demo supplierinfo mirrors), vendor.quant 14,
+        supplierinfo+vp 46, ptav+plus 2, ptav+mult 5, esp_price 1.
+    gx6:
+      stage_status: green
+      tests: /tmp/gx67_20_8_17.log
+      note: >
+        community +demo gx8_20_8_17_c -i/-u; community nodemo
+        gx8_20_8_17_nd. All 8 modules (with 20_17) installed. No
+        ERROR/CRITICAL. Community lane; no enterprise matrix.
+    gx7:
+      stage_status: green
+      url: http://127.0.0.1:18201/web/login
+      tests: /tmp/gx67_20_8_17.log
+      note: >
+        0 failed / 13 after tightening inverse-name and many2oneId
+        assertions (Field.inverse is a callable; .length ? on name_get
+        lists is valid). FIRSTCLICK_OK on demo20e. Login HTTP 200.
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18201/web/login
+      db: odooallapps20e.odootools.com
+      compose: faotools_env/local/run/demo20e/compose.yml
+      ports: {http: 18201, longpolling: 19201}
+      image: faotools/env-demo-20:current
+      binds: [tools-20_port, enterprise-saas-19.4, system-20.0]
+      languages: en_US
+      logins: {admin: admin, demo: faotools}
+      portal: {gemini.portal@example.com: faotools}
+      mailpit: http://localhost:18025
+      note: >
+        Owner finalized the integrated demo20e walk on 2026-09-22.
+        Same walk covers 20_17. Do not env-up.
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-22T13:07:00+01:00
+      port: e7289b3349b
+      merge_to_20_port: 7c0e7ddacc8
+      aggregate: 60d47c3cb79
+      tests: /home/feelwhy/env-sync/b1_20817/test.log
+      note: >
+        B1 0 failed / 15 on clone test_b1_20817 (shared with 20_17;
+        includes TestDemoDuplicates and TestDemoScoring). checker
+        findings 0. Bugbot no findings. Portal ACL review no medium+.
+        Module trees identical on 20_8 and 20_port. Shared tools
+        checkout left on 18.0.
   "20_17":
     order: 18
     modules: [customer_scoring, vendor_scoring, header_clock, res_partner_completeness]
-    stage: null
-    stage_status: pending
+    stage: Gx.9
+    stage_status: green
     known_breaks: [self_readable_fields, self_writeable_fields]
+    enterprise_required: false
+    blocked_by: []
+    worktree: /home/feelwhy/Odoo/_worktrees/tools-20_17
+    shared_tools_left_on: "18.0"
+    contract: migration/contracts/20_17.md
+    note: >
+      Gx.0–Gx.7 lockstep with 20_8 on 20_port. Finalized with 20_8
+      on 2026-09-22. Same demo20e walk as 20_8.
+    seed:
+      commit: 9c00c09f9da
+      from_pin: 0ae669cafde
+      verified: "4 module subtrees from origin/19.0 0ae669cafde; seed and port are one commit"
+    gx0:
+      stage_status: green
+      pin: 0ae669cafde
+      worktree: /home/feelwhy/Odoo/_worktrees/tools-20_17
+      note: "checkout origin/19.0 -- the four modules onto scaffold"
+    gx1:
+      stage_status: green
+      note: "feature contract from live descriptions + source; scoring/clocks first-click"
+    gx2:
+      stage_status: green
+      note: "current-serie pin 0ae669cafde accepted as baseline (do not --test shared demo19)"
+    gx3:
+      stage_status: green
+      checker: {findings: 0}
+      note: >
+        ir.access.csv; SELF_* -> user_writeable on header_clock_ids;
+        scoring_widget record.resId; partner search anchors name=inactive
+        (type_person gone); visibility already public.
+    gx4:
+      stage_status: green
+      note: >
+        Layer 1 customer_scoring.xml / vendor_scoring.xml.
+        header_clock and res_partner_completeness demo empty (same as
+        19.0). Layer 2 _load_demo_scoring.
+    gx5:
+      stage_status: green
+      note: >
+        demo20e oneshot -i with 20_8. All 4 installed demo=t.
+        customer_scoring 3, vendor_scoring 3, header.clock 6,
+        scoring.point 20. Azure has both scoring flags.
+    gx6:
+      stage_status: green
+      tests: /tmp/gx67_20_8_17.log
+      note: "same community +demo/-u/nodemo matrix as 20_8 (gx8_20_8_17_c / _nd)"
+    gx7:
+      stage_status: green
+      url: http://127.0.0.1:18201/web/login
+      tests: /tmp/gx67_20_8_17.log
+      note: >
+        0 failed / 13 (shared run with 20_8). FIRSTCLICK_OK: partner
+        form/list/kanban, scoring.point, header.clock, res.users clocks.
+    gx8:
+      stage_status: green
+      url: http://127.0.0.1:18201/web/login
+      db: odooallapps20e.odootools.com
+      logins: {admin: admin, demo: faotools}
+      note: "Same integrated demo20e walk as 20_8. Finalized 2026-09-22."
+    gx9:
+      stage_status: green
+      accepted_at: 2026-09-22T13:07:00+01:00
+      port: 9c00c09f9da
+      merge_to_20_port: 0ae9943cfe4
+      aggregate: 60d47c3cb79
+      tests: /home/feelwhy/env-sync/b1_20817/test.log
+      note: >
+        B1 0 failed / 15 on clone test_b1_20817 (shared with 20_8).
+        checker findings 0. Bugbot no findings. Module trees identical
+        on 20_17 and 20_port. Shared tools checkout left on 18.0.
 
 # ---------------------------------------------------------------- live records
 # One entry per module once phase 8 starts. Never reuse a stale id after a failed apply.
@@ -2432,11 +2594,22 @@ source_serie_defects:
 # the checker, since the dead-hook check requires a super() call and both overrides have none.
 port_items:
   - {key: product_lst_price_inverse_rename, module: variant_price_system, group: 20_8,
+     status: fixed_in_gx3,
      site: "models/product_product.py:32",
      evidence: "product.product._set_product_lst_price at 19.0 product_product.py:309, absent at
                 saas-19.4; core's lst_price inverse is now _inverse_product_lst_price (:386,
                 wired at :38). Our method is bound by object on the redeclared field, so the
                 inverse keeps firing - rename it and re-read core's field declaration."}
+  - key: supplierinfo_uom_id
+    module: vendor_product_management
+    group: 20_8
+    status: fixed_in_gx3
+    site: "models/product_supplierinfo.py + views + demo + wizard + portal JS"
+    evidence: >
+      saas-19.4 renamed product.supplierinfo.product_uom_id to uom_id (required,
+      computed). A leftover Many2one(required=False) named product_uom_id created
+      a new field with comodel ??? and blocked Gx.5 -i. vendor.quant
+      supplier_product_uom_id / product_uom_id left intact.
   - {key: resource_attendance_onchange_hours, module: business_appointment, group: 20_16,
      site: "models/resource_calendar_attendance.py:12",
      evidence: "resource.calendar.attendance._onchange_hours present at 19.0

@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-21 (`20_16` + `20_3` Gx.9 green after owner walk on demo20e; then `20_8`/`20_17`)
+**Last updated:** 2026-09-22 (`20_8` + `20_17` Gx.9 green; numeric parity re-merged into `20_port` `60d47c3cb79`)
 
 ## Where we are
 
@@ -19,8 +19,8 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **in progress** — through `20_13`/`20_16`/`20_3` **Gx.9 green**. Next `20_8` + `20_17` on integrated `20_port` / demo20e. Shared `tools` / `enterprise` stay `19.0`. |
-| 5b — `_port` ↔ numeric module parity | **required after phase 5, before phase 6.** Working trees synced 2026-09-21. `20_port` HEAD still needs B1 of the 2026-09-16 Gx.2 feature-test commits (`20_2`/`20_c`/`20_14`/`20_5`/`20_6`/`20_9`/`20_10`) plus the walk lockstep. Any later mismatch is investigated and reported. |
+| 5 — per-group loops on saas-19.4 | **Gx.9 green for all 18 groups.** Fresh-build of both all-apps templates from `20_port` is the remaining close-out (community `odooallapps20build`, enterprise `odooallapps20ebuild`) compared with the accumulated databases. Shared `tools` stays `18.0`. |
+| 5b — `_port` ↔ numeric module parity | **green** at `20_port` `60d47c3cb79`. Feature-test and lockstep commits re-merged. `diff -rq` of every numeric module folder was empty. |
 | 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
 | 7 — master infrastructure + faotools.com enablement | pending |
 | 8 — per-group loops on 20.0 | pending |
@@ -184,8 +184,8 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 14 | `20_16` | 9 | `Gx.9` **green** | owner walk demo20e; B1 0/61; i18n step-5 session walk; visibility inherit dropped |
 | 15 | `20_3` | 5 | `Gx.9` **green** | owner walk demo20e; B1 0/4; mappingproxy mass action; jstree off-proxy; RFQ `uom_id` |
 | 16 | `20_13` | 4 | `Gx.9` **green** | B1 `b29ef140fd9` / merge `1d07d34fbb0`; composer FORBIDDEN; Mailpit; :18214 |
-| 17 | `20_8` | 4 | — | removed product view; `useState` |
-| 18 | `20_17` | 4 | — | `SELF_*_FIELDS`; `useState` |
+| 17 | `20_8` | 4 | `Gx.9` **green** | B1 `e7289b3349b` / merge `7c0e7ddacc8`; 0/15 on `test_b1_20817`; demo20e :18201 |
+| 18 | `20_17` | 4 | `Gx.9` **green** | B1 `9c00c09f9da` / merge `0ae9943cfe4`; same walk and test log |
 
 All 18 groups carry confirmed work. The 2026-09-12 “pilot and `20_c` have none” claim was
 the `@odoo/owl` skip. `ir.access` already hits 86 of 93 modules; OWL 3 `useState` hits 25
