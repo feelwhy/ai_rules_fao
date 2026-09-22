@@ -211,7 +211,7 @@ phases:
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
     status: in_progress
-    active_group: "fresh-build"
+    active_group: ""
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique

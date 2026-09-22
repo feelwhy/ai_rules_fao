@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-22 (`20_8` + `20_17` Gx.9 green; numeric parity re-merged into `20_port` `60d47c3cb79`)
+**Last updated:** 2026-09-22 (fresh all-apps templates green; accumulated DBs fail the xmlid purge assert)
 
 ## Where we are
 
@@ -19,7 +19,7 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **Gx.9 green for all 18 groups.** Fresh-build of both all-apps templates from `20_port` is the remaining close-out (community `odooallapps20build`, enterprise `odooallapps20ebuild`) compared with the accumulated databases. Shared `tools` stays `18.0`. |
+| 5 — per-group loops on saas-19.4 | **Gx.9 green for all 18 groups.** Fresh templates `odooallapps20build` and `odooallapps20ebuild` are **ASSERT_OK**. Accumulated `odooallapps20` / `odooallapps20e` are **ASSERT_FAIL** on review rows with no xmlid (not deleted). Shared `tools` stays `18.0`. |
 | 5b — `_port` ↔ numeric module parity | **green** at `20_port` `60d47c3cb79`. Feature-test and lockstep commits re-merged. `diff -rq` of every numeric module folder was empty. |
 | 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
 | 7 — master infrastructure + faotools.com enablement | pending |
