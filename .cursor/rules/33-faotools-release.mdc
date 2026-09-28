@@ -81,28 +81,38 @@ Public `description` stays short; put the important detail here. Do not put toke
 5. Auto-link commits: search `github.commit` for that `module_id`, `ingore_commit=False`, preferably `in_release=False`. Pick rows that belong to this change (message, SHA, date after the previous release). Write `commit_ids` on the new `module.release`. If none match, say so — do not attach unrelated history.
 6. Do **not** run Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`). MCP wraps the call in a savepoint; that method’s `cr.commit()` then aborts the cursor (`InFailedSqlTransaction`). The operator runs it from the UI if needed.
 7. `odoo_record_url` for every new `module.release` and paste the links in the reply.
-8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). The release is **not done** until `/ru/` (and the other shipped languages) show the translated notes. This step is **never** skipped, delayed, or treated as a later follow-up unless the user **explicitly** says to skip translations (quote that command on the reprint; do not mark the step done).
+8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). Start it in the **same turn** as publish. Do not end the turn after step 7. Do not ask “translate it?” / “proceed with step 8?”. Chunk-gate does not split this step off. The release is **not done** until the live page scan below is green for every shipped language. The **only** skip is the user **explicitly** saying to skip translations (quote that command; do not mark step 8 done).
 
-Report per release: module, serie, old → new version, state, commit count, URL, and the `ru_RU` ≠ `en_US` proof.
+Report per release only after that scan: module, serie, old → new version, state, commit count, URL, and the page-scan result (every shipped language, or the list that is still English). A reply that says published / готово / all ok before the scan is a failed release.
 
 ## Public changelog translations (19.0+)
 
 Pull `ai_rules` `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
 
-**Hard gate.** A 19.0+ publish that leaves the new changelog English has failed the release. Do not report “published” until step 5 below has passed.
+**Hard gate.** A 19.0+ publish that leaves any new changelog sentence in English on a shipped language page has failed the release. One translated line next to English lines is a failure. Do not report “published” until the live page scan has passed. The user must not have to open the site and ask again.
 
 These do **not** skip or postpone this block (they are not an explicit “skip translations”):
 
 - “do not redeploy / rebuild Functional” (faotools.com). Changelog apply is a loader write on the live DB, not a project rebuild.
 - Demo / master project rebuilds, GitHub update, or “YAML is in git”.
 - “the YAML is not on the container disk yet.”
+- An MCP parse error, a `\u` escape the bridge ate, a payload that is “too big”, or a diacritic the call rejected. Change the text so the call succeeds, then apply. Do not stop and do not tell the user that encoding blocked the release.
 
 After the English row is `3_published`:
 
-1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`.
-2. Translate every new English sentence to **every shipped language** in `support_translations.const.SHIPPED_LANGS` (glossary / do-not-translate). Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists.
-3. **Apply now on faotools.com** via MCP `odoo_actions_run` on `support.translations`, method `_apply_description`, args = `[payload, installed_lang_codes, path]`. `payload` is the YAML `match` plus the new `releases` entry (load from the local file). That writes `update_field_translations` on the live row. Do **not** wait for a Functional image rebuild. `_reapply_for_description` only if that YAML is already on the container disk. Never `odoo_records_write` translations that are not in the YAML. If MCP refuses to parse a large payload, apply in language batches (sentence-only terms are enough; the loader wraps the icon). A parse failure is not a skip.
+1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`. Every new English sentence, every code in `support_translations.const.SHIPPED_LANGS` (read the list; do not type a subset). `python3 support/support_translations/scripts/check_release_tm.py` must not report a gap for this release. Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists. Keep real Unicode in the YAML.
+2. Translate glossary-first (do-not-translate terms stay as-is: Odoo, Bearer, MB).
+3. **Apply now on faotools.com** via MCP `odoo_actions_run` on `support.translations`, method `_apply_description`, args = `[payload, lang_codes, path]`, then `odoo_operations_confirm`. A preview is not an apply. `payload` is the YAML `match` plus the new `releases` entry. Sentence-only `source` strings (no HTML, no icon): the loader wraps the icon. Do **not** wait for a Functional image rebuild. Never `odoo_records_write` translations that are not in the YAML.
 4. If this 19.0 page also lists older-serie rows (`migration_release_ids`), those public descriptions must be in the same TM list and applied. Do not leave them English.
-5. Prove it: `ru_RU` `description` ≠ `en_US` on the new row, and `/<lang>/apps/...` shows the translated sentence.
+5. **Live page scan, every shipped language, before any “done” reply.** Read each `res.lang` `url_code` for `SHIPPED_LANGS`. GET `https://faotools.com/<url_code>/apps/<slug>`. Cut from `>{version}.{exact_version}</h5>` to the next version heading. The block fails when it still contains any full English sentence from this release. Re-apply that language and scan again. `en_GB` may still show the English sentence when the wording has no British spelling difference — say so; it is the only allowed match. A loader result `[1, N, []]` and a `ru_RU` field read are not this scan.
+
+### MCP payload that actually applies (incident 2026-09-28, `ai_mcp_server` 1.1.0)
+
+The bridge rejects the call **before Odoo** when the arguments are not one JSON object. That is not a reason to leave the page in English.
+
+- Build the arguments with `json.dumps(..., separators=(",", ":"))` and `json.loads` them before sending. Do not pretty-print. A hand-wrapped payload with an extra `]` / `}` before the language list dies as `Extra data` / `Failed to parse arguments`.
+- Do not send `\uXXXX` in the tool-call body; the bridge eats the backslash. Raw UTF-8 inside that compact JSON works (Cyrillic, Arabic, CJK).
+- If a language still will not parse, rewrite **that** translation so the call succeeds (ASCII fold of Latin diacritics is allowed on the live write; the YAML keeps the real letters). Confirm, then re-scan the page. Do not drop letters (`ı` / `ş` / `ł` must not vanish).
+- Apply in language batches when one payload is too large. Every code in `SHIPPED_LANGS` still has to land.
 
 Skip this block only when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish), or when the user **explicitly** commanded a skip. Store HTML (`resulted_description`) stays `en_US`.
