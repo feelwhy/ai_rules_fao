@@ -1130,8 +1130,8 @@ After the English row is `3_published`:
 
 The bridge rejects the call **before Odoo** when the arguments are not one JSON object. That is not a reason to leave the page in English.
 
-- Build the arguments with `json.dumps(..., separators=(",", ":"))` and `json.loads` them before sending. Do not pretty-print. A hand-wrapped payload with an extra `]` / `}` before the language list dies as `Extra data` / `Failed to parse arguments`.
-- Do not send `\uXXXX` in the tool-call body; the bridge eats the backslash. Raw UTF-8 inside that compact JSON works (Cyrillic, Arabic, CJK).
+- Build the arguments with `json.dumps(..., separators=(",", ":"), ensure_ascii=False)` and `json.loads` them before sending. Do not pretty-print. The default `ensure_ascii=True` writes `\uXXXX`, and the bridge eats that backslash. A hand-wrapped payload with an extra `]` / `}` before the language list dies as `Extra data` / `Failed to parse arguments`.
+- Send that compact text as raw UTF-8. It works for Cyrillic, Arabic, and CJK.
 - If a language still will not parse, rewrite **that** translation so the call succeeds (ASCII fold of Latin diacritics is allowed on the live write; the YAML keeps the real letters). Confirm, then re-scan the page. Do not drop letters (`ı` / `ş` / `ł` must not vanish).
 - Apply in language batches when one payload is too large. Every code in `SHIPPED_LANGS` still has to land.
 
