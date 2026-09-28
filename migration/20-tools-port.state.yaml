@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-28T13:05:00+01:00
-updated_by: agent/phase6-item31-delta
+updated_at: 2026-09-28T13:40:00+01:00
+updated_by: agent/phase6-item31b-rule22
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -266,12 +266,16 @@ phases:
           system_20_0: "/tmp/p6/checker-system-20.0.json (13, saas-era kinds)"
       official_image: "Docker Hub library/odoo has no 20.0 tag (latest 19.0-20260908); item 32 keeps the overlay image"
     "31b_rule22_and_checker":
-      status: pending
-      note: >
-        ai_rules chunk before any Fx.1: new kinds fa-icon, owl-ref (t-custom-ref / useRef /
-        useChildRef / useForwardRefToParent / onRendered / useChildSubEnv), ctrl-hook
-        (controller base-class method existence + signature), py-import (removed module
-        constant); facts 1-10 of docs/20-final-delta.md into 22-migrate-v19-to-v20.
+      status: done
+      at: 2026-09-28T13:40:00+01:00
+      commit: "ai_rules 9db1a3e — rules: record the 20.0 final delta and check icons, refs, controller hooks, imports."
+      rule: "22-migrate-v19-to-v20: section '20.0 final delta' F1-F10 with the FA -> Material rename table (152 icons mapped from 5643 core diff pairs, 28 unmapped)"
+      checker_kinds_added: [fa-icon, owl-ref, ctrl-hook, py-import]
+      checker_hints_added: [MOVED_JS_PATHS action_service, VIEW_XMLID_HINTS crm_team_salesteams_view_form, JS_SYMBOL_HINTS owl refs]
+      proof:
+        saas_pin_full_run: "25 findings before and after; new kinds report 0 on the saas-19.4 target"
+        v20_new_kinds: "255 on tools-20_port: fa-icon 212 files / owl-ref 32 / ctrl-hook 9 / py-import 2 (PREFETCH_MAX also in cloud_base/models/clouds_folder.py:11)"
+        system_v20_new_kinds: "4 fa-icon files"
     "32_final_image_and_matrix": {status: pending}
     "33_init_20_final": {status: pending}
   "7_master_infrastructure": {status: pending}
