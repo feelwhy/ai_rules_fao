@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-22T13:07:00+01:00
-updated_by: agent/20_8-20_17-gx9
+updated_at: 2026-09-28T13:05:00+01:00
+updated_by: agent/phase6-item31-delta
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -21,7 +21,7 @@ updated_by: agent/20_8-20_17-gx9
 pins:
   source_serie: "19.0"
   target_serie: "saas-19.4"       # stands in for the future 20.0
-  final_serie: "20.0"             # not released yet
+  final_serie: "20.0"             # released 2026-09 (Odoo Experience); branch fetched 2026-09-28
   # Re-pinned twice on 2026-09-12: 3ead42e8511 (two automated store updates) and then
   # 84e7d1c4840, the parallel chat's commit of defects 3-5. Neither touched a 20_2 module,
   # so the Gx.0 seed is valid against this pin (subtree hashes re-verified).
@@ -33,6 +33,12 @@ pins:
   odoo_saas_19_4: 3630379f63633612e5a9e8d435deecbe26eaa15a
   enterprise_saas_19_4: 8d73a02a8ba9a99fb41b2cd01b1680c6ded4b837
   pinned_at: 2026-09-12
+  # Phase 6 item 31 (2026-09-28): released 20.0, fetched without checkout. Not an
+  # ancestor of the saas-19.4 pins (docs/20-final-delta.md). Nothing is ported to
+  # these yet; Fx stages start only after the rule-22 chunk (6.31b).
+  odoo_20_0: c6306830baea390c5fa30a99187358420684089f
+  enterprise_20_0: 366ecb35b9456c17a1b890af793de1e9c6b22ad7
+  final_pinned_at: 2026-09-28
 
 # ---------------------------------------------------------------- phases
 phases:
@@ -210,8 +216,21 @@ phases:
         The tracker called this "phase 4 work if we want CI on these branches" and it was never
         decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
   "5_pre_release_group_loops":
-    status: in_progress
+    status: done
     active_group: ""
+    closing_comparison:
+      status: green
+      at: 2026-09-28T12:40:00+01:00
+      fresh: "ASSERT_OK odooallapps20build and odooallapps20ebuild (2026-09-22, unchanged)"
+      accumulated: "ASSERT_OK odooallapps20.odootools.com and odooallapps20e.odootools.com"
+      deleted_xmlid_less:
+        - {db: odooallapps20.odootools.com, model: extra.contact.info, id: 26, label: "1223"}
+        - {db: odooallapps20.odootools.com, model: sticky.note, id: 17, label: "Заметка №17 для P00010"}
+        - {db: odooallapps20e.odootools.com, model: scoring.point, id: 21, label: test}
+        - {db: odooallapps20e.odootools.com, model: header.clock, id: 7, label: Africa/Addis_Ababa}
+      logs:
+        - /home/feelwhy/env-sync/b1_20817/assert_acc20_after.log
+        - /home/feelwhy/env-sync/b1_20817/assert_acc20e_after.log
     open_items:
       - >
         env-test / env-demo-build clone names are not session-unique
@@ -228,7 +247,33 @@ phases:
       20_port (HEAD 60d47c3cb79). diff -rq of every numeric module folder
       against 20_port was empty. Repeat after every later Gx.9 and every
       lockstep walk fix.
-  "6_final_serie_release": {status: pending}
+  "6_final_serie_release":
+    status: in_progress
+    "31_pin_and_compare":
+      status: done
+      at: 2026-09-28T13:05:00+01:00
+      artifact: docs/20-final-delta.md
+      compared: "tested saas-19.4 pins -> odoo_20_0 / enterprise_20_0 over tools-20_port ad04db88a88 and system-20.0 fb515d5"
+      ancestry: "saas pin is NOT an ancestor of 20.0; odoo merge-base 0f5525c0c1bc (4977 / 2124), enterprise 4c4e2c95af9a (3703 / 1331)"
+      result:
+        source_confirmed_breaks: 10
+        program_wide: [font_awesome_to_material_symbols, owl_ref_compat_dropped]
+        checker_found: 3      # js-import action_service, js-symbol refs, view-xmlid crm_team form
+        checker_missed: 6     # fa icons, portal counters hook, PREFETCH_MAX, _file_read, hr_attendance route, mail_attachment_delete
+        checker_runs:
+          tools_20_0: "/tmp/p6/checker-tools-20.0.json (50; 25 new vs saas pin)"
+          tools_saas: "/tmp/p6/checker-tools-saas194.json (25, accepted residue)"
+          system_20_0: "/tmp/p6/checker-system-20.0.json (13, saas-era kinds)"
+      official_image: "Docker Hub library/odoo has no 20.0 tag (latest 19.0-20260908); item 32 keeps the overlay image"
+    "31b_rule22_and_checker":
+      status: pending
+      note: >
+        ai_rules chunk before any Fx.1: new kinds fa-icon, owl-ref (t-custom-ref / useRef /
+        useChildRef / useForwardRefToParent / onRendered / useChildSubEnv), ctrl-hook
+        (controller base-class method existence + signature), py-import (removed module
+        constant); facts 1-10 of docs/20-final-delta.md into 22-migrate-v19-to-v20.
+    "32_final_image_and_matrix": {status: pending}
+    "33_init_20_final": {status: pending}
   "7_master_infrastructure": {status: pending}
   "8_final_group_loops": {status: pending}
   "9_publish_loops": {status: pending}

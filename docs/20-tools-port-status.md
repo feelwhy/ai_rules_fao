@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-22 (fresh all-apps templates green; accumulated DBs fail the xmlid purge assert)
+**Last updated:** 2026-09-28 (phase 5 closed; phase 6 item 31 — 20.0 pinned and compared with the saas-19.4 pins)
 
 ## Where we are
 
@@ -19,9 +19,9 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
 | 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
-| 5 — per-group loops on saas-19.4 | **Gx.9 green for all 18 groups.** Fresh templates `odooallapps20build` and `odooallapps20ebuild` are **ASSERT_OK**. Accumulated `odooallapps20` / `odooallapps20e` are **ASSERT_FAIL** on review rows with no xmlid (not deleted). Shared `tools` stays `18.0`. |
+| 5 — per-group loops on saas-19.4 | **Done.** Gx.9 green for all 18 groups. Fresh templates `odooallapps20build` / `odooallapps20ebuild` and accumulated `odooallapps20.odootools.com` / `odooallapps20e.odootools.com` are **ASSERT_OK** (2026-09-28, after deleting the four xmlid-less review rows). Shared `tools` stays `18.0`. |
 | 5b — `_port` ↔ numeric module parity | **green** at `20_port` `60d47c3cb79`. Feature-test and lockstep commits re-merged. `diff -rq` of every numeric module folder was empty. |
-| 6 — 20.0 upstream release re-analysis | pending (waiting on Odoo) |
+| 6 — 20.0 upstream release re-analysis | **item 31 done** (2026-09-28): `odoo@20.0` `c6306830bae`, `enterprise@20.0` `366ecb35b94` pinned; [20-final-delta.md](20-final-delta.md) — **10 source-confirmed breaks**, two program-wide (Font Awesome → Material Symbols in 53 modules; OWL ref compat and `t-custom-ref` dropped). Item 31b (rule 22 + checker kinds) is next and gates every Fx.1. |
 | 7 — master infrastructure + faotools.com enablement | pending |
 | 8 — per-group loops on 20.0 | pending |
 | 9 — publish loops | pending |
