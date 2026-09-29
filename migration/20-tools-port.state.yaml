@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T13:00:00+01:00
-updated_by: agent/fx8-20_2-review
+updated_at: 2026-09-29T14:55:00+01:00
+updated_by: agent/fx8-20_2-review-fixes
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -323,8 +323,9 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    fx1: green     # tools 20_2 c1bf73f6543, merged 20_port bed6a9a1cde; system eca16ba
+    fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
+    review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
     next: "owner walk of fx8_20_2, then 20_2 Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
@@ -332,12 +333,12 @@ phases:
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
 aggregates:
-  # 2026-09-29: 20_port bed6a9a1cde (20_2 Material-icon port merged on top of 743eccd9b7f);
-  # system 20.0 eca16ba (Abigail's WhatsApp type is oi_whatsapp). Both pushed.
-  20_port: {git_sha: bed6a9a1cde6000ff5dadabfe44c2cf04adfe220, created: true, pushed: true, last_pushed: bed6a9a1cde6000ff5dadabfe44c2cf04adfe220}
+  # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
+  # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
+  20_port: {git_sha: 299187e254a4bdf3dbb87f1352566b0b25644652, created: true, pushed: true, last_pushed: 299187e254a4bdf3dbb87f1352566b0b25644652}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: eca16ba7ffa6235cc6a87bb3d68ba863248edc2b, created: true, pushed: true}
+  system_20_0: {git_sha: 4fef9e506c72340dd21319735d34e9ad818e1eb7, created: true, pushed: true}
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -495,14 +496,23 @@ groups:
     fx1:
       stage_status: green
       at: 2026-09-29
-      tools_20_2: c1bf73f65432579f2d386661e7dd136426101fa3
-      merge_to_20_port: bed6a9a1cde6000ff5dadabfe44c2cf04adfe220
+      tools_20_2: 20326816acabfbd70ff9c516517596a4724af2df   # was c1bf73f6543 before the review fixes
+      commits: [c1bf73f6543, c0dc700ce88, 20326816aca]
+      merge_to_20_port: 299187e254a4bdf3dbb87f1352566b0b25644652   # bed6a9a1cde, 5fb4989556e, 299187e254a
       system_20_0: eca16ba7ffa6235cc6a87bb3d68ba863248edc2b
       note: >
         Font Awesome keys in the five modules became Material / Odoo UI icon names.
         Versions re-prefixed 20.0.x.y.z. complementary_contact_data migration
         20.0.1.0.8 rewrites stored contact_info_type. Tests 0 failed, 0 errors of 31
         on faotools/env-demo-20:20.0 (DB p6fx20_2, dropped).
+      review_fixes: >
+        Owner's first click found two 20.0-only OWL breaks the checker did not know
+        (incident fx_review_owl_construction_20_2): this.env.isSmall in the FormCogMenu
+        pin inherit -> this.uiService.isSmall; static props on ContactInfo /
+        ContactInfoField -> props = useProps({...}) / inherited x2ManyFieldProps; the
+        FormRenderer patches now extend this.state instead of replacing the compiler's
+        proxy. Tests 31 green again; checker owl-static-props / env-removed quiet.
+      browser_smoke: "SMOKE_OK 12/12 pages (partner/employee/lead/sale/purchase/invoice forms, add-contact and pin dialogs, alerts list+form, notes kanban+form); log logs/fx8_20_2_smoke.log"
     fx2:
       stage_status: green
       at: 2026-09-29T13:00:00+01:00
@@ -513,7 +523,8 @@ groups:
         dates_plugs_editor: none
         empty_layer1: [smart_warnings, sticky_notes]
       layer2:
-        changed: false   # oi_whatsapp landed in Fx.1 (system eca16ba)
+        changed: true    # oi_whatsapp (system eca16ba); ODS-900 on S00001 so the sale alert fires (system 4fef9e5, with test)
+        defect_older_than_port: "demo_warning_obsolete_product matched ODS-900 while the loader put FURN_9999 on S00001 — dead on every serie; found by the 20.0 browser walk"
         loaders: [_load_demo_sticky_notes, _load_demo_smart_warnings, _load_demo_complementary_hr_partner]
         db: p6fx2_20_2   # dropped after the count
         image: faotools/env-demo-20:20.0
@@ -540,6 +551,7 @@ groups:
       keep_until: 2026-10-02T12:59:00+01:00
       compose: faotools_env/local/run/fx8_20_2/compose.yml
       login_probe: "admin/admin -> /odoo 200"
+      relaunched: "2026-09-29 14:50 after the OWL fixes: assets rebuilt, loaders re-run (S00001 carries ODS-900), browser smoke SMOKE_OK 12/12"
     baseline:
       command: "env-test.sh demo19 smart_warnings,sticky_notes,complementary_contact_data,complementary_employee_data,complementary_lead_data"
       result: "0 failed, 0 error(s) of 3 tests; all 5 modules upgrade; log gate FAIL 0 RECORD 7 ALLOW 1"
@@ -2555,6 +2567,39 @@ hypotheses:
   H7: {claim: "which deprecation warnings our code triggers", check: "test-window log on pinned image", phase: 4}
 
 incidents:
+  - id: fx_review_owl_construction_20_2
+    found: 2026-09-29
+    phase: "8 Fx (pilot 20_2)"
+    blocks: "every group's Fx review URL until its JS passes owl-static-props / env-removed AND a browser first-click"
+    symptom: >
+      fx8_20_2 was handed over on tests (31 green), loader counts and a login probe. The owner's
+      first click on a contact form and on a Smart Alert form showed "Oops!" twice:
+      `"env.isSmall" was removed when the ui service became UIPlugin` (sticky-notes pin inherit
+      of web.FormCogMenu), then `Component "ContactInfoField" defines a static "props" ... which
+      Owl 3 ignores` (complementary_contact_data). Every form view in the group was dead.
+    cause: >
+      Both constructs were legal on saas-19.4 (env.isSmall getter in ui_service.js:257; compat
+      layer read this.constructor.props), so the saas-era rule 22 and checker deliberately let
+      them pass (rule text: "static props ... still used in 160 core web files"). 20.0 turned
+      both into throws (env.js REMOVED_KEYS Proxy; owl3_compatibility_layer.js:44-48). Neither
+      the Odoo test suite nor a shell loader constructs OWL components, so tests + counts said
+      green. Fx.1 reused the Gx gates but skipped the Gx.7 browser/console smoke.
+    fixed:
+      tools_20_2: [c0dc700ce88, 20326816aca]     # uiService.isSmall; props = useProps(...) / inherited schema; Object.assign(this.state)
+      tools_20_port: 299187e254a
+      rule: "ai_rules 585c2fa — rule 22 F12 + F13, checker kinds owl-static-props / env-removed"
+      exposure: "/home/feelwhy/env-sync/p6/checker-tools-20.0-owl-props.json — 94 on tools-20_port (91 static props in 23 modules, 3 env.isSmall); system 0"
+    also_found: >
+      The same browser walk showed the sale-order "Obsolete product" alert never fired: the
+      loader put core product_order_01 (FURN_9999) on S00001 while the alert domain matched our
+      demo product ODS-900. Older than the port (19.0 had the same code). Fixed system 4fef9e5
+      with a regression test; the stray FURN_9999 line was removed from fx8_20_2 only.
+    process: >
+      A review URL for an Fx group is handed only after a headless-browser first-click of every
+      group form / menu on the 20.0 image reports no .o_error_dialog and no console error.
+      Runner (not source): /home/feelwhy/env-sync/p6/selenium/smoke_20_2.py against
+      selenium/standalone-chromium on the faotools-env-local network; result SMOKE_OK 12/12 at
+      /home/feelwhy/env-sync/p6/logs/fx8_20_2_smoke.log.
   - id: image_stale_19_addons
     found: 2026-09-12
     phase: 4.1
