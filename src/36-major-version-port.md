@@ -166,6 +166,16 @@ notebook tab the contract names (`selenium/standalone-chromium` on the
 and zero console errors before the URL leaves the chat. The 20_2 runner is the template
 (`~/env-sync/p6/selenium/smoke_20_2.py`, not source).
 
+**`Fx.2` also stands up the 20.0 enterprise review database and hands the screenshot
+overview.** Store screenshots for this serie are taken on enterprise, not community, so
+each group's `Fx.2` creates `fx8_<group>e` on `faotools/env-demo-20:20.0` with the
+enterprise-20.0 worktree on the addons path and `web_enterprise` installed, same demo
+and loaders as the community review DB, `en_US`, `admin`/`admin` and `demo`/`demo`,
+kept 72h. Then one PDF per module goes to the owner's Downloads: for every live 19.0
+`module.pic` (MCP, published description of that technical name), the file name
+(`reference`), the title (`name`) and the alt (`alt_name`), followed by the PNG from
+the module's `static/description/`. That is the shot list. Do not capture in this step.
+
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
 
