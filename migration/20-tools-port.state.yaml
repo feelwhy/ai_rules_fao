@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T12:30:00+01:00
-updated_by: agent/phase6-f11-decided
+updated_at: 2026-09-29T13:00:00+01:00
+updated_by: agent/fx2-20_2
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -251,7 +251,9 @@ phases:
       20_port (HEAD 60d47c3cb79). diff -rq of every numeric module folder
       against 20_port was empty. Repeat after every later Gx.9 and every
       lockstep walk fix. Re-checked 2026-09-29 at 20_port 743eccd9b7f: all 18
-      groups empty diff, worktrees clean, nothing unpushed.
+      groups empty diff, worktrees clean, nothing unpushed. Later the same day
+      20_2 Fx.1 merged as bed6a9a1cde (only that group's modules); complementary_contact_data
+      diff against 20_port was empty. The other 17 groups were not re-diffed.
   "6_final_serie_release":
     status: in_progress
     "31_pin_and_compare":
@@ -318,19 +320,24 @@ phases:
         from 20_port, and the phase-8 Fx.5 review DBs accumulate from that base.
       decided_at: 2026-09-29T12:26:00+01:00
   "7_master_infrastructure": {status: pending}
-  "8_final_group_loops": {status: pending}
+  "8_final_group_loops":
+    status: in_progress
+    pilot: "20_2"
+    fx1: green     # tools 20_2 c1bf73f6543, merged 20_port bed6a9a1cde; system eca16ba
+    fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
+    next: "20_c Fx.1"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
 aggregates:
-  # 2026-09-29: 20_port moved to 743eccd9b7f (20_14 cloud_base sync toggles, 20_4
-  # password-manager fixes merged by their chats); system 20.0 to fb515d5. Both pushed.
-  20_port: {git_sha: 743eccd9b7f, created: true, pushed: true, last_pushed: 743eccd9b7f}
+  # 2026-09-29: 20_port bed6a9a1cde (20_2 Material-icon port merged on top of 743eccd9b7f);
+  # system 20.0 eca16ba (Abigail's WhatsApp type is oi_whatsapp). Both pushed.
+  20_port: {git_sha: bed6a9a1cde6000ff5dadabfe44c2cf04adfe220, created: true, pushed: true, last_pushed: bed6a9a1cde6000ff5dadabfe44c2cf04adfe220}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: fb515d5, created: true, pushed: true}
+  system_20_0: {git_sha: eca16ba7ffa6235cc6a87bb3d68ba863248edc2b, created: true, pushed: true}
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -342,7 +349,7 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Gx.9
+    stage: Fx.2
     stage_status: green
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
@@ -485,6 +492,40 @@ groups:
       shared_tools_left_on: "19.0"
       pushed: true
       checker: "no findings (5 modules on 20_port @ d7254425af9)"
+    fx1:
+      stage_status: green
+      at: 2026-09-29
+      tools_20_2: c1bf73f65432579f2d386661e7dd136426101fa3
+      merge_to_20_port: bed6a9a1cde6000ff5dadabfe44c2cf04adfe220
+      system_20_0: eca16ba7ffa6235cc6a87bb3d68ba863248edc2b
+      note: >
+        Font Awesome keys in the five modules became Material / Odoo UI icon names.
+        Versions re-prefixed 20.0.x.y.z. complementary_contact_data migration
+        20.0.1.0.8 rewrites stored contact_info_type. Tests 0 failed, 0 errors of 31
+        on faotools/env-demo-20:20.0 (DB p6fx20_2, dropped).
+    fx2:
+      stage_status: green
+      at: 2026-09-29T13:00:00+01:00
+      layer1:
+        changed: false
+        lint: "LINT_OK via demo_lint.lint_roots extra_roots=tools-20_2 + system-20.0 (env-demo-lint.sh reads the shared tools checkout, which is 18.0)"
+        xmlids_on_20_0: [base.res_partner_12, hr.work_contact_hne, crm.crm_case_14]
+        dates_plugs_editor: none
+        empty_layer1: [smart_warnings, sticky_notes]
+      layer2:
+        changed: false   # oi_whatsapp landed in Fx.1 (system eca16ba)
+        loaders: [_load_demo_sticky_notes, _load_demo_smart_warnings, _load_demo_complementary_hr_partner]
+        db: p6fx2_20_2   # dropped after the count
+        image: faotools/env-demo-20:20.0
+        counts:
+          sticky.note: 13
+          smart.warning: 6
+          extra.contact.info: 23
+        abigail: {xmlid: odootools_demo.demo_info_abigail_whatsapp, contact_info_type: oi_whatsapp}
+        idempotent: true
+        log: /home/feelwhy/env-sync/p6/logs/fx2_20_2_install.log
+      screenshots: migration/screenshots/20_2.md
+      backend_editor: none
     baseline:
       command: "env-test.sh demo19 smart_warnings,sticky_notes,complementary_contact_data,complementary_employee_data,complementary_lead_data"
       result: "0 failed, 0 error(s) of 3 tests; all 5 modules upgrade; log gate FAIL 0 RECORD 7 ALLOW 1"

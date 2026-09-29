@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-29 (phase 6 item 32 — 20.0 candidate image built, first matrix red, F11 found)
+**Last updated:** 2026-09-29 (pilot 20_2 Fx.1 and Fx.2 green)
 
 ## Where we are
 
@@ -23,7 +23,7 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 5b — `_port` ↔ numeric module parity | **green** at `20_port` `60d47c3cb79`. Feature-test and lockstep commits re-merged. `diff -rq` of every numeric module folder was empty. |
 | 6 — 20.0 upstream release re-analysis | **item 31 done** (2026-09-28): `odoo@20.0` `c6306830bae`, `enterprise@20.0` `366ecb35b94` pinned; [20-final-delta.md](20-final-delta.md) — **10 source-confirmed breaks**, two program-wide (Font Awesome → Material Symbols in 53 modules; OWL ref compat and `t-custom-ref` dropped). Item 31b **done** (`ai_rules` `9db1a3e`): rule 22 section "20.0 final delta" F1–F10 with the icon rename table; checker kinds `fa-icon`, `owl-ref`, `ctrl-hook`, `py-import` (quiet on the saas pin, 255 findings on `20_port` vs 20.0). Item 32 **done** (2026-09-29): image `faotools/env-demo-20:20.0` (core `853a1f86126b`, re-pinned from the tip), matrix **red on all four legs** — fresh dies at import (`PREFETCH_MAX`, F5), cumulative dies in core (`ir_model_fields.index` boolean → Selection, **F11**: a saas-19.4 DB has no upgrade path to 20.0). Item 33 **blocked** until Fx.1. F11 **decided** 2026-09-29: the saas DBs are evidence only; the 20.0 cumulative base is the first green 20.0 fresh build. |
 | 7 — master infrastructure + faotools.com enablement | pending |
-| 8 — per-group loops on 20.0 | pending |
+| 8 — per-group loops on 20.0 | **in progress** — pilot `20_2` Fx.1 and Fx.2 **green** (2026-09-29). Fx.1: Material icons, `20_2` `c1bf73f6543` merged to `20_port` `bed6a9a1cde`, system `eca16ba`. Fx.2: demo lint clean, no editor bodies; Layer 2 loaders on a throwaway 20.0 DB created 13 sticky notes, 6 alerts, 23 extra contacts (Abigail `oi_whatsapp`), idempotent, DB dropped. Screenshot work list: [migration/screenshots/20_2.md](../migration/screenshots/20_2.md). Next is `20_c` Fx.1. |
 | 9 — publish loops | pending |
 | 10 — cutover | pending |
 
