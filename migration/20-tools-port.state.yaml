@@ -12,7 +12,7 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T15:20:00+01:00
+updated_at: 2026-09-29T15:55:00+01:00
 updated_by: agent/fx3-20_2
 
 # ---------------------------------------------------------------- pins
@@ -335,7 +335,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: f37b34dcefe5f39958fced0c346dc454465f2bf2, created: true, pushed: true, last_pushed: f37b34dcefe5f39958fced0c346dc454465f2bf2}
+  20_port: {git_sha: e1aa8d3d331583ba51f636971b7b2af31de8a0ed, created: true, pushed: true, last_pushed: e1aa8d3d331583ba51f636971b7b2af31de8a0ed}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca, created: true, pushed: true}
@@ -549,10 +549,20 @@ groups:
         obsolete-product sentence now names ODS-900 Workstation in the pot and all 42
         .po files; the rest of that catalog was not re-exported (a DB export of the
         group is thinner than the shipped pot).
-      tools_20_2: f31c150abcb541d11d2e1078c17f891fe1cc76d8
-      merge_to_20_port: f37b34dcefe5f39958fced0c346dc454465f2bf2
+      tools_20_2: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3
+      merge_to_20_port: e1aa8d3d331583ba51f636971b7b2af31de8a0ed
+      leftover_english_msgstr: >
+        msgid "Sticky Notes" kept msgstr equal to the English source in all 41
+        non-English catalogs, so the preferences group and button stayed English
+        after the first load. Translated (ru: Стикеры) and reloaded with
+        overwrite=True on fx8_20_2 and fx8_20_2e. en_GB stays Sticky Notes.
+        Empty-msgstr does not catch this.
       system_20_0: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca
       empty_msgstr: 0
+      loaded_on:
+        - {db: fx8_20_2e, url: "http://127.0.0.1:18221/web/login", active_langs: 43, proof: "extra.contact.info comment: Comment -> Комментарий"}
+        - {db: fx8_20_2, url: "http://127.0.0.1:18220/web/login", active_langs: 43}
+      users_left_on: en_US
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
