@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T11:30:00+01:00
-updated_by: agent/phase6-item32-image-matrix
+updated_at: 2026-09-29T12:30:00+01:00
+updated_by: agent/phase6-f11-decided
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -250,7 +250,8 @@ phases:
       2026-09-22 re-merged the numeric feature-test and lockstep commits into
       20_port (HEAD 60d47c3cb79). diff -rq of every numeric module folder
       against 20_port was empty. Repeat after every later Gx.9 and every
-      lockstep walk fix.
+      lockstep walk fix. Re-checked 2026-09-29 at 20_port 743eccd9b7f: all 18
+      groups empty diff, worktrees clean, nothing unpushed.
   "6_final_serie_release":
     status: in_progress
     "31_pin_and_compare":
@@ -265,9 +266,11 @@ phases:
         checker_found: 3      # js-import action_service, js-symbol refs, view-xmlid crm_team form
         checker_missed: 6     # fa icons, portal counters hook, PREFETCH_MAX, _file_read, hr_attendance route, mail_attachment_delete
         checker_runs:
-          tools_20_0: "/tmp/p6/checker-tools-20.0.json (50; 25 new vs saas pin)"
-          tools_saas: "/tmp/p6/checker-tools-saas194.json (25, accepted residue)"
-          system_20_0: "/tmp/p6/checker-system-20.0.json (13, saas-era kinds)"
+          # The 2026-09-28 /tmp/p6 artifacts were lost with a WSL restart; the numbers
+          # are in docs/20-final-delta.md and the durable re-run at the baked tip is below.
+          tools_20_0: "50 (25 new vs saas pin) — re-run at the baked tip: /home/feelwhy/env-sync/p6/checker-tools-20.0-tip.json (305 = 50 + 255)"
+          tools_saas: "25, accepted residue (numbers in docs/20-final-delta.md)"
+          system_20_0: "13, saas-era kinds (numbers in docs/20-final-delta.md)"
       official_image: "Docker Hub library/odoo has no 20.0 tag (latest 19.0-20260908); item 32 keeps the overlay image"
     "31b_rule22_and_checker":
       status: done
@@ -307,12 +310,13 @@ phases:
     "33_init_20_final":
       status: blocked
       blocked_on: "fresh 20.0 build must start with no custom errors; today it dies at import (F5). Unblocks after Fx.1 across the groups."
-      owner_decision_required: true
+      owner_decision_required: false
       decision: >
-        F11: a saas-19.4 database cannot be -u'd onto 20.0 (core schema, no upgrade path
-        for a saas-fork DB). Proposed: the 20.0 cumulative base is the first green 20.0
-        fresh build from 20_port; odooallapps20 / odooallapps20e stay as saas-stage evidence
-        and are not migrated. Phase 8 Fx.5 review DBs accumulate from the new base.
+        F11 — DECIDED by the owner 2026-09-29: a saas-19.4 database is never -u'd onto 20.0.
+        odooallapps20.odootools.com / odooallapps20e.odootools.com are saas-stage evidence
+        and stay untouched; the 20.0 cumulative base is the first green 20.0 fresh build
+        from 20_port, and the phase-8 Fx.5 review DBs accumulate from that base.
+      decided_at: 2026-09-29T12:26:00+01:00
   "7_master_infrastructure": {status: pending}
   "8_final_group_loops": {status: pending}
   "9_publish_loops": {status: pending}
@@ -321,10 +325,12 @@ phases:
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
 aggregates:
-  20_port: {git_sha: 60d47c3cb79, created: true, pushed: true, last_pushed: 60d47c3cb79}
+  # 2026-09-29: 20_port moved to 743eccd9b7f (20_14 cloud_base sync toggles, 20_4
+  # password-manager fixes merged by their chats); system 20.0 to fb515d5. Both pushed.
+  20_port: {git_sha: 743eccd9b7f, created: true, pushed: true, last_pushed: 743eccd9b7f}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 44adf61, created: true, pushed: true}
+  system_20_0: {git_sha: fb515d5, created: true, pushed: true}
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done

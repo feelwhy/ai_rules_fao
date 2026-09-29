@@ -300,12 +300,11 @@ where it dies in core again — `mail_activity._compute_phone` → `KeyError: 'c
 `crm` is not yet loaded. That is exactly what Odoo's upgrade scripts exist for, and there is no
 upgrade path for a saas-fork database outside odoo.sh.
 
-**Consequence — proposal, owner decision pending (ledger 6.33 `owner_decision_required`):** the
-accumulated path does not cross the saas-19.4 → 20.0 boundary. Proposed: `odooallapps20.odootools.com`
-/ `odooallapps20e.odootools.com` stay as the saas-stage evidence; the 20.0 cumulative base is the
-first green **20.0 fresh build** from `20_port`, and the Fx.5 review DBs accumulate from there. Until
-the owner confirms, nobody rebuilds or migrates those databases. Nothing in `tools` changes for F11
-(`custom_fields` never writes `index`).
+**Consequence — decided by the owner 2026-09-29 (ledger 6.33):** the accumulated path does not
+cross the saas-19.4 → 20.0 boundary. `odooallapps20.odootools.com` / `odooallapps20e.odootools.com`
+stay as the saas-stage evidence and are not migrated; the 20.0 cumulative base is the first green
+**20.0 fresh build** from `20_port`, and the Fx.5 review DBs accumulate from there. Nothing in
+`tools` changes for F11 (`custom_fields` never writes `index`).
 
 ### Serie-specific infrastructure audit (`faotools_env`, phase-7 work, none blocks Fx)
 
@@ -339,5 +338,5 @@ matrix run, the audit — is complete.
   concentrate in `20_14`, `20_15`, `20_4`, `20_16`, `20_5`.
 - Item 4 is the silent class again: no test we have would notice a hidden portal card. Fx.4 needs an
   HTTP assertion per portal module that `/my` renders the card with a non-zero counter.
-- F11 (proposal, owner decision pending): the cumulative lane restarts on 20.0 from the first green
-  fresh build; do not spend time hand-migrating the saas-19.4 accumulated databases.
+- F11 (decided): the cumulative lane restarts on 20.0 from the first green fresh build; do not
+  spend time hand-migrating the saas-19.4 accumulated databases.
