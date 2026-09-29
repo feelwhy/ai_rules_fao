@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T16:35:00+01:00
-updated_by: agent/fx6-20_2
+updated_at: 2026-09-29T16:50:00+01:00
+updated_by: agent/fx7-20_2
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -326,7 +326,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_2 Fx.7"
+    next: "20_2 Fx.8"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -350,7 +350,7 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Fx.6
+    stage: Fx.7
     stage_status: green
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
@@ -620,6 +620,23 @@ groups:
       public_20_0: 0
       origin_write_dates_unchanged: true
       preview: "https://faotools.com/apppublish//20.0/<draft id>/"
+    fx7:
+      stage_status: green
+      at: 2026-09-29T16:50:00+01:00
+      method: >
+        English of the five drafts already matched the 20.0 TM except the
+        Smart Alerts sentence that no longer mentions Font Awesome icons.
+        That sentence was retranslated in all 42 shipped languages. Each file
+        gained a releases block: the unpublished 20.0 migration changelog plus
+        the 19.0 rows its history link will show. check_release_tm: 0 gaps
+        across 99 files. The live drafts stay English; apply is Px.7.
+      files:
+        - support_translations/tm/website/smart_warnings_20.0.yaml
+        - support_translations/tm/website/sticky_notes_20.0.yaml
+        - support_translations/tm/website/complementary_contact_data_20.0.yaml
+        - support_translations/tm/website/complementary_employee_data_20.0.yaml
+        - support_translations/tm/website/complementary_lead_data_20.0.yaml
+      branch: support@19.0
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
