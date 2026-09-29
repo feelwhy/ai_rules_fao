@@ -154,6 +154,18 @@ check after every later `Gx.9` merge and after every lockstep walk fix.
 `Fx` pass **re-prefixes** each module's manifest `version` to `20.0.` + the tail
 that `Gx.3` left unprefixed — that is the one bump `11-manifest-version` allows.
 
+**`Fx.1` is not green, and no `Fx` review URL is handed, without the `Gx.7` browser
+first-click on the 20.0 image.** Tests, `-i`/`-u`, shell loader counts and a login probe
+never construct an OWL component; on 20_2 all of them were green while every form view
+in the group died on the owner's first click, twice (`env.isSmall`, `static props` —
+rule 22 F12 / F13, incident `fx_review_owl_construction_20_2`). Run the checker with
+`--odoo-ref origin/20.0` (kinds `owl-static-props`, `env-removed`, `owl-props-spread`,
+`owl-ref`), then drive a headless browser over every group form, menu, dialog and
+notebook tab the contract names (`selenium/standalone-chromium` on the
+`faotools-env-local` network, BiDi console capture) and require zero `.o_error_dialog`
+and zero console errors before the URL leaves the chat. The 20_2 runner is the template
+(`~/env-sync/p6/selenium/smoke_20_2.py`, not source).
+
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
 
