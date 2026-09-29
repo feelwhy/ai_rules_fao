@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T16:55:00+01:00
-updated_by: agent/fx8-20_2
+updated_at: 2026-09-29T17:10:00+01:00
+updated_by: agent/fx1-20_c
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -323,10 +323,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
+    active_group: "20_c"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_2 phase 8 complete. Screenshots before Px.1. Do not start 20_c until asked."
+    next: "20_c Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -335,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: e1aa8d3d331583ba51f636971b7b2af31de8a0ed, created: true, pushed: true, last_pushed: e1aa8d3d331583ba51f636971b7b2af31de8a0ed}
+  20_port: {git_sha: 084b77f235e7a2adee873a6e858e12abb7fc05fc, created: true, pushed: true, last_pushed: 084b77f235e7a2adee873a6e858e12abb7fc05fc}
   20_final: {git_sha: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3, created: true, pushed: true, last_pushed: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca, created: true, pushed: true}
@@ -705,13 +706,26 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
     # ported onto 20_c as 47d58c3ad8a and rematched 20_port.
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_c
     review_worktree: /home/feelwhy/Odoo/_worktrees/tools-20_c_review
+    fx1:
+      stage_status: green
+      at: 2026-09-29T17:10:00+01:00
+      tools_20_c: ae8d6ea3bda9cc412a32b3b69db35e0bd2fd23d8
+      merge_to_20_port: 084b77f235e7a2adee873a6e858e12abb7fc05fc
+      checker: "0 findings vs origin/20.0 after the edit (was 4 fa-icon)"
+      versions: "re-prefixed 20.0.x.y.z, tails unchanged"
+      icons:
+        - "portal download span: fa fa-download -> oi data-icon=download"
+        - "product settings buttons: icon fa-arrow-right -> arrow_forward"
+        - "manifest blurbs: fa-globe -> oi data-icon=public"
+      tests: "0 failed, 0 error(s) of 27 on faotools/env-demo-20:20.0 (DB fx1_20_c, dropped)"
+      browser: "not run. No OWL in this group. No review URL handed."
     seed:
       commit: c781d8b6c17
       from_pin: 835c4be4b5deb809cc9100bbf4725d894561f08a
