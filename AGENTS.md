@@ -1618,7 +1618,10 @@ live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-po
    group review DBs) keep `en_US` active and Mitchell Admin / the demo user on `en_US`.
    Do not `--load-language` a shipped list that omits `en_US`, and do not run
    `_demo_activate_shipped_langs` "because Gx.8 needs them". Translations are `Fx.3`
-   and `Px.7` only.
+   and `Px.7` only. `Fx.3` is not green until the group's review database has every
+   shipped language loaded from the refreshed `.po` files (`res.lang.action_unarchive`,
+   which loads installed modules) and a non-English term on that database differs from
+   English. Leave `admin` and `demo` on `en_US`; the owner switches language to check.
 8. **Owner-asked fixes stay in the plan and are applied on the newest group.** When the
    owner asks to fix anything (first-click crash, missing `demo`/`demo`, checker miss),
    the successor is written into rule 22 + the checker **and** becomes a required
