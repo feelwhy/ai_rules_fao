@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T16:50:00+01:00
-updated_by: agent/fx7-20_2
+updated_at: 2026-09-29T16:55:00+01:00
+updated_by: agent/fx8-20_2
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -326,7 +326,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_2 Fx.8"
+    next: "20_2 phase 8 complete. Screenshots before Px.1. Do not start 20_c until asked."
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: e1aa8d3d331583ba51f636971b7b2af31de8a0ed, created: true, pushed: true, last_pushed: e1aa8d3d331583ba51f636971b7b2af31de8a0ed}
-  20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
+  20_final: {git_sha: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3, created: true, pushed: true, last_pushed: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca, created: true, pushed: true}
 
@@ -350,7 +350,7 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Fx.7
+    stage: Fx.8
     stage_status: green
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
@@ -637,6 +637,21 @@ groups:
         - support_translations/tm/website/complementary_employee_data_20.0.yaml
         - support_translations/tm/website/complementary_lead_data_20.0.yaml
       branch: support@19.0
+    fx8:
+      stage_status: green
+      at: 2026-09-29T16:55:00+01:00
+      tools_20_2: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3
+      tools_20_port: e1aa8d3d331583ba51f636971b7b2af31de8a0ed
+      tools_20_final: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3
+      tools_20_0_untouched: 971c21a311ebe5682576a86396ef539c71d7c216
+      module_diff_20_2_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final fast-forwarded to 20_2. That tree is only these five modules.
+        It is the same SHA the Fx.4 matrix already passed (0 failed, 0 errors
+        of 31 tests, community and enterprise). Not a merge of the whole
+        20_port: item 33 stays blocked until every group starts on 20.0.
+      not_merged_to: "tools 20.0 (that is Px.2)"
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
