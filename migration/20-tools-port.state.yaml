@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-28T13:40:00+01:00
-updated_by: agent/phase6-item31b-rule22
+updated_at: 2026-09-29T11:30:00+01:00
+updated_by: agent/phase6-item32-image-matrix
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -36,9 +36,13 @@ pins:
   # Phase 6 item 31 (2026-09-28): released 20.0, fetched without checkout. Not an
   # ancestor of the saas-19.4 pins (docs/20-final-delta.md). Nothing is ported to
   # these yet; Fx stages start only after the rule-22 chunk (6.31b).
-  odoo_20_0: c6306830baea390c5fa30a99187358420684089f
-  enterprise_20_0: 366ecb35b9456c17a1b890af793de1e9c6b22ad7
-  final_pinned_at: 2026-09-28
+  odoo_20_0: 853a1f86126b9f841e3bba5b3153dbc37ac1bffc
+  enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+  final_pinned_at: 2026-09-29
+  # Re-pinned deliberately at item 32: env-serie-image.sh bakes the branch tip, which had
+  # moved past the 2026-09-28 analysis pins (odoo c6306830bae, enterprise 366ecb35b94; 31 /
+  # 27 commits). The checker at the baked tip reports the identical delta (50 + 255).
+  analysis_pins_20_0: {odoo: c6306830baea390c5fa30a99187358420684089f, enterprise: 366ecb35b9456c17a1b890af793de1e9c6b22ad7}
 
 # ---------------------------------------------------------------- phases
 phases:
@@ -276,8 +280,39 @@ phases:
         saas_pin_full_run: "25 findings before and after; new kinds report 0 on the saas-19.4 target"
         v20_new_kinds: "255 on tools-20_port: fa-icon 212 files / owl-ref 32 / ctrl-hook 9 / py-import 2 (PREFETCH_MAX also in cloud_base/models/clouds_folder.py:11)"
         system_v20_new_kinds: "4 fa-icon files"
-    "32_final_image_and_matrix": {status: pending}
-    "33_init_20_final": {status: pending}
+    "32_final_image_and_matrix":
+      status: done            # deliverable complete; the matrix itself is RED, see result
+      at: 2026-09-29T11:30:00+01:00
+      image:
+        tag: faotools/env-demo-20:20.0      # :current stays saas-19.4 for demo20/demo20e
+        base: faotools/env-demo-19:current
+        core_rev: 853a1f86126b9f841e3bba5b3153dbc37ac1bffc   # == pins.odoo_20_0
+        odoo_release: "20.0"
+        baked_addons: 658
+        build_log: /home/feelwhy/env-sync/p6/image-build.log
+      enterprise_worktree: /home/feelwhy/Odoo/_worktrees/enterprise-20.0   # detached at pins.enterprise_20_0
+      matrix:
+        runner: /home/feelwhy/env-sync/p6/matrix20.sh
+        tools: 743eccd9b7f
+        system: fb515d5
+        fresh_community: "RED — ImportError PREFETCH_MAX (joint_calendar) at registry load; logs/fresh_c.log"
+        fresh_enterprise: "RED — same; logs/fresh_e.log"
+        cumulative_community: "RED in core at web (7/211): ir_model_fields.index boolean -> varchar 'true'/'false' rejected by check_indexes (F11); logs/cum_c.log"
+        cumulative_enterprise: "RED — same; logs/cum_e.log"
+        after_index_map_probe: "-u all then dies in core mail_activity._compute_phone KeyError crm.lead (33/211); logs/cum_c_after_indexmap.log"
+        throwaway_dbs_dropped: [p6fresh20c, p6fresh20e, p6cum20c, p6cum20e]
+        served_dbs_untouched: true
+      checker_at_baked_tip: "/home/feelwhy/env-sync/p6/checker-tools-20.0-tip.json — 305 = 50 old kinds + 255 new kinds, identical delta"
+      infra_audit: "docs/20-final-delta.md § Serie-specific infrastructure audit (turnstile >=19, _DBFILTER_SERIE_MAJORS, serie_20, env_dbfilter_header odoo.service.db, common.sh branch map, demo lists)"
+    "33_init_20_final":
+      status: blocked
+      blocked_on: "fresh 20.0 build must start with no custom errors; today it dies at import (F5). Unblocks after Fx.1 across the groups."
+      owner_decision_required: true
+      decision: >
+        F11: a saas-19.4 database cannot be -u'd onto 20.0 (core schema, no upgrade path
+        for a saas-fork DB). Proposed: the 20.0 cumulative base is the first green 20.0
+        fresh build from 20_port; odooallapps20 / odooallapps20e stay as saas-stage evidence
+        and are not migrated. Phase 8 Fx.5 review DBs accumulate from the new base.
   "7_master_infrastructure": {status: pending}
   "8_final_group_loops": {status: pending}
   "9_publish_loops": {status: pending}

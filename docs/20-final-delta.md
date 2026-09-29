@@ -14,8 +14,10 @@ Companions: [20-tools-touchpoints.md](20-tools-touchpoints.md) (the surface),
 |---|---|---|
 | `odoo@saas-19.4` (tested pin) | `3630379f63633612e5a9e8d435deecbe26eaa15a` | 2026-09-12 |
 | `enterprise@saas-19.4` (tested pin) | `8d73a02a8ba9a99fb41b2cd01b1680c6ded4b837` | 2026-09-12 |
-| `odoo@20.0` | `c6306830baea390c5fa30a99187358420684089f` | 2026-09-28 09:18 UTC |
-| `enterprise@20.0` | `366ecb35b9456c17a1b890af793de1e9c6b22ad7` | 2026-09-28 09:18 UTC |
+| `odoo@20.0` (analysis pin) | `c6306830baea390c5fa30a99187358420684089f` | 2026-09-28 09:18 UTC |
+| `enterprise@20.0` (analysis pin) | `366ecb35b9456c17a1b890af793de1e9c6b22ad7` | 2026-09-28 09:18 UTC |
+| `odoo@20.0` (baked in the item-32 image, current ledger pin) | `853a1f86126b9f841e3bba5b3153dbc37ac1bffc` | 2026-09-29 |
+| `enterprise@20.0` (worktree `enterprise-20.0`, current ledger pin) | `9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13` | 2026-09-29 |
 | `tools@20_port` scanned | `ad04db88a88` | |
 | `system@20.0` scanned | `fb515d5` | |
 
@@ -252,6 +254,79 @@ widened kinds — that is the rule-22 chunk that must land before any Fx.1.
 | Tracking values removed | already on the saas pin (phase-1 finding 12–13) | none new |
 | Many2one field rework, push notifications, account/asset/return/MRP changes | not on our surface | none |
 
+## Item 32 — 20.0 candidate image and the first matrix on it (2026-09-29)
+
+### Image
+
+`faotools/env-demo-20:20.0`, built by `faotools_env/local/env-serie-image.sh --ref 20.0 --tag
+faotools/env-demo-20:20.0` on the `faotools/env-demo-19:current` OS layer (same mechanism as the
+saas-19.4 image; `:current` still carries saas-19.4 `3630379f6363` and the demo20/demo20e
+containers are untouched). Baked core `853a1f86126b9f841e3bba5b3153dbc37ac1bffc`, `odoo.release`
+`20.0`, 658 addon dirs, packaged tree empty, Python 3.12.3. Docker Hub still publishes no
+`odoo:20.0`.
+
+**Re-pin.** The build clones the branch tip, and `20.0` had moved past the analysis pin
+(`c6306830bae` → `853a1f86126b`, 31 commits / 90 non-i18n files; `enterprise` `366ecb35b94` →
+`9e5c3e9044fd`, 27 commits). The checker at the new tip reports the same 50 old-kind findings plus
+the 255 new-kind ones, so the ten items above hold at the baked pin. Ledger pins now name the baked
+revs; enterprise 20.0 is the detached worktree `/home/feelwhy/Odoo/_worktrees/enterprise-20.0`.
+
+### Matrix (all four legs red, as expected before any Fx.1)
+
+Runner `/home/feelwhy/env-sync/p6/matrix20.sh`, logs under `/home/feelwhy/env-sync/p6/logs/`.
+`tools-20_port` `743eccd9b7f`, `system-20.0` `fb515d5`. Throwaway DBs dropped afterwards; the served
+DBs were only cloned (`CREATE DATABASE … TEMPLATE`), never opened by the 20.0 image.
+
+| Leg | Result | First failure |
+|---|---|---|
+| fresh community (`-i` the 20 list, `--with-demo`) | red at module 226/226 graph, 50 s in | `Couldn't load module joint_calendar` — `ImportError: cannot import name 'PREFETCH_MAX' from 'odoo.tools.constants'` (item 5, first runtime reproduction) |
+| fresh enterprise | red, same | same |
+| cumulative community (clone of `odooallapps20.odootools.com`, `-u all`) | red at `web` (7/211) | `registry.check_indexes` `AssertionError` — see F11 below; **core, before any tools module loads** |
+| cumulative enterprise (clone of `odooallapps20e.odootools.com`) | red, same | same |
+
+### F11. A saas-19.4 database cannot be `-u`'d onto 20.0 (core schema, not our code)
+
+`ir.model.fields.index` is `fields.Boolean` on the saas pin (`ir_model.py:601`) and
+`fields.Selection(FIELD_INDEX_TYPES)` — `btree` / `btree_not_null` / `trigram` — at 20.0
+(`ir_model.py:572-576,613`). Loading `base` on a saas database, the ORM converts the boolean column
+to `varchar` (`'true'` / `'false'`); `_instanciate_attrs` then passes `'index': field_data['index']`
+(`:1494`) unchanged into every **manual** field, and `Registry.check_indexes` asserts
+`index in ('btree', 'btree_not_null', 'trigram', True, False, None)` (`registry.py:920`). Our
+`x_oz_*` custom fields are the manual fields that trip it; any Studio field would too.
+
+Proof on the throwaway clone: `UPDATE ir_model_fields SET index = CASE WHEN index='true' THEN
+'btree' WHEN index='false' THEN NULL ELSE index END` lets `-u all` continue to `mail` (33/211),
+where it dies in core again — `mail_activity._compute_phone` → `KeyError: 'crm.lead'` while
+`crm` is not yet loaded. That is exactly what Odoo's upgrade scripts exist for, and there is no
+upgrade path for a saas-fork database outside odoo.sh.
+
+**Consequence — proposal, owner decision pending (ledger 6.33 `owner_decision_required`):** the
+accumulated path does not cross the saas-19.4 → 20.0 boundary. Proposed: `odooallapps20.odootools.com`
+/ `odooallapps20e.odootools.com` stay as the saas-stage evidence; the 20.0 cumulative base is the
+first green **20.0 fresh build** from `20_port`, and the Fx.5 review DBs accumulate from there. Until
+the owner confirms, nobody rebuilds or migrates those databases. Nothing in `tools` changes for F11
+(`custom_fields` never writes `index`).
+
+### Serie-specific infrastructure audit (`faotools_env`, phase-7 work, none blocks Fx)
+
+| Branch | Verdict for serie 20 |
+|---|---|
+| `env_project._turnstile_overlay_needed` (`>= 19`) and `runtime/odoo19_turnstile_overlay/turnstile.js` | The overlay equals `odoo@19.0` git; 20.0's file is the saas-19.4 one (same code, prettier quotes). Applying it on 20 overwrites a newer file with 19.0 formatting — harmless today, wrong in principle. Make it `== 19` (Hub `odoo:19.0` deb is the only base that lacks the fix) |
+| `_DBFILTER_SERIE_MAJORS = {16, 17, 18, 19}` | `_serie_major_for_bake()` refuses 20 → no serie-20 base or project image until it is added |
+| `data/env_serie_data.xml` | no `serie_20` record; `hooks._seed_after_clone_for_serie` (`>= 19` → `after_clone_19.py`) would already pick the right script |
+| `runtime/env_dbfilter_header` | imports `odoo.service.db`, absent on saas-19.4 and 20.0 (release notes: `db` service removed). Already `CRITICAL … Failed to load server-wide module` on every 20 container; must be ported before a serie-20 image can carry it |
+| `local/lib/common.sh` `repo_branch_for_serie` | pre-release map sends `odoo` / `enterprise` to `saas-19.4`; for the final serie it must be `20.0` with the `enterprise-20.0` worktree, and `demo20*` must switch image tag from `:current` (saas) to the 20.0 image once `20_port` starts on 20.0 |
+| `_base_wkhtmltox_pin` (`<= 16` bullseye, else jammy), `_kpi_provider_overlay_needed` (`<= 16`), `env_database` `/websocket if major >= 16`, `_make_enterprise_modules_for_major` (`<= 16`, `<= 17`) | hold for 20 unchanged |
+| `demo20-*-modules.txt` | `hr_org_chart`, `website_sale_comparison*`, `website_sale_*wishlist` are ignored on saas and 20.0 alike — drop them |
+| `knowsystem_custom_fields` `web.assets_qweb` | dead bundle on both pins — clean at Fx |
+
+### Gate for item 33
+
+Item 33 (`20_final` from the complete `20_port`, master preparation) requires a full tree that
+starts on 20.0 with no custom errors. It does not: the fresh build dies at import. Phase 7 stays
+blocked while the ten items go through Fx.1 per group. Item 32's own deliverable — the image, the
+matrix run, the audit — is complete.
+
 ## What this changes in the plan
 
 - Rule 22 gets five new facts (items 1–2 as transforms with icon rename table and ref recipe; 3, 5, 9
@@ -264,3 +339,5 @@ widened kinds — that is the rule-22 chunk that must land before any Fx.1.
   concentrate in `20_14`, `20_15`, `20_4`, `20_16`, `20_5`.
 - Item 4 is the silent class again: no test we have would notice a hidden portal card. Fx.4 needs an
   HTTP assertion per portal module that `/my` renders the card with a non-zero counter.
+- F11 (proposal, owner decision pending): the cumulative lane restarts on 20.0 from the first green
+  fresh build; do not spend time hand-migrating the saas-19.4 accumulated databases.
