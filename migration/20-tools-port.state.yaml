@@ -325,7 +325,7 @@ phases:
     pilot: "20_2"
     fx1: green     # tools 20_2 c1bf73f6543, merged 20_port bed6a9a1cde; system eca16ba
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
-    next: "20_c Fx.1"
+    next: "owner walk of fx8_20_2, then 20_2 Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -526,6 +526,20 @@ groups:
         log: /home/feelwhy/env-sync/p6/logs/fx2_20_2_install.log
       screenshots: migration/screenshots/20_2.md
       backend_editor: none
+    review:
+      db: fx8_20_2
+      url: http://127.0.0.1:18220/web/login
+      image: faotools/env-demo-20:20.0
+      tools: /home/feelwhy/Odoo/_worktrees/tools-20_2
+      system: /home/feelwhy/Odoo/_worktrees/system-20.0
+      logins: {admin: admin, demo: demo}
+      languages: en_US
+      seeded: {sticky.note: 13, smart.warning: 6, extra.contact.info: 23, abigail: oi_whatsapp}
+      filestore: GX8_FILESTORE_OK
+      report_url: http://127.0.0.1:8069
+      keep_until: 2026-10-02T12:59:00+01:00
+      compose: faotools_env/local/run/fx8_20_2/compose.yml
+      login_probe: "admin/admin -> /odoo 200"
     baseline:
       command: "env-test.sh demo19 smart_warnings,sticky_notes,complementary_contact_data,complementary_employee_data,complementary_lead_data"
       result: "0 failed, 0 error(s) of 3 tests; all 5 modules upgrade; log gate FAIL 0 RECORD 7 ALLOW 1"
