@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T15:55:00+01:00
-updated_by: agent/fx3-20_2
+updated_at: 2026-09-29T16:30:00+01:00
+updated_by: agent/fx4-20_2
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -326,7 +326,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_2 Fx.4"
+    next: "20_2 Fx.5"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -350,7 +350,7 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Fx.3
+    stage: Fx.4
     stage_status: green
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
@@ -563,6 +563,38 @@ groups:
         - {db: fx8_20_2e, url: "http://127.0.0.1:18221/web/login", active_langs: 43, proof: "extra.contact.info comment: Comment -> Комментарий"}
         - {db: fx8_20_2, url: "http://127.0.0.1:18220/web/login", active_langs: 43}
       users_left_on: en_US
+    fx4:
+      stage_status: green
+      at: 2026-09-29T16:30:00+01:00
+      image: faotools/env-demo-20:20.0
+      core: 853a1f86126b9f841e3bba5b3153dbc37ac1bffc
+      tools_20_2: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3
+      system_20_0: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      runner: /home/feelwhy/env-sync/p6/fx4_20_2_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_2_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_2_e.log]
+      matrix_dbs_dropped: true
+      community: >
+        Each of the 5 modules, own closure: --without-demo=True -i, --with-demo -i,
+        then -u. Then the five together --with-demo --test-enable. 0 failed, 0 error(s)
+        of 31 tests. MATRIX_OK.
+      enterprise: >
+        Same 15 install/update legs plus the group test. 0 failed, 0 error(s) of 31 tests.
+        Enterprise addons path mounted. MATRIX_OK.
+      cumulative: >
+        No 20.0 all-apps database exists (item 33 still blocked on PREFETCH_MAX).
+        The cumulative leg for this first group is the five modules installed together.
+      log_gate: >
+        Per leg, FAIL 0. Group-test ALLOW 1 is the deliberate varchar read in
+        test_ru_read_crashes_on_varchar_then_healer_fixes_it. RECORD is markdown2
+        missing in mail (and ai, on enterprise).
+      browser:
+        community: "SMOKE_OK 12/12 on fx8_20_2"
+        enterprise: >
+          First pass missed .sticky_note_container on partner 16, lead 14 and sale 1,
+          and /odoo/sticky-notes/4 404. Six demo notes (azure, sale, lead) were absent
+          while their target xmlids existed. Reloaded _load_demo_sticky_notes: 13 notes.
+          Second pass SMOKE_OK 12/12; the note form is id 14 on this database.
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
