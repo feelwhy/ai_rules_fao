@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T14:55:00+01:00
-updated_by: agent/fx8-20_2-review-fixes
+updated_at: 2026-09-29T15:20:00+01:00
+updated_by: agent/fx3-20_2
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -326,7 +326,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "owner walk of fx8_20_2, then 20_2 Fx.3"
+    next: "20_2 Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -335,10 +335,10 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 299187e254a4bdf3dbb87f1352566b0b25644652, created: true, pushed: true, last_pushed: 299187e254a4bdf3dbb87f1352566b0b25644652}
+  20_port: {git_sha: f37b34dcefe5f39958fced0c346dc454465f2bf2, created: true, pushed: true, last_pushed: f37b34dcefe5f39958fced0c346dc454465f2bf2}
   20_final: {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 4fef9e506c72340dd21319735d34e9ad818e1eb7, created: true, pushed: true}
+  system_20_0: {git_sha: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca, created: true, pushed: true}
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -350,7 +350,7 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Fx.2
+    stage: Fx.3
     stage_status: green
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
@@ -537,6 +537,22 @@ groups:
         log: /home/feelwhy/env-sync/p6/logs/fx2_20_2_install.log
       screenshots: migration/screenshots/20_2.md
       backend_editor: none
+    fx3:
+      stage_status: green
+      at: 2026-09-29
+      method: >
+        trans_export on fx8_20_2e for the five modules. Code terms: lost 0.
+        Unchanged msgid kept its msgstr. New entries are the module catalog
+        (summary, description, shortdesc, privilege placeholder No, ir.model Module)
+        translated in all 42 shipped languages. Removed view strings Create a Customer
+        and Create an Opportunity (no longer in the modules). odootools_demo: the
+        obsolete-product sentence now names ODS-900 Workstation in the pot and all 42
+        .po files; the rest of that catalog was not re-exported (a DB export of the
+        group is thinner than the shipped pot).
+      tools_20_2: f31c150abcb541d11d2e1078c17f891fe1cc76d8
+      merge_to_20_port: f37b34dcefe5f39958fced0c346dc454465f2bf2
+      system_20_0: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca
+      empty_msgstr: 0
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
@@ -552,6 +568,23 @@ groups:
       compose: faotools_env/local/run/fx8_20_2/compose.yml
       login_probe: "admin/admin -> /odoo 200"
       relaunched: "2026-09-29 14:50 after the OWL fixes: assets rebuilt, loaders re-run (S00001 carries ODS-900), browser smoke SMOKE_OK 12/12"
+    review_enterprise:
+      db: fx8_20_2e
+      url: http://127.0.0.1:18221/web/login
+      image: faotools/env-demo-20:20.0
+      enterprise: /home/feelwhy/Odoo/_worktrees/enterprise-20.0
+      web_enterprise: installed
+      logins: {admin: admin, demo: demo}
+      languages: en_US
+      seeded: {sticky.note: 13, smart.warning: 6, extra.contact.info: 23, s00001: [FURN_6667, FURN_7777, FURN_8888, ODS-900]}
+      keep_until: 2026-10-02T14:57:00+01:00
+      purpose: "store screenshots for this serie are taken on enterprise"
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_2-smart_warnings-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_2-sticky_notes-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_2-complementary_contact_data-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_2-complementary_employee_data-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_2-complementary_lead_data-screenshots.pdf
     baseline:
       command: "env-test.sh demo19 smart_warnings,sticky_notes,complementary_contact_data,complementary_employee_data,complementary_lead_data"
       result: "0 failed, 0 error(s) of 3 tests; all 5 modules upgrade; log gate FAIL 0 RECORD 7 ALLOW 1"
