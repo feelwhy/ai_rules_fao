@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T16:05:00+01:00
-updated_by: agent/fx1-20_4
+updated_at: 2026-09-30T16:50:00+01:00
+updated_by: agent/fx2-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_4 Fx.2"
+    next: "20_4 Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -339,7 +339,7 @@ aggregates:
   20_port: {git_sha: c9ae7d063b210055d9e7ee25967d2ac23ddba199, created: true, pushed: true, last_pushed: c9ae7d063b210055d9e7ee25967d2ac23ddba199}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: f46cf64b12dca9f35d9f77dd28fce02218afcc8b, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
+  system_20_0: {git_sha: 532f133f4ca64c0718318f5edd266e2295cd9672, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -1720,7 +1720,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Fx.1
+    stage: Fx.2
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -1887,7 +1887,7 @@ groups:
       tests: "0 failed, 0 error(s) of 11 on faotools/env-demo-20:20.0, fresh install with demo, community (DB fx1_20_4, dropped); log has 1 unrelated markdown2 warning"
       browser: >
         Done at Fx.1 because the group has OWL. Temporary DB with odootools_demo Layer 2, headless
-        Chromium (33 checks, admin and portal): bundles kanban, Sales login dialog (submit),
+        Chromium (32 checks, admin and portal; first written as 33 by mistake): bundles kanban, Sales login dialog (submit),
         keys kanban, selection, preview eye and copy, jstree filter click, key/bundle/vault
         forms, custom types/fields, settings, roles list/form, user form, general settings,
         tasks kanban/list/form, quick search, portal home card, vault login and open, portal
@@ -1899,6 +1899,62 @@ groups:
         20_4 is not an ancestor of 20_port (the Gx.9 changes were cherry-picked), so the merge
         conflicted once in password_bundle.xml on the icon lines; took the 20_4 side. All four
         module folders equal 20_4.
+    fx2:
+      stage_status: green
+      at: 2026-09-30T16:50:00+01:00
+      tools_20_4: 16b188d84c86367345d82a4998a1e1e0b8a4e0f7
+      system_20_0: 532f133f4ca64c0718318f5edd266e2295cd9672
+      layer1:
+        changed: false
+        lint: >
+          demo_lint on a temporary root that links tools-20_4 and system-20.0 (the default
+          root would read the 19.0 checkout): one issue, no demo_xmlids.json snapshot for
+          security_user_roles (its demo_roles.xml was added at Gx.8 without one). Snapshot
+          written; lint is now 0 issues across the four modules and odootools_demo.
+        empty_layer1: [task_numbers]
+      layer2:
+        changed: false
+        loader: "res.company._reload_tools_demo_data (23 loaders ran) + _demo_pwm_stamp_sales_extra_password"
+        idempotent: true
+        counts: {keys: 15, bundles: 2, vaults: 2, tags: 6, roles: 7, types: 2, demo_user: true, tasks_with_reference: 9}
+        matches_19_0_counts: "keys, bundles, vaults, tags, roles, types, demo user. The 19.0 avatars=16 figure was not compared: this run counted 13 users with an image, a different metric."
+        sales_bundle: 'named Sales (extra password: "faotools")'
+      screenshots: migration/screenshots/20_4.md
+      shot_rows: 37
+      pics_note: "22 rows come from description 1015 features and directly; live titles of two rows carry <i class='fa fa-gears'> (Fx.6 must not copy that)"
+    review:
+      db: fx8_20_4
+      url: http://127.0.0.1:18224/web/login
+      image: faotools/env-demo-20:20.0
+      tools: /home/feelwhy/Odoo/_worktrees/tools-20_4
+      also_mounted: "tools-20_port as second tools path (custom_fields dependency of the password custom fields app)"
+      system: /home/feelwhy/Odoo/_worktrees/system-20.0
+      logins: {admin: admin, demo: demo, portal: portal}
+      languages: en_US
+      filestore: GX8_FILESTORE_OK
+      report_url: http://127.0.0.1:8069
+      keep_until: 2026-10-03T15:30:00+01:00
+      compose: faotools_env/local/run/fx8_20_4/compose.yml
+      browser: "SMOKE_OK 32/32 (same runner as Fx.1, with the login dialog, key selection, preview, copy, tree click, portal vault and tasks). Log logs/fx8_20_4_smoke.log"
+    review_enterprise:
+      db: fx8_20_4e
+      url: http://127.0.0.1:18225/web/login
+      image: faotools/env-demo-20:20.0
+      enterprise: /home/feelwhy/Odoo/_worktrees/enterprise-20.0
+      web_enterprise: installed
+      logins: {admin: admin, demo: demo, portal: portal}
+      languages: en_US
+      filestore: GX8_FILESTORE_OK
+      report_url: http://127.0.0.1:8069
+      keep_until: 2026-10-03T15:30:00+01:00
+      compose: faotools_env/local/run/fx8_20_4e/compose.yml
+      purpose: "store screenshots for this serie are taken on enterprise"
+      browser: "SMOKE_OK 32/32. Log logs/fx8_20_4e_smoke.log"
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_4-odoo_password_manager-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_4-odoo_password_manager_custom_fields-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_4-security_user_roles-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_4-task_numbers-screenshots.pdf
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]

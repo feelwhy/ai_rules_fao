@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-09-30 (20_4 Fx.1 green; 20_c Fx.8 green)
+**Last updated:** 2026-09-30 (20_4 Fx.2 green; 20_c Fx.8 green)
 
 ## Where we are
 
