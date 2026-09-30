@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-29T17:10:00+01:00
-updated_by: agent/fx1-20_c
+updated_at: 2026-09-30T13:50:00+01:00
+updated_by: agent/fx6-20_c
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_c Fx.5"
+    next: "20_c Fx.7"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -706,7 +706,7 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Fx.4
+    stage: Fx.6
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
@@ -853,6 +853,44 @@ groups:
       browser:
         community: "SMOKE_OK 18/18 on fx8_20_c"
         enterprise: "SMOKE_OK 18/18 on fx8_20_ce. Portal task shows Version Release and sale order S00001."
+    fx5:
+      stage_status: skipped
+      at: 2026-09-30
+      reason: "Owner said move to Fx.6. The review databases from Fx.2 were already the walk."
+    fx6:
+      stage_status: green
+      at: 2026-09-30T13:50:00+01:00
+      method: >
+        Standalone copy of each published 19.0 description. version 20.0,
+        prepublish true, force_no_git true, not_supported false, no
+        pre_publish_origin_id, documentation_url cleared, website_published
+        false. No video on any of the eight pages. short_summary unchanged.
+        Feature text needed no edit: the fa- icons are on the faotools.com page
+        itself and no sentence tells the customer to use Font Awesome. The task
+        draft carries exact_version 1.0.6 to match the 20.0 manifest and the
+        published 19.0 release 1107 (the 19.0 page still said 1.0.5).
+      drafts:
+        - {tech_name: custom_fields, origin: 1019, draft: 1255, exact_version: 1.0.11, release: 1144}
+        - {tech_name: partner_custom_fields, origin: 1020, draft: 1257, exact_version: 1.0.5, release: 1143}
+        - {tech_name: opportunity_custom_fields, origin: 1021, draft: 1256, exact_version: 1.0.5, release: 1141}
+        - {tech_name: opportunity_custom_fields_website, origin: 1022, draft: 1258, exact_version: 1.0.2, release: 1142}
+        - {tech_name: product_custom_fields, origin: 1023, draft: 1259, exact_version: 1.0.6, release: 1145}
+        - {tech_name: product_custom_fields_website_sale, origin: 1024, draft: 1260, exact_version: 1.0.4, release: 1146}
+        - {tech_name: project_custom_fields, origin: 1025, draft: 1261, exact_version: 1.0.5, release: 1147}
+        - {tech_name: task_custom_fields, origin: 1026, draft: 1262, exact_version: 1.0.6, release: 1148}
+      releases: >
+        migration true, state 0_work, not published, no check activity, release_date
+        2026-09-30. Pre-release history links each module's 19.0 releases plus the
+        older history behind its 19.0 migration release. The opportunity release
+        describes the CRM form layout change; product and custom_fields describe
+        the icon changes; the task release states defect 6 is still open in its
+        internal notes and does not claim it fixed.
+      pics: 33
+      features: 16
+      public_20_0: 0
+      origin_write_dates_unchanged: true
+      preview: "https://faotools.com/apppublish//20.0/<draft id>/"
+      tools: a9f166aab21186d4a4e312b307ff550152742707
     demo_show_product_types:
       at: 2026-09-30T12:45:00+01:00
       tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
