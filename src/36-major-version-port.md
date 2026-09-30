@@ -167,6 +167,17 @@ check after every later `Gx.9` merge and after every lockstep walk fix.
 `Fx` pass **re-prefixes** each module's manifest `version` to `20.0.` + the tail
 that `Gx.3` left unprefixed — that is the one bump `11-manifest-version` allows.
 
+**The `Fx.6` migration release lists substantial changes only.** Its `description` is the flag
+line ("The app is published to version 20.") plus one line for each change a customer would
+notice: a removed or moved feature, a changed layout, a behavior fix. Nothing else goes in.
+Not substantial, so never a line: an icon set change, "works as before on Odoo 20", a manifest
+or access-file move, an upgrade-time key rename, anything the customer cannot see or act on.
+A port with no such change ships the flag line alone. Those details belong in the internal
+`notes` (Before / After), not the public text. `Fx.7` mirrors the live release row exactly:
+the same lines in the TM file, every shipped language filled, and `check_release_tm.py` at
+0 gaps. A line added after `Fx.6` is written to the live release and the TM file in the same
+turn. Incident 2026-09-30: 20_2 and 20_c drafted 11 of 13 releases with filler lines; ten shrank to the flag line.
+
 **`Fx.1` is not green, and no `Fx` review URL is handed, without the `Gx.7` browser
 first-click on the 20.0 image.** Tests, `-i`/`-u`, shell loader counts and a login probe
 never construct an OWL component; on 20_2 all of them were green while every form view

@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T14:20:00+01:00
-updated_by: agent/fx7-20_c
+updated_at: 2026-09-30T15:00:00+01:00
+updated_by: agent/trim-releases
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -616,7 +616,11 @@ groups:
         - {tech_name: complementary_contact_data, origin: 1040, draft: 1254, exact_version: 1.0.7, release: 1134}
         - {tech_name: complementary_employee_data, origin: 1041, draft: 1250, exact_version: 1.0.3, release: 1135}
         - {tech_name: complementary_lead_data, origin: 1042, draft: 1252, exact_version: 1.0.3, release: 1137}
-      releases: "migration true, state 0_work, not published, no check activity"
+      releases: >
+        migration true, state 0_work, not published, no check activity. Public
+        text is substantial lines only (2026-09-30 trim): Smart Alerts keeps its
+        Font Awesome line; sticky_notes and the three Contact Full Details apps
+        ship the flag line alone.
       pics: 31
       public_20_0: 0
       origin_write_dates_unchanged: true
@@ -629,8 +633,10 @@ groups:
         Smart Alerts sentence that no longer mentions Font Awesome icons.
         That sentence was retranslated in all 42 shipped languages. Each file
         gained a releases block: the unpublished 20.0 migration changelog plus
-        the 19.0 rows its history link will show. check_release_tm: 0 gaps
-        across 99 files. The live drafts stay English; apply is Px.7.
+        the 19.0 rows its history link will show. 2026-09-30 trim: the 20.0 row
+        of sticky_notes and the three Contact Full Details files is the flag
+        line alone, matching live releases 1133, 1134, 1135, 1137. check_release_tm:
+        0 gaps across 107 files. The live drafts stay English; apply is Px.7.
       files:
         - support_translations/tm/website/smart_warnings_20.0.yaml
         - support_translations/tm/website/sticky_notes_20.0.yaml
@@ -881,10 +887,12 @@ groups:
       releases: >
         migration true, state 0_work, not published, no check activity, release_date
         2026-09-30. Pre-release history links each module's 19.0 releases plus the
-        older history behind its 19.0 migration release. The opportunity release
-        describes the CRM form layout change; product and custom_fields describe
-        the icon changes; the task release states defect 6 is still open in its
-        internal notes and does not claim it fixed.
+        older history behind its 19.0 migration release. Public text is
+        substantial lines only (2026-09-30 trim, after the owner objected to
+        "works as before" and icon lines): opportunity keeps the CRM layout
+        line; task keeps "saving a portal placement now clears the cached list
+        of portal fields"; the other six ship the flag line alone. Defect 6 is
+        still open and only the internal notes say so.
       pics: 33
       features: 16
       public_20_0: 0
@@ -900,12 +908,13 @@ groups:
         checked against the live drafts. Only the releases block was empty. Each
         file gained the module's 19.0-serie changelog rows plus one new 20.0 row
         whose HTML is the live 0_work release text. The flag line reuses the
-        published 19.0 translation with 19 changed to 20. The refresh sentence
-        is new in all 42 shipped languages (8 sentences); locale siblings share
-        wording (fr_*, de_CH, nl_BE, es_419/es_CL), en_GB is the English.
-        check_release_tm: 0 gaps across 107 files. Every cell of the eight
-        files passes validate_term: 13188 cells, 0 errors. Additions only, no
-        line removed. The live drafts stay English; apply is Px.7.
+        published 19.0 translation with 19 changed to 20. After the 2026-09-30
+        trim two refresh sentences remain across the group (opportunity layout,
+        task portal cache), both in 42 languages; the task sentence was split
+        out of its earlier two-sentence translation, Arabic reworded. All 13
+        In Work 20.0 rows (20_2 and 20_c) equal their live release text term
+        by term. check_release_tm: 0 gaps across 107 files; validate_term 0
+        errors. The live drafts stay English; apply is Px.7.
       files:
         - support_translations/tm/website/custom_fields_20.0.yaml
         - support_translations/tm/website/partner_custom_fields_20.0.yaml

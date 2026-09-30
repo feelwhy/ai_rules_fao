@@ -1036,7 +1036,7 @@ The user’s “make a release” is the live-write gate. Ask only when the modu
 **A new-major-serie release is different.** During a major port (`36-major-version-port`) the target is a **standalone prepublication** with no `pre_publish_origin_id` (see `30-prepublishment-descriptions`). Specifics:
 
 - The draft `module.release` lives on that same record and stays valid when the record is promoted in place. **Publish the release while the draft is still hidden, then apply the prepublication** (`36-major-version-port` `Px.3` before `Px.4`). On a standalone draft the apply only clears `prepublish` / `not_supported` / `force_no_git` and re-renders (`module_description.py:859-866`) — it destroys nothing, and it is the write that makes the page public. Publishing the release first is therefore what guarantees the page is never public with an empty changelog.
-- It is a **migration** release: `migration=True`, and the first line is the flag entry — `<li class="mt8"><i class="fa fa-flag-checkered text-success mr8"> </i> The app is published to version 20.</li>` — naming the **new** serie, followed by `fa-plus` lines for substantial changes.
+- It is a **migration** release: `migration=True`, and the first line is the flag entry — `<li class="mt8"><i class="fa fa-flag-checkered text-success mr8"> </i> The app is published to version 20.</li>` — naming the **new** serie, followed only by lines for substantial changes a customer would notice (`fa-plus` for a feature, `fa-refresh` for a fix). An icon change or "works as before" is not a line; a port with no such change ships the flag line alone (`36-major-version-port`).
 - Preserve the `exact_version` tail across the major bump; do not invent an extra increment. (`cloud_base` 18.0 ended at `1.4.44` and its 19.0 migration release was also `1.4.44`.)
 - The GitHub update runs **server-side inside Odoo** with the stored `github_connector.github_access_token` — `odoo shell` on the container or the UI button — never through MCP, because `_update_in_git` calls `cr.commit()` per module and aborts an MCP savepoint. Use the **full** update, never the quick variant, and do not build a parallel plain-git export path: the pushed manifest, `index.html` and image layout must stay byte-comparable with previous releases. Assert `not_supported` and `force_no_git` are both False first, or the archive branch deletes the store images.
 
@@ -1742,6 +1742,17 @@ check after every later `Gx.9` merge and after every lockstep walk fix.
 (`Fx.3`, diff-driven) and the publication drafts (`Fx.6`, `Fx.7`). The same
 `Fx` pass **re-prefixes** each module's manifest `version` to `20.0.` + the tail
 that `Gx.3` left unprefixed — that is the one bump `11-manifest-version` allows.
+
+**The `Fx.6` migration release lists substantial changes only.** Its `description` is the flag
+line ("The app is published to version 20.") plus one line for each change a customer would
+notice: a removed or moved feature, a changed layout, a behavior fix. Nothing else goes in.
+Not substantial, so never a line: an icon set change, "works as before on Odoo 20", a manifest
+or access-file move, an upgrade-time key rename, anything the customer cannot see or act on.
+A port with no such change ships the flag line alone. Those details belong in the internal
+`notes` (Before / After), not the public text. `Fx.7` mirrors the live release row exactly:
+the same lines in the TM file, every shipped language filled, and `check_release_tm.py` at
+0 gaps. A line added after `Fx.6` is written to the live release and the TM file in the same
+turn. Incident 2026-09-30: 20_2 and 20_c drafted 11 of 13 releases with filler lines; ten shrank to the flag line.
 
 **`Fx.1` is not green, and no `Fx` review URL is handed, without the `Gx.7` browser
 first-click on the 20.0 image.** Tests, `-i`/`-u`, shell loader counts and a login probe
