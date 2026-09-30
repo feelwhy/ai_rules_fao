@@ -339,7 +339,7 @@ aggregates:
   20_port: {git_sha: ef02f9e5b8a87868459fc90782d672975013cfe9, created: true, pushed: true, last_pushed: ef02f9e5b8a87868459fc90782d672975013cfe9}
   20_final: {git_sha: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3, created: true, pushed: true, last_pushed: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca, created: true, pushed: true}
+  system_20_0: {git_sha: f46cf64b12dca9f35d9f77dd28fce02218afcc8b, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
