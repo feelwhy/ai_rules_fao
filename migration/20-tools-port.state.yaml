@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T15:10:00+01:00
-updated_by: agent/fx8-20_c
+updated_at: 2026-09-30T16:05:00+01:00
+updated_by: agent/fx1-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -323,11 +323,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    active_group: "20_c"
+    active_group: "20_4"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_c phase 8 complete. Screenshots before Px.1. Do not start 20_3 until asked."
+    next: "20_4 Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: ef02f9e5b8a87868459fc90782d672975013cfe9, created: true, pushed: true, last_pushed: ef02f9e5b8a87868459fc90782d672975013cfe9}
+  20_port: {git_sha: c9ae7d063b210055d9e7ee25967d2ac23ddba199, created: true, pushed: true, last_pushed: c9ae7d063b210055d9e7ee25967d2ac23ddba199}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: f46cf64b12dca9f35d9f77dd28fce02218afcc8b, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1720,7 +1720,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -1862,6 +1862,43 @@ groups:
       reviews:
         bugbot: "medium: jstree onUpdateSearch leftover asc:!this.asc — fixed"
         security: "no medium+; Extra Security hints do not grant write; portal title is vault name only"
+    fx1:
+      stage_status: green
+      at: 2026-09-30T16:05:00+01:00
+      tools_20_4: 16b188d84c86367345d82a4998a1e1e0b8a4e0f7
+      merge_to_20_port: c9ae7d063b210055d9e7ee25967d2ac23ddba199
+      order_note: "Owner asked for 20_4 before 20_3 (2026-09-30)."
+      checker: >
+        36 findings vs origin/20.0 on the first run (18 fa-icon, 9 owl-static-props,
+        4 js-symbol, 2 owl-ref, 1 ctrl-hook, 1 qweb-tcall, 1 python-api). After the port:
+        no findings except one python-api false positive
+        (password_bundle.py:438 base64.b64encode(os.urandom(16)).decode(), already a str).
+      versions: "re-prefixed 20.0.x.y.z, tails unchanged (1.3.24, 1.0.7, 1.1.12, 1.0.6)"
+      ports:
+        - "static props / defaultProps -> props = useProps({...}) on 8 components (PasswordManager, PasswordNavigation, PasswordPreview, PwmJsTreeContainer, PortalPassword, PasswordLoginDialog, PasswordDuplicatesField, TaskQuickSearch)"
+        - "useRef / t-custom-ref -> signal.ref() + t-ref=this.x, read by calling it (jstree host, login dialog modalRef)"
+        - "useChildRef -> this.modalRef = signal.ref(); <Dialog modalRef=this.modalRef>"
+        - "record.data.id -> record.resId (duplicates field, bundle kanban controller)"
+        - "18 Font Awesome sites -> Material Symbols (oi data-icon); scss selectors follow"
+        - "portal counter: _prepare_home_portal_values -> _prepare_portal_counter_values (pwm_count)"
+        - "portal_vault: additional_title as a t-call attribute"
+        - "kanban record xpath //article[@t-ref=...] -> article"
+        - "task_numbers kanban xpath -> main/div.o_kanban_project_header; portal task list shows the number before the name (20.0 dropped the id column)"
+      tests: "0 failed, 0 error(s) of 11 on faotools/env-demo-20:20.0, fresh install with demo, community (DB fx1_20_4, dropped); log has 1 unrelated markdown2 warning"
+      browser: >
+        Done at Fx.1 because the group has OWL. Temporary DB with odootools_demo Layer 2, headless
+        Chromium (33 checks, admin and portal): bundles kanban, Sales login dialog (submit),
+        keys kanban, selection, preview eye and copy, jstree filter click, key/bundle/vault
+        forms, custom types/fields, settings, roles list/form, user form, general settings,
+        tasks kanban/list/form, quick search, portal home card, vault login and open, portal
+        tasks. Zero error dialogs, zero console errors. First run found the signal.ref .el bug
+        (login dialog died on mount); fixed. Copy needs a clipboard stub in headless.
+        Temporary DB and container removed. The Fx.2 review DBs are not built yet.
+      rule_fixes: "ai_rules b7da101: a signal ref is read by calling it; the owl-ref hint said .el"
+      merge_note: >
+        20_4 is not an ancestor of 20_port (the Gx.9 changes were cherry-picked), so the merge
+        conflicted once in password_bundle.xml on the icon lines; took the 20_4 side. All four
+        module folders equal 20_4.
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
