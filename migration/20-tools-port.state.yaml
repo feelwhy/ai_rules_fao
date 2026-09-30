@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T16:50:00+01:00
-updated_by: agent/fx2-20_4
+updated_at: 2026-09-30T17:45:00+01:00
+updated_by: agent/login-dedup-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: c9ae7d063b210055d9e7ee25967d2ac23ddba199, created: true, pushed: true, last_pushed: c9ae7d063b210055d9e7ee25967d2ac23ddba199}
+  20_port: {git_sha: 4b7e0dd3f8220fbf1367516012df00542d2b43ce, created: true, pushed: true, last_pushed: 4b7e0dd3f8220fbf1367516012df00542d2b43ce}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 66106ae7f1917600ea23fef6c60126540dc13125, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1930,6 +1930,35 @@ groups:
       screenshots: migration/screenshots/20_4.md
       shot_rows: 37
       pics_note: "1015 has 21 rows, 1016 has 2, 1017 has 6, 1018 has 8. Live titles of two 1015 rows carry <i class='fa fa-gears'>; Fx.6 must not copy that."
+    login_dialog_fix:
+      at: 2026-09-30T17:45:00+01:00
+      asked: "log in page is displayed multiple times often"
+      tools_20_4: 26a6e31d0c0247f72b7a9ce993127c377046b61c
+      merge_to_20_port: 4b7e0dd3f8220fbf1367516012df00542d2b43ce
+      cause: >
+        checkBundleSecurity opened a new PasswordLoginDialog on every call while the bundle
+        login was pending. It is called from the kanban renderer onWillRender (every render),
+        record click, preview/copy/eye/open buttons, jstree actions, mass actions and export,
+        so an expired session stacked one dialog per render and click. Same code on 19.0.
+      fix: >
+        Module-level Map bundle id -> pending login promise. A second check for the same
+        bundle waits for the open dialog; the entry is removed on any close (dialog plugin
+        onClose covers Log in, Discard, X, Escape, closeAll). Discard still leaves callers
+        waiting and redirects to the bundles overview, as before.
+      proof: >
+        Repro on fx8_20_4 (expire Sales login by a later password_update_time, click three
+        Sales keys): old code 3 dialogs, 2 left after one login, 1 click served, 5 before
+        discard; fix 1 dialog, 0 left, 3 clicks served, 1 before discard; discard then reopen
+        asks again in both. Full smoke 32/32 after the fix. Runner
+        ~/env-sync/p6/login_dedup_run.sh (not source).
+      caveat: >
+        A running review server caches asset versions: the container must restart to serve
+        changed JS (both fx8_20_4 containers restarted). The onWillRender check still sends
+        one RPC per render; unchanged.
+      current_serie: "19.0 has the same bug; not fixed there (agents do not write 19.0)."
+      enterprise_note: >
+        On fx8_20_4e the owner set IT Infrastructure to extra password with a 3-minute
+        session and renamed Sales; that is why the login returns every 3 minutes there.
     review:
       db: fx8_20_4
       url: http://127.0.0.1:18224/web/login
