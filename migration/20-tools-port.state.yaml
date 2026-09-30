@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T18:25:00+01:00
-updated_by: agent/avatars-20_4
+updated_at: 2026-09-30T18:45:00+01:00
+updated_by: agent/settings-arrows-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 4b7e0dd3f8220fbf1367516012df00542d2b43ce, created: true, pushed: true, last_pushed: 4b7e0dd3f8220fbf1367516012df00542d2b43ce}
+  20_port: {git_sha: 398797bcfa6cccc925b03f6523e7b837b47bd76f, created: true, pushed: true, last_pushed: 398797bcfa6cccc925b03f6523e7b837b47bd76f}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 1ba0dd908de711ff6c3ef2bc95e1722d81e96a0b, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1930,6 +1930,20 @@ groups:
       screenshots: migration/screenshots/20_4.md
       shot_rows: 37
       pics_note: "1015 has 21 rows, 1016 has 2, 1017 has 6, 1018 has 8. Live titles of two 1015 rows carry <i class='fa fa-gears'>; Fx.6 must not copy that."
+    settings_arrow_links:
+      at: 2026-09-30T18:45:00+01:00
+      asked: "fix -- in links with proper arrows like Attributes; ensure it is part of the migration rule"
+      tools_20_4: a0b400a9ef22aba17859c35ccb163dcfe09e6723
+      merge_to_20_port: 398797bcfa6cccc925b03f6523e7b837b47bd76f
+      cause: 'task_numbers settings buttons used icon="oi-arrow-right"; 20.0 prints the string as data-icon, so the label showed "--"'
+      fix: 'icon="arrow_forward" on both links (core settings pages use the same). Module updated on fx8_20_4 and fx8_20_4e; both stored arches carry arrow_forward.'
+      seen: "community review DB in headless Chromium: both buttons carry data-icon arrow_forward, no error dialog. The enterprise page was not opened in the browser (its login page now sits behind a website cookie bar the runner could not click); its stored view arch was checked in SQL instead."
+      rule: >
+        ai_rules 22 F1 paragraph plus Learned entry, checker kind icon-name (ai_rules 8efceff). Retro-scan of tools-20_port: 6 files, only task_numbers is on a
+        group that reached Fx.1. Others fix at their own Fx.1:
+        business_appointment, cloud_base, email_suite, mail_manual_routing, odoo_email_from.
+        The checker also lists them, so a later Fx.1 cannot skip it.
+      not_done: "The five other groups' branches were not edited (they have not started Fx)."
     user_avatars_demo:
       at: 2026-09-30T18:25:00+01:00
       asked: "users should have the avatars; use one of the employees (found by name); part of our demo system"
