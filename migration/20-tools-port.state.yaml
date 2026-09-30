@@ -339,7 +339,7 @@ aggregates:
   20_port: {git_sha: c9ae7d063b210055d9e7ee25967d2ac23ddba199, created: true, pushed: true, last_pushed: c9ae7d063b210055d9e7ee25967d2ac23ddba199}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 532f133f4ca64c0718318f5edd266e2295cd9672, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
+  system_20_0: {git_sha: 66106ae7f1917600ea23fef6c60126540dc13125, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -1903,7 +1903,7 @@ groups:
       stage_status: green
       at: 2026-09-30T16:50:00+01:00
       tools_20_4: 16b188d84c86367345d82a4998a1e1e0b8a4e0f7
-      system_20_0: 532f133f4ca64c0718318f5edd266e2295cd9672
+      system_20_0: 66106ae7f1917600ea23fef6c60126540dc13125
       layer1:
         changed: false
         lint: >
@@ -1919,6 +1919,14 @@ groups:
         counts: {keys: 15, bundles: 2, vaults: 2, tags: 6, roles: 7, types: 2, demo_user: true, tasks_with_reference: 9}
         matches_19_0_counts: "keys, bundles, vaults, tags, roles, types, demo user. The 19.0 avatars=16 figure was not compared: this run counted 13 users with an image, a different metric."
         sales_bundle: 'named Sales (extra password: "faotools")'
+        duplicates: >
+          Owner ask 2026-09-30: demo duplicates use only the IP Address custom field.
+          _demo_pwm_stamp_settings now stores that field (x_oz_pswd_1) as the sole
+          criterion; Reference + User name stay the fallback when the custom fields app
+          is absent. On both review databases Server 192/190 shows 1 duplicate (same IP
+          as the OpenShift key) and Google Adsense shows none. Test
+          test_password_duplicates_use_only_the_ip_address_field passes; the rest of the
+          odootools_demo suite was not run.
       screenshots: migration/screenshots/20_4.md
       shot_rows: 37
       pics_note: "1015 has 21 rows, 1016 has 2, 1017 has 6, 1018 has 8. Live titles of two 1015 rows carry <i class='fa fa-gears'>; Fx.6 must not copy that."
