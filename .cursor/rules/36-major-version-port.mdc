@@ -199,6 +199,12 @@ kept 72h. Then one PDF per module goes to the owner's Downloads: for every live 
 (`reference`), the title (`name`) and the alt (`alt_name`), followed by the PNG from
 the module's `static/description/`. That is the shot list. Do not capture in this step.
 
+**Every review database installs `odootools_demo`, and so carries the baseline apps**
+(`34-demo-data` **Baseline apps before any demo**): `gx8_<group>`, `fx8_<group>` and
+`fx8_<group>e` alike. A review database without `sale_management`, `website_sale`,
+`crm`, `stock`, `purchase`, `project`, `account`, `hr` and `contacts` shows a thinner
+demo than the template the customer will get, and it cannot be handed over.
+
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
 

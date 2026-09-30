@@ -1232,6 +1232,25 @@ Never in `tools/<module>/demo/`: `demo_xmlids.json`, `demo_purge.json`, `asset_s
 or any other script JSON. Those live in `system/odootools_demo/demo_scripts/<module>/`.
 The linter fails a public module that still ships them.
 
+### Baseline apps before any demo (20.0 onward)
+
+Every template, review and smoke database installs these apps before any demo:
+`contacts`, `account` (Invoicing), `sale_management` (with `sale`), `website_sale`,
+`crm`, `stock`, `purchase`, `project`, `hr`. They are hard `depends` of
+`odootools_demo` on `system` 20.0, so any database that installs it gets them first.
+A Layer 2 loader may therefore build on them for any family, so the demo shows more
+than one app: roles take sales, purchase, stock and project groups, alerts and
+checklists target real orders, tasks and leads. Incident 2026-09-30:
+`fx8_20_4` installed only `project` + `portal` under the group, and the Security User
+Roles demo silently lost every purchase / stock / sales group.
+
+- Keep tools apps out of `odootools_demo` `depends`: an unported one would block a
+ group review database.
+- Layer 1 is unchanged. A `tools` module's demo XML still uses only its own
+ `depends`, because the apps.odoo.com preview has no `odootools_demo`.
+- A build script does not keep its own copy of this list. It installs
+ `odootools_demo` (next to the group), and Odoo resolves the rest.
+
 ### Layer 2 rules (odootools_demo)
 
 - Guard: `_demo_module_installed("<module>")`, or `"<model>" not in self.env` → return.
@@ -1775,6 +1794,12 @@ kept 72h. Then one PDF per module goes to the owner's Downloads: for every live 
 `module.pic` (MCP, published description of that technical name), the file name
 (`reference`), the title (`name`) and the alt (`alt_name`), followed by the PNG from
 the module's `static/description/`. That is the shot list. Do not capture in this step.
+
+**Every review database installs `odootools_demo`, and so carries the baseline apps**
+(`34-demo-data` **Baseline apps before any demo**): `gx8_<group>`, `fx8_<group>` and
+`fx8_<group>e` alike. A review database without `sale_management`, `website_sale`,
+`crm`, `stock`, `purchase`, `project`, `account`, `hr` and `contacts` shows a thinner
+demo than the template the customer will get, and it cannot be handed over.
 
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
