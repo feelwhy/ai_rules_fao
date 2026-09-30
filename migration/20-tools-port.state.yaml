@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T21:40:00+01:00
-updated_by: agent/fx6-20_4
+updated_at: 2026-09-30T22:25:00+01:00
+updated_by: agent/fx8-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_4 Fx.7"
+    next: "20_4 phase 8 complete. Screenshots before Px.1. Do not start 20_3 until asked."
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -337,7 +337,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: c89eef8800436d5edca391ae8f2573fc38fc7ebe, created: true, pushed: true, last_pushed: c89eef8800436d5edca391ae8f2573fc38fc7ebe}
-  20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
+  20_final: {git_sha: f44d8d1e3ca425a7a551fb019303b8efb462f8a6, created: true, pushed: true, last_pushed: f44d8d1e3ca425a7a551fb019303b8efb462f8a6}  # 2026-09-30: merge of 20_2 + 20_c + 20_4 (17 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
@@ -1720,7 +1720,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Fx.6
+    stage: Fx.8
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -2060,6 +2060,53 @@ groups:
       public_20_0: 0
       origin_write_dates_unchanged: true
       preview: "https://faotools.com/apppublish//20.0/<draft id>/"
+    fx7:
+      stage_status: green
+      at: 2026-09-30T22:10:00+01:00
+      support_sha: 04d98828
+      branch: support@19.0
+      method: >
+        The four 20.0 TM files already equalled the 19.0 files and the live drafts (fields,
+        features 5/1/4/3, pics 21/2/6/8). Only the releases block was empty. Each file gained
+        the module's 19.0-serie changelog rows plus one 20.0 row equal to the live 0_work release
+        text (1149-1152) term by term. Flag line reuses the published 19.0 translation with 19
+        changed to 20. Two new sentences in 42 languages: the login dialog (Password Manager)
+        and the blank period lines (Security User Roles; the UI tab name is taken from the
+        roles catalog of each language). Custom Fields summary now links to
+        /apps/20.0/password-manager-20-0-odoo-password-manager-1263 (source and fingerprint;
+        the 4 summary terms are split around the link, so translations are untouched).
+      rows: {odoo_password_manager: "10 + 1", odoo_password_manager_custom_fields: "3 + 1", security_user_roles: "5 + 1", task_numbers: "3 + 1"}
+      check_release_tm: "0 gaps across 111 files"
+      validate_term: "0 errors on every cell"
+      not_reviewed_by_native_speaker: true
+      live_drafts: "stay English; apply is Px.7"
+    fx8:
+      stage_status: green
+      at: 2026-09-30T22:25:00+01:00
+      tools_20_4: 6f07e960633c6585d66393cbde6cb10492ec1dad
+      tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
+      tools_20_2: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3
+      tools_20_port: c89eef8800436d5edca391ae8f2573fc38fc7ebe
+      tools_20_final_before: dbbd02a5663898875365d9857e6d16c0e9d94b86
+      tools_20_final: f44d8d1e3ca425a7a551fb019303b8efb462f8a6
+      tools_20_0_untouched: 971c21a311ebe5682576a86396ef539c71d7c216
+      module_diff_20_final_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is a merge commit with parents the previous 20_final (20_2 + 20_c) and 20_4
+        (clean merge, no conflicts). Its tree is the 17 modules of the three groups plus
+        requirements.txt. The four 20_4 module folders equal 20_4 and 20_port; the 13 older
+        folders are unchanged. Cumulative check: one database with all 17 modules installed
+        together with demo and their tests, then -u of all 17, on community and on enterprise:
+        0 failed, 0 errors of 72 tests each. The one ERROR line in each log is the deliberate
+        crash of complementary_contact_data test_ru_read_crashes_on_varchar_then_healer_fixes_it
+        (same line as in the earlier cumulative logs). System worktree: system-20.0-clean at
+        0968dca. Not a merge of the rest of 20_port: item 33 stays blocked until every group
+        starts on 20.0.
+      not_merged_to: "tools 20.0 (that is Px.2)"
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_final4_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final4_e.log]
+      runner: /home/feelwhy/env-sync/p6/fx8_20_4_cumulative.sh
+      cleanup: "temporary worktree tools-20_final removed; throwaway databases dropped"
     role_period_eternity:
       at: 2026-09-30T19:10:00+01:00
       asked: "the temporary periods show from eternity to eternity"
