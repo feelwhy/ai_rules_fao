@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T20:30:00+01:00
-updated_by: agent/fx3-20_4
+updated_at: 2026-09-30T21:10:00+01:00
+updated_by: agent/fx4-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_4 Fx.4"
+    next: "20_4 Fx.5"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -1720,7 +1720,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Fx.3
+    stage: Fx.4
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -1978,6 +1978,48 @@ groups:
         fx8_20_4 containers on the new depends would need sale, purchase, stock, crm, hr and
         website installed first; they were not restarted.
       rule: "ai_rules_fao 36 item 7: reading the export, and ir.module.module.shortdesc is not overwritten by a reload"
+    fx4:
+      stage_status: green
+      at: 2026-09-30T21:10:00+01:00
+      image: faotools/env-demo-20:20.0
+      core: 853a1f86126b9f841e3bba5b3153dbc37ac1bffc
+      tools_20_4: ab0620b4cd9531706d43558aae83bc1a18eb96a6
+      tools_20_port: d4ba28bf883214a172ab3ac9e82cb4f159f12a37
+      system_20_0: 0968dca5ede93065e141b2f5edabd577410ecf9c
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      runner: /home/feelwhy/env-sync/p6/fx4_20_4_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_4_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_4_e.log]
+      matrix_dbs_dropped: true
+      tools_paths: "tools-20_4 first, tools-20_port second (custom_fields for the password custom fields app); system-20.0-clean, not the shared worktree"
+      community: >
+        Each of the 4 modules, own closure: --without-demo=True -i, --with-demo -i, then -u.
+        Then the four together --with-demo --test-enable. 0 failed, 0 error(s) of 18 tests.
+        9 of 9 legs, MATRIX_OK.
+      enterprise: >
+        Same 9 legs with the enterprise addons path. 0 failed, 0 error(s) of 18 tests.
+        MATRIX_OK.
+      cumulative: "The four modules installed together; no 20.0 all-apps database exists (item 33 still blocked)."
+      log_gate: >
+        No ERROR or CRITICAL line on either edition. Only WARNING: markdown2 is not installed
+        (mail, and ai on enterprise), 13 per edition per source. No ALLOW entries were needed.
+      portal_counter: >
+        Rule 22 F4 asks for an HTTP check that /my shows each card. The browser run logs in as
+        portal and finds the /my/password_vaults card link (PORTAL vault card links: 1), which
+        only renders when the pwm_count counter is non-zero.
+      browser:
+        community: "SMOKE_OK 32/32 on fx8_20_4 after the last code change (login dialog, periods, settings arrows, avatars). Log logs/fx4_20_4_c_smoke.log"
+        enterprise: >
+          Not repeated. The owner has been working in fx8_20_4e (admin on Portuguese, IT
+          Infrastructure given an extra password with a 3-minute session, key 1 gone), so the
+          runner's assumptions no longer hold there. The 32/32 on that database is from before
+          those changes (Fx.2). The enterprise install / update / test matrix above is fresh.
+      runner_fixes: >
+        smoke_20_4.py login now targets form.oe_login_form (the enterprise login page has
+        several forms and the first submit button is not the login one).
+      incident: >
+        At 16:46:33 two scratch files were rewritten on disk to older content (this smoke
+        runner and system-20.0 tests/test_demo_runtime.py), the same minute for both. Committed
+        repos were unaffected; the smoke runner was rebuilt from the session.
     role_period_eternity:
       at: 2026-09-30T19:10:00+01:00
       asked: "the temporary periods show from eternity to eternity"
