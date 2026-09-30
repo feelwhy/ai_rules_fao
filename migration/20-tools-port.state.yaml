@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T18:45:00+01:00
-updated_by: agent/settings-arrows-20_4
+updated_at: 2026-09-30T19:10:00+01:00
+updated_by: agent/role-periods-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 398797bcfa6cccc925b03f6523e7b837b47bd76f, created: true, pushed: true, last_pushed: 398797bcfa6cccc925b03f6523e7b837b47bd76f}
+  20_port: {git_sha: 6afed972ad72f347cc7184df7b0494e62403454a, created: true, pushed: true, last_pushed: 6afed972ad72f347cc7184df7b0494e62403454a}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 1ba0dd908de711ff6c3ef2bc95e1722d81e96a0b, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1930,6 +1930,40 @@ groups:
       screenshots: migration/screenshots/20_4.md
       shot_rows: 37
       pics_note: "1015 has 21 rows, 1016 has 2, 1017 has 6, 1018 has 8. Live titles of two 1015 rows carry <i class='fa fa-gears'>; Fx.6 must not copy that."
+    role_period_eternity:
+      at: 2026-09-30T19:10:00+01:00
+      asked: "the temporary periods show from eternity to eternity"
+      tools_20_4: f88cb78cf283e5e84ebf1fec2f6dd07d3e16827c
+      merge_to_20_port: 6afed972ad72f347cc7184df7b0494e62403454a
+      not_the_demo: >
+        The demo loader (_demo_pwm_stamp_role_rules) always gives both dates. The blank lines
+        on fx8_20_4e (Procurement Special: periods 14, 15, 17) were saved from the form at
+        16:07:48, next to dated lines.
+      cause: >
+        In the editable period list Enter saves the row and opens a new blank one; a second
+        Enter saves that blank row. Both dates are optional, so it is stored and shows as
+        "∞ - ∞ ⚡". Such a line fits every moment, so it keeps the rule active for ever and
+        makes the dated periods of that rule pointless. Reproduced in Chromium on fx8_20_4:
+        fill one period, press Enter three times -> 2 blank periods saved. Core behaviour and
+        the same view on 19.0, so not a port regression.
+      fix: >
+        security.role.rule.create/write drop NEW (0,0,{}) period lines with no start and no
+        end when the rule has a dated period (already stored or in the same save); a rule
+        with only blank lines keeps one. Lines that already exist are never touched, no
+        migration, direct period.create is unchanged, open-ended periods (start only or end
+        only) stay.
+      tests: >
+        7 tests in security_user_roles/tests/test_rule_periods.py: 5 fail on the old model,
+        all pass on the fix (0 failed of 9 on a scratch DB). Same Enter pattern in Chromium
+        after the fix: one dated period saved.
+      review_dbs: >
+        fx8_20_4 and fx8_20_4e restarted (Python change). On fx8_20_4e the 3 blank lines
+        were deleted (owner's test rules 3 and 4 keep their dated periods, no blank period
+        is left on either DB).
+      still_true: >
+        While the rule dialog is open the preview under it still shows "∞ - ∞ ⚡" for the
+        blank rows (client-side name); they disappear when the role is saved.
+      not_done: "19.0 has the same behaviour; not changed."
     settings_arrow_links:
       at: 2026-09-30T18:45:00+01:00
       asked: "fix -- in links with proper arrows like Attributes; ensure it is part of the migration rule"
