@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T13:50:00+01:00
-updated_by: agent/fx6-20_c
+updated_at: 2026-09-30T14:20:00+01:00
+updated_by: agent/fx7-20_c
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_c Fx.7"
+    next: "20_c Fx.8"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -706,7 +706,7 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Fx.6
+    stage: Fx.7
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
@@ -891,6 +891,33 @@ groups:
       origin_write_dates_unchanged: true
       preview: "https://faotools.com/apppublish//20.0/<draft id>/"
       tools: a9f166aab21186d4a4e312b307ff550152742707
+    fx7:
+      stage_status: green
+      at: 2026-09-30T14:20:00+01:00
+      method: >
+        The eight 20.0 TM files already equalled the 19.0 files and the live
+        drafts: every field source, 16 features, 33 pics, notes; short summaries
+        checked against the live drafts. Only the releases block was empty. Each
+        file gained the module's 19.0-serie changelog rows plus one new 20.0 row
+        whose HTML is the live 0_work release text. The flag line reuses the
+        published 19.0 translation with 19 changed to 20. The refresh sentence
+        is new in all 42 shipped languages (8 sentences); locale siblings share
+        wording (fr_*, de_CH, nl_BE, es_419/es_CL), en_GB is the English.
+        check_release_tm: 0 gaps across 107 files. Every cell of the eight
+        files passes validate_term: 13188 cells, 0 errors. Additions only, no
+        line removed. The live drafts stay English; apply is Px.7.
+      files:
+        - support_translations/tm/website/custom_fields_20.0.yaml
+        - support_translations/tm/website/partner_custom_fields_20.0.yaml
+        - support_translations/tm/website/opportunity_custom_fields_20.0.yaml
+        - support_translations/tm/website/opportunity_custom_fields_website_20.0.yaml
+        - support_translations/tm/website/product_custom_fields_20.0.yaml
+        - support_translations/tm/website/product_custom_fields_website_sale_20.0.yaml
+        - support_translations/tm/website/project_custom_fields_20.0.yaml
+        - support_translations/tm/website/task_custom_fields_20.0.yaml
+      branch: support@19.0
+      support_sha: a285d4ca
+      not_reviewed_by_native_speaker: true
     demo_show_product_types:
       at: 2026-09-30T12:45:00+01:00
       tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
