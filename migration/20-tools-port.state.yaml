@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T15:00:00+01:00
-updated_by: agent/trim-releases
+updated_at: 2026-09-30T15:10:00+01:00
+updated_by: agent/fx8-20_c
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_c Fx.8"
+    next: "20_c phase 8 complete. Screenshots before Px.1. Do not start 20_3 until asked."
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -337,7 +337,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: ef02f9e5b8a87868459fc90782d672975013cfe9, created: true, pushed: true, last_pushed: ef02f9e5b8a87868459fc90782d672975013cfe9}
-  20_final: {git_sha: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3, created: true, pushed: true, last_pushed: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3}
+  20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: f46cf64b12dca9f35d9f77dd28fce02218afcc8b, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
@@ -712,7 +712,7 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Fx.7
+    stage: Fx.8
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
@@ -889,10 +889,10 @@ groups:
         2026-09-30. Pre-release history links each module's 19.0 releases plus the
         older history behind its 19.0 migration release. Public text is
         substantial lines only (2026-09-30 trim, after the owner objected to
-        "works as before" and icon lines): opportunity keeps the CRM layout
-        line; task keeps "saving a portal placement now clears the cached list
-        of portal fields"; the other six ship the flag line alone. Defect 6 is
-        still open and only the internal notes say so.
+        "works as before", icon and CRM-layout lines): task keeps "saving a
+        portal placement now clears the cached list of portal fields"; the
+        other seven ship the flag line alone. Defect 6 is still open and only
+        the internal notes say so.
       pics: 33
       features: 16
       public_20_0: 0
@@ -902,6 +902,7 @@ groups:
     fx7:
       stage_status: green
       at: 2026-09-30T14:20:00+01:00
+      support_sha_after_trim: 554be930
       method: >
         The eight 20.0 TM files already equalled the 19.0 files and the live
         drafts: every field source, 16 features, 33 pics, notes; short summaries
@@ -909,8 +910,8 @@ groups:
         file gained the module's 19.0-serie changelog rows plus one new 20.0 row
         whose HTML is the live 0_work release text. The flag line reuses the
         published 19.0 translation with 19 changed to 20. After the 2026-09-30
-        trim two refresh sentences remain across the group (opportunity layout,
-        task portal cache), both in 42 languages; the task sentence was split
+        trim one refresh sentence remains across the group (task portal
+        cache; the opportunity layout line was dropped too), in 42 languages; the task sentence was split
         out of its earlier two-sentence translation, Arabic reworded. All 13
         In Work 20.0 rows (20_2 and 20_c) equal their live release text term
         by term. check_release_tm: 0 gaps across 107 files; validate_term 0
@@ -927,6 +928,30 @@ groups:
       branch: support@19.0
       support_sha: a285d4ca
       not_reviewed_by_native_speaker: true
+    fx8:
+      stage_status: green
+      at: 2026-09-30T15:10:00+01:00
+      tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
+      tools_20_2: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3
+      tools_20_port: ef02f9e5b8a87868459fc90782d672975013cfe9
+      tools_20_final: dbbd02a5663898875365d9857e6d16c0e9d94b86
+      tools_20_0_untouched: 971c21a311ebe5682576a86396ef539c71d7c216
+      module_diff_20_final_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is now a merge commit with parents 20_2 and 20_c (clean merge,
+        no conflicts). Its tree is the 13 modules of the two groups plus
+        requirements.txt. Each module folder equals its group branch and 20_port.
+        Cumulative check: one database with all 13 modules installed together
+        with demo and their tests, then -u of all 13, on community and on
+        enterprise: 0 failed, 0 errors of 56 tests each. The one ERROR line in
+        each log is the deliberate crash of complementary_contact_data
+        test_ru_read_crashes_on_varchar_then_healer_fixes_it (same line as the
+        20_2 Fx.4 log). The custom_fields FutureWarning at custom_extra_field.py:783
+        is also in the Fx.4 logs. Not a merge of the rest of 20_port: item 33
+        stays blocked until every group starts on 20.0.
+      not_merged_to: "tools 20.0 (that is Px.2)"
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_final_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final_e.log]
     demo_show_product_types:
       at: 2026-09-30T12:45:00+01:00
       tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
