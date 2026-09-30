@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T21:10:00+01:00
-updated_by: agent/fx4-20_4
+updated_at: 2026-09-30T21:40:00+01:00
+updated_by: agent/fx6-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_4 Fx.5"
+    next: "20_4 Fx.7"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: d4ba28bf883214a172ab3ac9e82cb4f159f12a37, created: true, pushed: true, last_pushed: d4ba28bf883214a172ab3ac9e82cb4f159f12a37}
+  20_port: {git_sha: c89eef8800436d5edca391ae8f2573fc38fc7ebe, created: true, pushed: true, last_pushed: c89eef8800436d5edca391ae8f2573fc38fc7ebe}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1720,7 +1720,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Fx.4
+    stage: Fx.6
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -2020,6 +2020,46 @@ groups:
         At 16:46:33 two scratch files were rewritten on disk to older content (this smoke
         runner and system-20.0 tests/test_demo_runtime.py), the same minute for both. Committed
         repos were unaffected; the smoke runner was rebuilt from the session.
+    fx5:
+      stage_status: skipped
+      at: 2026-09-30
+      reason: "Owner said move to Fx.6. The review databases from Fx.2 were already the walk."
+    fx6:
+      stage_status: green
+      at: 2026-09-30T21:40:00+01:00
+      tools_20_4: 6f07e960633c6585d66393cbde6cb10492ec1dad
+      merge_to_20_port: c89eef8800436d5edca391ae8f2573fc38fc7ebe
+      version_tail: >
+        Manifest of odoo_password_manager was 20.0.1.3.24; the published 19.0 page is 1.3.26
+        (the two later 19.0 fixes were already ported at Gx.8). Bumped to 20.0.1.3.26 so the
+        draft and the release carry the same tail. The other three already matched.
+      method: >
+        Standalone copy of each published 19.0 description. version 20.0, prepublish true,
+        force_no_git true, not_supported false, no pre_publish_origin_id, documentation_url
+        cleared, website_published false. Videos are not copied: Password Manager (183) and
+        Security User Roles (187) keep theirs on 19.0. short_summary unchanged. One edit:
+        the Custom Fields summary linked to the core module's 19.0 page; it now links to the
+        20.0 draft (/apps/20.0/password-manager-20-0-odoo-password-manager-1263), and the Fx.7
+        translations of that summary must carry the same href. The Font Awesome markup in
+        pic and feature titles is page text on faotools.com and stays (same call as 20_c).
+      drafts:
+        - {tech_name: odoo_password_manager, origin: 1015, draft: 1263, exact_version: 1.3.26, release: 1149}
+        - {tech_name: odoo_password_manager_custom_fields, origin: 1016, draft: 1264, exact_version: 1.0.7, release: 1150}
+        - {tech_name: security_user_roles, origin: 1017, draft: 1265, exact_version: 1.1.12, release: 1151}
+        - {tech_name: task_numbers, origin: 1018, draft: 1266, exact_version: 1.0.6, release: 1152}
+      releases: >
+        migration true, state 0_work, not published, no check activity, release_date
+        2026-09-30. Pre-release history links each module's 19.0 releases plus the older
+        history behind its 19.0 migration release (pwm 32 rows, custom fields 5, roles 13,
+        task numbers 4). Public text is substantial lines only: Password Manager keeps the
+        login-dialog fix, Security User Roles keeps the blank-period fix, the other two ship
+        the flag line alone. The access hints on the bundle and password forms are a
+        customer-visible addition, left to the internal notes; say if they should be a line.
+      pics: 37
+      features: 13
+      public_20_0: 0
+      origin_write_dates_unchanged: true
+      preview: "https://faotools.com/apppublish//20.0/<draft id>/"
     role_period_eternity:
       at: 2026-09-30T19:10:00+01:00
       asked: "the temporary periods show from eternity to eternity"
