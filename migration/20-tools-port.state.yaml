@@ -1921,7 +1921,7 @@ groups:
         sales_bundle: 'named Sales (extra password: "faotools")'
       screenshots: migration/screenshots/20_4.md
       shot_rows: 37
-      pics_note: "22 rows come from description 1015 features and directly; live titles of two rows carry <i class='fa fa-gears'> (Fx.6 must not copy that)"
+      pics_note: "1015 has 21 rows, 1016 has 2, 1017 has 6, 1018 has 8. Live titles of two 1015 rows carry <i class='fa fa-gears'>; Fx.6 must not copy that."
     review:
       db: fx8_20_4
       url: http://127.0.0.1:18224/web/login
