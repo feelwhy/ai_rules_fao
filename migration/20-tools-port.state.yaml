@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T19:10:00+01:00
-updated_by: agent/role-periods-20_4
+updated_at: 2026-09-30T20:30:00+01:00
+updated_by: agent/fx3-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_4 Fx.3"
+    next: "20_4 Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,10 +336,10 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 6afed972ad72f347cc7184df7b0494e62403454a, created: true, pushed: true, last_pushed: 6afed972ad72f347cc7184df7b0494e62403454a}
+  20_port: {git_sha: d4ba28bf883214a172ab3ac9e82cb4f159f12a37, created: true, pushed: true, last_pushed: d4ba28bf883214a172ab3ac9e82cb4f159f12a37}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 1ba0dd908de711ff6c3ef2bc95e1722d81e96a0b, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
+  system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -1720,7 +1720,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Fx.2
+    stage: Fx.3
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -1930,6 +1930,54 @@ groups:
       screenshots: migration/screenshots/20_4.md
       shot_rows: 37
       pics_note: "1015 has 21 rows, 1016 has 2, 1017 has 6, 1018 has 8. Live titles of two 1015 rows carry <i class='fa fa-gears'>; Fx.6 must not copy that."
+    fx3:
+      stage_status: green
+      at: 2026-09-30T20:30:00+01:00
+      tools_20_4: ab0620b4cd9531706d43558aae83bc1a18eb96a6
+      merge_to_20_port: d4ba28bf883214a172ab3ac9e82cb4f159f12a37
+      system_20_0: 0968dca5ede93065e141b2f5edabd577410ecf9c
+      method: >
+        odoo i18n export from fx8_20_4 for the four modules, compared with the shipped pots.
+        Kept out: demo records (password tags, custom types, the IP Address field), the
+        selection keys ascii_50 / ascii_72 / hex. Old msgids the export lost: 9 dropped
+        (moved kanban buttons, core fields that left, IP Address, Create a Task), 8 kept
+        because their text is still in the source, Selected passwords ( migrated to the new
+        multi-line msgid. Unchanged msgid kept its msgstr. All 42 .po files and the 4 pots
+        rewritten (172 files).
+      new_terms_translated: >
+        4 app names, 3 short code strings, 9 feature titles, 4 summary intros, 12 access hints
+        on the key and bundle forms, 4 module descriptions, plus derived ones: kanban copy
+        buttons and the Passwords stat span from the old msgstr, HTTP Routing / Module /
+        Activity Plans from the core Odoo 20 catalogs. The hints use the UI's own wording for
+        Extra Security, Full rights, Readonly access, Access Groups and Access Users.
+      summary_choice: >
+        Each module summary is the translated first sentence followed by the English keyword
+        tail. 20_2 and 20_c translated the keyword tails too; this one keeps them English
+        (search terms). Say so if the tails should be translated.
+      app_names: >
+        Password Manager and Password Manager: Custom Fields were English in 41 catalogs from
+        the old files; now translated in every language (en_GB stays English).
+      empty_msgstr: 0
+      left_english: >
+        Material Symbols icon e.g. checklist (40 catalogs): core Odoo 20 has no translation
+        of it yet. ID, URL, Email, Info and similar words that are the same word in that language.
+      demo_layer: >
+        _demo_apply_all_translations() returned 18 gaps on both review DBs: the IP Address label
+        of the demo custom field had English placeholders in demo_i18n_extra.json while the
+        odootools_demo catalogs had real translations. The extra file now carries the real ones
+        (18 languages, system 0968dca); the call returns [] on both.
+      loaded_on:
+        - {db: fx8_20_4, url: "http://127.0.0.1:18224/web/login", active_langs: 43, gaps: 0, proof: "ru: Роли безопасности пользователей, kanban Имя пользователя / Пароль, menu Пароли по наборам; de, ja, zh_CN also checked"}
+        - {db: fx8_20_4e, url: "http://127.0.0.1:18225/web/login", active_langs: 43, gaps: 0, proof: "same strings"}
+      users_left_on: en_US
+      incident: >
+        While this ran, another session committed and pushed system 20.0 3513de3 (baseline
+        business apps added to odootools_demo depends) and had uncommitted edits in the
+        system-20.0 worktree, which the review containers mount. The shell runs used a clean
+        worktree of 1ba0dd9 (_worktrees/system-20.0-clean, now at 0968dca). Restarting the
+        fx8_20_4 containers on the new depends would need sale, purchase, stock, crm, hr and
+        website installed first; they were not restarted.
+      rule: "ai_rules_fao 36 item 7: reading the export, and ir.module.module.shortdesc is not overwritten by a reload"
     role_period_eternity:
       at: 2026-09-30T19:10:00+01:00
       asked: "the temporary periods show from eternity to eternity"

@@ -55,6 +55,18 @@ live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-po
    list, so do not translate demo strings into the tools `.po` files. The same call is
    the weekly template refresh and the template build, so a new template is translated
    by the same path the review databases use.
+   **Reading the `Fx.3` export.** `odoo i18n export -d <review db> -o <file> <module>` lists
+   terms the shipped pot never had, and not all of them are for the `.po`: demo records
+   (`model:<demo model>,name:`) belong to the system layer, and selection keys read out of a
+   `(key, _("…"))` tuple (`ascii_50`, `hex`) are not terms. Keep the ones from views, code,
+   `base.module_*` (name, summary, description) and the core models the module extends; take
+   core wording from the core `.po` (`HTTP Routing`, `Module`), and keep English where core
+   itself has none. An old msgid the export lost is dropped only when its text is gone from the
+   source; one that moved only by whitespace keeps its msgstr. A msgid kept with a msgstr equal
+   to the English source is a finding for app names (`20_2` Sticky Notes, `20_4` Password
+   Manager), not for `ID` / `URL`. `ir.module.module.shortdesc` is **not** rewritten by
+   `_update_translations(overwrite=True)`: a changed app name needs a per-language write on the
+   review database (a fresh database takes it from the `.po`).
 8. **Owner-asked fixes stay in the plan and are applied on the newest group.** When the
    owner asks to fix anything (first-click crash, missing `demo`/`demo`, checker miss),
    the successor is written into rule 22 + the checker **and** becomes a required
