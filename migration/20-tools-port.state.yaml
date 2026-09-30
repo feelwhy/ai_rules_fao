@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 084b77f235e7a2adee873a6e858e12abb7fc05fc, created: true, pushed: true, last_pushed: 084b77f235e7a2adee873a6e858e12abb7fc05fc}
+  20_port: {git_sha: ef02f9e5b8a87868459fc90782d672975013cfe9, created: true, pushed: true, last_pushed: ef02f9e5b8a87868459fc90782d672975013cfe9}
   20_final: {git_sha: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3, created: true, pushed: true, last_pushed: 12eb085df474f08218d8e0ce064f84f5c6d1fbf3}
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 4aaf4a4d4557abddc06d5258d28550b89e0ee8ca, created: true, pushed: true}
@@ -846,6 +846,14 @@ groups:
       browser:
         community: "SMOKE_OK 18/18 on fx8_20_c"
         enterprise: "SMOKE_OK 18/18 on fx8_20_ce. Portal task shows Version Release and sale order S00001."
+    demo_show_product_types:
+      at: 2026-09-30T12:45:00+01:00
+      tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
+      merge_to_20_port: ef02f9e5b8a87868459fc90782d672975013cfe9
+      setting: "Show custom product types (group_custom_fields_products_show_type)"
+      scope: "demo databases only; a later upgrade does not turn it back on"
+      applied_on: [fx8_20_c, fx8_20_ce]
+      proof: "checkbox True; admin, demo and portal have the group"
     seed:
       commit: c781d8b6c17
       from_pin: 835c4be4b5deb809cc9100bbf4725d894561f08a
