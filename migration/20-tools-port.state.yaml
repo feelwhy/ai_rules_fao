@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_c Fx.3"
+    next: "20_c Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -706,7 +706,7 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Fx.2
+    stage: Fx.3
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
@@ -798,6 +798,24 @@ groups:
         - /mnt/c/Users/feel1/Downloads/20_c-product_custom_fields_website_sale-screenshots.pdf
         - /mnt/c/Users/feel1/Downloads/20_c-project_custom_fields-screenshots.pdf
         - /mnt/c/Users/feel1/Downloads/20_c-task_custom_fields-screenshots.pdf
+    fx3:
+      stage_status: green
+      at: 2026-09-30T11:10:00+01:00
+      tools_20_c: f6b3da6f4b183b7116395ae88817af48b22eb818
+      merge_to_20_port: a58fc1f8804bfa240edf352db36e2a926cc2019c
+      method: >
+        trans export on fx8_20_ce. Code terms lost: 0. Unchanged msgid kept
+        its msgstr. New entries are the module name, summary and description,
+        plus HTTP Routing (ir.http) and Module (ir.module.module). The two
+        icon descriptions keep the oi markup. Slovenian Create an Opportunity
+        was still the English sentence; it is now Ustvari priložnost.
+        en_GB stays English. Where Odoo core itself leaves HTTP Routing or
+        Module in English, that wording is kept.
+      empty_msgstr: 0
+      loaded_on:
+        - {db: fx8_20_ce, url: "http://127.0.0.1:18223/web/login", active_langs: 43, proof: "partner_custom_fields name: Custom Fields for Contacts -> Пользовательские поля для контактов; HTTP Routing -> Маршрутизация HTTP"}
+        - {db: fx8_20_c, url: "http://127.0.0.1:18222/web/login", active_langs: 43, proof: "same Russian module name and HTTP Routing"}
+      users_left_on: en_US
     seed:
       commit: c781d8b6c17
       from_pin: 835c4be4b5deb809cc9100bbf4725d894561f08a
