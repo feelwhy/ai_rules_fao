@@ -46,6 +46,16 @@ live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-po
    shipped language loaded from the refreshed `.po` files (`res.lang.action_unarchive`,
    which loads installed modules) and a non-English term on that database differs from
    English. Leave `admin` and `demo` on `en_US`; the owner switches language to check.
+   **Loading a language is not the whole of `Fx.3`.** The system demo loaders
+   (`odootools_demo`: custom-field types, labels and options, checklists, po appliers)
+   write only the languages that are active when they run, and the review database was
+   stamped in `Fx.2` with `en_US` alone. After the languages are active, `Fx.3` calls
+   `res.company._demo_apply_all_translations()` (languages, every loader, then a gap
+   check) and requires it to return `[]`. The `tools` `.po` files do not carry demo
+   records: Odoo merges each `.po` with its `.pot` and skips entries the `.pot` does not
+   list, so do not translate demo strings into the tools `.po` files. The same call is
+   the weekly template refresh and the template build, so a new template is translated
+   by the same path the review databases use.
 8. **Owner-asked fixes stay in the plan and are applied on the newest group.** When the
    owner asks to fix anything (first-click crash, missing `demo`/`demo`, checker miss),
    the successor is written into rule 22 + the checker **and** becomes a required
