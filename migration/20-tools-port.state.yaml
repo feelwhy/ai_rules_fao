@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T17:45:00+01:00
-updated_by: agent/login-dedup-20_4
+updated_at: 2026-09-30T18:05:00+01:00
+updated_by: agent/task-codes-20_4
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -339,7 +339,7 @@ aggregates:
   20_port: {git_sha: 4b7e0dd3f8220fbf1367516012df00542d2b43ce, created: true, pushed: true, last_pushed: 4b7e0dd3f8220fbf1367516012df00542d2b43ce}
   20_final: {git_sha: dbbd02a5663898875365d9857e6d16c0e9d94b86, created: true, pushed: true, last_pushed: dbbd02a5663898875365d9857e6d16c0e9d94b86}  # 2026-09-30: merge of 20_2 + 20_c (13 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 66106ae7f1917600ea23fef6c60126540dc13125, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
+  system_20_0: {git_sha: bb0363326cf1a8935ba72b42d7c4f9b5aec35c1e, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -1930,6 +1930,25 @@ groups:
       screenshots: migration/screenshots/20_4.md
       shot_rows: 37
       pics_note: "1015 has 21 rows, 1016 has 2, 1017 has 6, 1018 has 8. Live titles of two 1015 rows carry <i class='fa fa-gears'>; Fx.6 must not copy that."
+    task_codes_demo:
+      at: 2026-09-30T18:05:00+01:00
+      asked: "Home Construction HC, Office Design OD, Research & Development RD; part of the demo for new templates"
+      system_20_0: bb0363326cf1a8935ba72b42d7c4f9b5aec35c1e
+      loader: >
+        New Layer 2 loader res.company._load_demo_task_numbers (DEMO_DATA_LOADERS, after
+        _load_demo_scoring), so action_setup_demo_template, env-demo-reload and the weekly
+        refresh all run it. Stamps un_reference by xmlid (name fallback), numbers every task
+        that has no un_reference_short (core demo tasks exist before task_numbers is
+        installed, so none had a number), then recomputes references still missing the
+        code. Switches on group_task_numbers_from_project when it is not implied yet (same
+        value as DEMO_CONFIG_BY_MODULE). Existing numbers are never changed.
+      proof: >
+        Two odootools_demo tests pass (codes, OD/<n> on every Office Design task, a second
+        run renumbers nothing; duplicates test). fx8_20_4: cleared OD, full
+        _reload_tools_demo_data restored it; all project tasks numbered, OD/035, RD/060.
+        fx8_20_4e: loader alone (owner's bundle test settings left as they are);
+        HC/010 (5 tasks there, 0 on community), OD/040, RD/065.
+      not_done: "19.0 templates unchanged (agents do not write 19.0)."
     login_dialog_fix:
       at: 2026-09-30T17:45:00+01:00
       asked: "log in page is displayed multiple times often"
