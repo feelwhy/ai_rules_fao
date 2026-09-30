@@ -816,6 +816,13 @@ groups:
         - {db: fx8_20_ce, url: "http://127.0.0.1:18223/web/login", active_langs: 43, proof: "partner_custom_fields name: Custom Fields for Contacts -> Пользовательские поля для контактов; HTTP Routing -> Маршрутизация HTTP"}
         - {db: fx8_20_c, url: "http://127.0.0.1:18222/web/login", active_langs: 43, proof: "same Russian module name and HTTP Routing"}
       users_left_on: en_US
+      demo_labels: >
+        Demo field labels, types and options are translated by the system layer
+        (odootools_demo CF_I18N), not by the tools po files. The loader writes only
+        the languages active when it runs, so Fx.3 must re-run
+        res.company._load_demo_custom_fields after the languages are loaded.
+        Missed on the first pass; re-run on both review DBs on 2026-09-30, proved
+        in ru, de, ja, zh_CN, lt, ar.
     fx4:
       stage_status: green
       at: 2026-09-30T12:35:00+01:00
