@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 09a7f77148f1dc0bbde22686c11c2456a820685d, created: true, pushed: false, last_pushed: 67716c536f024f7f61ecf6a7484b354343fdadac}
+  20_port: {git_sha: 09a7f77148f1dc0bbde22686c11c2456a820685d, created: true, pushed: true, last_pushed: 09a7f77148f1dc0bbde22686c11c2456a820685d}
   20_final: {git_sha: f44d8d1e3ca425a7a551fb019303b8efb462f8a6, created: true, pushed: true, last_pushed: f44d8d1e3ca425a7a551fb019303b8efb462f8a6}  # 2026-09-30: merge of 20_2 + 20_c + 20_4 (17 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
