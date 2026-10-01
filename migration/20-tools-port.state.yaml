@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-01T18:15:00+01:00
-updated_by: agent/fx7-20_14
+updated_at: 2026-10-01T18:25:00+01:00
+updated_by: agent/fx8-20_14
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -323,11 +323,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    active_group: "20_14"
+    active_group: "20_5"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_14 Fx.8"
+    next: "20_5 Fx.1"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -337,7 +337,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: cd85ce6d524b3a4a8184d5e3ccfad79f09e5423a, created: true, pushed: true, last_pushed: cd85ce6d524b3a4a8184d5e3ccfad79f09e5423a}
-  20_final: {git_sha: f44d8d1e3ca425a7a551fb019303b8efb462f8a6, created: true, pushed: true, last_pushed: f44d8d1e3ca425a7a551fb019303b8efb462f8a6}  # 2026-09-30: merge of 20_2 + 20_c + 20_4 (17 modules)
+  20_final: {git_sha: da146fab4047d5316bca535b4de66b25c9a34dbf, created: true, pushed: true, last_pushed: da146fab4047d5316bca535b4de66b25c9a34dbf}  # 2026-10-01: 20_2 + 20_c + 20_4 + 20_14 (26 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
 
@@ -1058,7 +1058,7 @@ groups:
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
               dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
-    stage: Fx.7
+    stage: Fx.8
     stage_status: green
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
@@ -1451,6 +1451,32 @@ groups:
         - support_translations/tm/website/box_odoo_20.0.yaml
         - support_translations/tm/website/nas_odoo_20.0.yaml
         - support_translations/tm/website/cloud_base_documents_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-01T18:25:00+01:00
+      tools_20_14: 3f9d0210f9518b0a634a40b65e1156f2348b82ea
+      tools_20_port: cd85ce6d524b3a4a8184d5e3ccfad79f09e5423a
+      tools_20_final_before: f44d8d1e3ca425a7a551fb019303b8efb462f8a6
+      tools_20_final: da146fab4047d5316bca535b4de66b25c9a34dbf
+      tools_20_0_untouched: 971c21a311ebe5682576a86396ef539c71d7c216
+      module_diff_20_final_vs_20_14: empty
+      module_diff_20_final_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is a merge commit with parents the previous 20_final (20_2 + 20_c + 20_4)
+        and 20_14 (clean merge, no conflicts). Its tree is those 17 modules plus the nine
+        cloud-storage apps. The nine folders equal 20_14 and 20_port; the 17 older folders
+        and requirements.txt are unchanged. Cumulative check: one database installing every
+        module now on 20_final with demo and their tests, then -u, on community (25 modules;
+        no cloud_base_documents) and on enterprise (all 26): 0 failed, 0 errors of 159 tests
+        (community) and 168 (enterprise). The one ERROR line in each log is the deliberate
+        crash of complementary_contact_data test_ru_read_crashes_on_varchar_then_healer_fixes_it.
+        System worktree: system-20.0-clean at ac08f4fc529. Not a merge of the rest of 20_port:
+        item 33 stays blocked until every group starts on 20.0.
+      not_merged_to: "tools 20.0 (that is Px.2)"
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_final14_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final14_e.log]
+      runner: /home/feelwhy/env-sync/p6/fx8_20_14_cumulative.sh
+      cleanup: "temporary worktree tools-20_final removed; throwaway databases dropped"
     review:
       db: fx8_20_14
       url: http://127.0.0.1:18226/web/login
