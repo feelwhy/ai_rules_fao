@@ -1341,7 +1341,7 @@ groups:
       browser: "SMOKE_OK 29/29 (File Manager, configuration, logs picker, settings, chatter box with folder tree and Add URL, portal /my, share via token as portal and logged out). Log logs/fx2_20_14c_smoke.log"
     review_enterprise:
       db: fx8_20_14e
-      url: http://127.0.0.1:18227/web/login
+      url: http://localhost:8019/web/login
       image: faotools/env-demo-20:20.0
       enterprise: /home/feelwhy/Odoo/_worktrees/enterprise-20.0
       web_enterprise: installed
@@ -1350,6 +1350,7 @@ groups:
       languages: en_US
       keep_until: 2026-10-04T11:20:00+01:00
       compose: faotools_env/local/run/fx8_20_14e/compose.yml
+      port_note: "Owner 2026-10-01: served on localhost:8019 (OAuth redirect URLs of the cloud clients are registered for it). web.base.url = http://localhost:8019, so a new client's default redirect URI follows. No clients exist on this DB yet."
       purpose: "store screenshots for this serie are taken on enterprise"
       browser: "SMOKE_OK 30/30 (adds Documents). Log logs/fx2_20_14e_smoke.log"
       overview_pdfs:
