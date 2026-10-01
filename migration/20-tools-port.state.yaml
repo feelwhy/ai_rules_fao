@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-09-30T22:25:00+01:00
-updated_by: agent/fx8-20_4
+updated_at: 2026-10-01T10:55:00+01:00
+updated_by: agent/fx1-20_14
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -323,11 +323,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    active_group: "20_4"
+    active_group: "20_14"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_4 phase 8 complete. Screenshots before Px.1. Do not start 20_3 until asked."
+    next: "20_14 Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: c89eef8800436d5edca391ae8f2573fc38fc7ebe, created: true, pushed: true, last_pushed: c89eef8800436d5edca391ae8f2573fc38fc7ebe}
+  20_port: {git_sha: 67716c536f024f7f61ecf6a7484b354343fdadac, created: true, pushed: true, last_pushed: 67716c536f024f7f61ecf6a7484b354343fdadac}
   20_final: {git_sha: f44d8d1e3ca425a7a551fb019303b8efb462f8a6, created: true, pushed: true, last_pushed: f44d8d1e3ca425a7a551fb019303b8efb462f8a6}  # 2026-09-30: merge of 20_2 + 20_c + 20_4 (17 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1058,7 +1058,7 @@ groups:
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
               dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
@@ -1224,6 +1224,71 @@ groups:
         project.portal_my_task exist at saas-19.4; website_sale.product
         is a pre-existing 20_c hit). 0 real findings.
       leftover_b1: "0 failed, 0 error(s) of 51 tests; Bugbot clean; security review no medium+"
+    fx1:
+      stage_status: green
+      at: 2026-10-01T10:55:00+01:00
+      order_note: "Owner asked for 20_14 after 20_4 (2026-10-01)."
+      tools_20_14: e125a57a3c19d802c432371bf8ecf10bcbba9f27
+      commits: [a7189db4f1d, e125a57a3c1]
+      merge_to_20_port: 67716c536f024f7f61ecf6a7484b354343fdadac
+      merge_note: "20_14 was an ancestor of 20_port; clean --no-ff merge. All 9 module folders equal 20_14."
+      port_worktree_dirty_left_alone: "odoo_password_manager password_manager.js and project_custom_fields project_project.xml were modified in tools-20_port by someone else; not touched, not committed"
+      checker: >
+        57 findings vs origin/20.0 on the first run, all in cloud_base / cloud_base_documents
+        (25 fa-icon, 14 owl-static-props, 8 owl-ref, 3 js-symbol, 2 js-import, 1 ctrl-hook,
+        1 py-import, 1 owl-props-spread, 1 qweb-tesc, 1 icon-name). After the port: 3 fa-icon,
+        deliberate: jstree icon class names stored as data (clouds.folder.icon_class
+        "fa fa-folder", clouds.client fallback "fa fa-refresh", default-folder marker
+        "fa fa-file-o"), drawn by a Material Symbols SCSS shim in cloud_manager_search.scss.
+      versions: "re-prefixed 20.0.x.y.z, tails unchanged. 19.0 is ahead on owncloud 1.1.12, cloud_base 1.4.63, cloud_base_documents 1.1.18 and two prices: [#auto] publish bumps only; both 19.0 code commits since the seed (one-way sync, res_id coerce) are already ported. Fx.6 aligns the tails."
+      ports:
+        - "static props / defaultProps -> props = useProps({...}) on 12 components (CloudJsTreeContainer, NodeJsTreeContainer, CloudDropZone, CloudManager, CloudNavigation, PhotosSlideShow, PhotosSlideShowAction, CloudLogs, JsTreeWidget, RuleParent, jsTreePortal, Many2XAutocompleteAttachments with ...many2XAutocompleteProps)"
+        - "standardActionServiceProps from @web/webclient/actions/action_plugin"
+        - "useRef / t-custom-ref -> signal.ref() read by calling it (jstree hosts, portal tree, File Manager upload input); kanban record xpath -> article"
+        - "CloudLogs period: useDateTimePicker inputRefs [startDate, endDate]; dead target 'root' dropped (20.0 would use the string as the popover element)"
+        - "mail Chatter patch: this.props -> this.threadId() / this.threadModel(); onWillUpdateProps -> useOnChange; isAttachmentBoxOpened -> activePanel ATTACHMENT; Add URL xpath -> o-mail-Chatter-attachmentActions//FileUploader; attachments fall back to sortedAttachments"
+        - "AttachmentList: Open in clouds action icon 'cloud'; hover button btn-secondary"
+        - "ir.attachment: _compute_raw reads attach._file_read() (record-based) and BinaryBytes(db_datas); cloud read moved to _cloud_file_read(); the _file_read(fname) override removed"
+        - "portal counter: _prepare_home_portal_values -> _prepare_portal_counter_values (shares_count, clouds.share, read)"
+        - "PREFETCH_MAX defined locally in clouds_folder.py"
+        - "Font Awesome -> Material Symbols in 12 templates, 7 view archs, the slideshow spinner; kanban checkbox scss keyed on data-icon; icon-only links titled"
+        - "cloud_base_documents format_file_size: t-esc -> t-out"
+        - "jstree_widget: formRecord.data.id -> formRecord.resId; File Manager preview attachment id from record.resId"
+      tests: >
+        faotools/env-demo-20:20.0, fresh install with demo of the group plus its tests, then -u.
+        Community (8 modules, no cloud_base_documents): 0 failed, 0 error(s) of 89 tests.
+        Enterprise (9 modules): 0 failed, 0 error(s) of 98 tests. -u exit 0 on both.
+        First run was red on both (F6 _file_read(fname): 1 error community, registry load
+        failed enterprise); green at e125a57. Log warnings: only markdown2, box_sdk_gen
+        PyPI name, documents superuser create (core).
+      runner: /home/feelwhy/env-sync/p6/fx1_20_14_test.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_14_c2.log, /home/feelwhy/env-sync/p6/logs/fx1_20_14_e2.log]
+      browser: >
+        Done at Fx.1 on a temporary enterprise DB (9 modules + odootools_demo Layer 2, system
+        0968dca: 9 rules, 90 folders, 83 files in folders, 1 share). Headless Chromium on the
+        fx8-chrome grid, admin and portal: SMOKE_OK 30/30 pages, zero error dialogs, zero
+        console errors. File Manager kanban + folder filter + Upload to / Add URL dialog +
+        selection panel + image preview; clients, rules (all tabs), folders, tags, shares
+        (stat buttons), queue, logs + period picker, settings; partner chatter attachment box
+        with the folder tree, folder click keeps the box open, Add URL dialog, box toggle;
+        Documents kanban; portal /my card, /clouds/shares, share tree, folder click.
+        Folder icons render through the shim (computed ::before "folder"). Community browser
+        pass not repeated (same modules minus Documents; the Fx.2 community review DB is the walk).
+      smoke_db_note: >
+        The demo share is for Azure Interior while the demo portal user Joel Willis has no
+        company (19.0 and 20.0 base demo alike), so portal sees no Shares card on a demo DB.
+        The smoke DB linked Joel Willis to the share by hand. Not a port regression; a demo
+        change is the owner's call.
+      smoke_runner: [/home/feelwhy/env-sync/p6/fx1_20_14_smoke_setup.sh, /home/feelwhy/env-sync/p6/fx1_20_14_smoke_run.sh, /home/feelwhy/env-sync/p6/selenium/smoke_20_14.py]
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_14_smoke.log
+      temporary_db_removed: true
+      rule_fixes: "ai_rules 643678a: F14 (mail Chatter / AttachmentList on 20.0, useDateTimePicker target, stored FA class names), F6 checker coverage, new kind patch-props"
+      incident: >
+        Docker Desktop restarted at 09:52 and its WSL integration for Ubuntu did not come back
+        (/var/run/docker.sock missing, docker.exe 'distro-services/ubuntu.sock'); the owner
+        re-enabled it. The fx8_20_4 / fx8_20_4e / fx8_20_c / fx8_20_ce review containers
+        exited (255) with that restart and were not restarted (they mount the shared
+        system-20.0 worktree, whose odootools_demo depends changed).
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
