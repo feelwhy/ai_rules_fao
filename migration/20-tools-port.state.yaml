@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-01T11:45:00+01:00
-updated_by: agent/fx2-20_14
+updated_at: 2026-10-01T17:15:00+01:00
+updated_by: agent/fx3-20_14
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_14 Fx.3"
+    next: "20_14 Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 67716c536f024f7f61ecf6a7484b354343fdadac, created: true, pushed: true, last_pushed: 67716c536f024f7f61ecf6a7484b354343fdadac}
+  20_port: {git_sha: 09a7f77148f1dc0bbde22686c11c2456a820685d, created: true, pushed: false, last_pushed: 67716c536f024f7f61ecf6a7484b354343fdadac}
   20_final: {git_sha: f44d8d1e3ca425a7a551fb019303b8efb462f8a6, created: true, pushed: true, last_pushed: f44d8d1e3ca425a7a551fb019303b8efb462f8a6}  # 2026-09-30: merge of 20_2 + 20_c + 20_4 (17 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1058,7 +1058,7 @@ groups:
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
               dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
-    stage: Fx.2
+    stage: Fx.3
     stage_status: green
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
@@ -1327,6 +1327,43 @@ groups:
       incident: >
         At about 10:50 every Docker command from WSL hung (socket present, docker.exe fine);
         the first builds never started a container. Owner restarted Docker Desktop; rebuilt.
+    fx3:
+      stage_status: green
+      at: 2026-10-01T17:15:00+01:00
+      tools_20_14: 79ae974c08dc770c7fc369be3f46d2f2f6779538
+      merge_to_20_port: 09a7f77148f1dc0bbde22686c11c2456a820685d
+      system_20_0: ac08f4f
+      method: >
+        odoo i18n export from fx8_20_14e for the nine modules, compared with the shipped pots.
+        Unchanged msgid kept its msgstr. Icon markup (Download, Upload, Open, Slideshow, the
+        warning banner) kept the old translated words and only the icon tag changed. MinIO
+        endpoint URL and MinIO addressing style are the Amazon S3 translations with the brand
+        replaced. New module names, the first sentence of each summary, and the description
+        feature lines are translated in the 33 base languages; de_CH, es_419, es_CL, fr_BE,
+        fr_CA, fr_CH, nl_BE and pt_BR take those. Summary keyword tails stay English.
+        HTTP Routing, Module, Scheduled Action and Activity Plans come from the Odoo 20
+        catalogs, with a hand fill where core has no file (bn, ms, sr) or an empty msgstr
+        (hi Scheduled Action, lt and lv Activity Plans). 17 old cloud_base msgids the export
+        lost are still in the source and were kept; 14 were dropped (the Font Awesome
+        strings, AND/ANY, the removed access errors). Every entry's comment starts with
+        "module: <name>", which /website/translations requires.
+      empty_msgstr: 0
+      left_english: >
+        Material Symbols icon e.g. checklist in every catalog: core Odoo 20 has no translation.
+        HTTP Routing and Module stay English where the core catalog itself does. Danish
+        Download and Upload were already the English word. Spanish and Italian No is the
+        same word. en_GB stays English.
+      summary_choice: "Translated first sentence, English keyword tail. Same choice as 20_4."
+      app_names: "All nine shortdescs translated. en_GB stays the English name. Russian: Решения для облачного хранения."
+      loaded_on:
+        - {db: fx8_20_14, url: "http://127.0.0.1:18226/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Решения для облачного хранения"}
+        - {db: fx8_20_14e, url: "http://localhost:8019/web/login", active_langs: 43, gaps: 0, proof: "ru: Решения для облачного хранения; de: Cloud-Speicher-Lösungen; MinIO endpoint: URL конечной точки MinIO"}
+      users_left_on: en_US
+      demo_layer: >
+        _demo_apply_all_translations() returned [] on both review databases. The enterprise
+        reload left the eight confirmed cloud clients, the Warehouses/Deliveries rules and
+        the three Packing folders in place. The first enterprise attempt died on a
+        concurrent stock.route update and was re-run.
     review:
       db: fx8_20_14
       url: http://127.0.0.1:18226/web/login
