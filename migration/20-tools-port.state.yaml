@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-01T18:25:00+01:00
-updated_by: agent/fx8-20_14
+updated_at: 2026-10-01T19:10:00+01:00
+updated_by: agent/fx1-20_5
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_5 Fx.1"
+    next: "20_5 Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: cd85ce6d524b3a4a8184d5e3ccfad79f09e5423a, created: true, pushed: true, last_pushed: cd85ce6d524b3a4a8184d5e3ccfad79f09e5423a}
+  20_port: {git_sha: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b, created: true, pushed: true, last_pushed: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b}
   20_final: {git_sha: da146fab4047d5316bca535b4de66b25c9a34dbf, created: true, pushed: true, last_pushed: da146fab4047d5316bca535b4de66b25c9a34dbf}  # 2026-10-01: 20_2 + 20_c + 20_4 + 20_14 (26 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
@@ -1516,7 +1516,7 @@ groups:
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     known_breaks: [x2many_commands, ir_attachment_datas, get_param, useState, owl_xpath]
     enterprise_required: true
@@ -1661,6 +1661,53 @@ groups:
       reviews:
         bugbot: "KPI Internal User crud grant — fixed (access-grant). total_notify ACL missing — false (untracked csv)."
         security: "KPI User write via xml crud — fixed to r + group_kpi_user."
+    fx1:
+      stage_status: green
+      at: 2026-10-01T19:10:00+01:00
+      tools_20_5: c37f7cf3f3d538f9b944aac7b2bcab11990ddd69
+      merge_to_20_port: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b
+      merge_note: >
+        The KPI restyle was already on 20_port (1c7b6b0) as well as on 20_5 (50dd959),
+        so kpi_chart.js, kpi_chart.xml and kpi_scorecard_line.xml conflicted. Resolved
+        to the 20_5 side. diff -rq of the four module folders is empty. The unrelated
+        dirty files on tools-20_port were left unstaged.
+      checker: >
+        32 findings vs origin/20.0 on the first run (16 fa-icon, 8 owl-static-props,
+        2 js-symbol, 2 owl-this, 1 py-import, 1 env-removed, 1 js-import, 1 owl-ref).
+        After the port: 0. The install then found two things the checker does not
+        see: ir.actions.report.report_file is gone (total_notify report), and a gantt
+        view may no longer wrap its popover in a bare templates element.
+      versions: "re-prefixed 20.0.1.2.9, 20.0.1.0.4, 20.0.1.1.12, 20.0.1.3.10. Tails unchanged."
+      ports:
+        - "Font Awesome -> Material Symbols on buttons, kanban cards, the period bar, the chart toggles, the jstree search icons, and the Joint Calendar description line (fa-tasks -> clear_all, fa-bell-o -> notifications, fa-bar-chart-o -> bar_chart)"
+        - "static props -> props = useProps on the eight KPI and reminder components; standardActionServiceProps imported from action_plugin"
+        - "jstree t-custom-ref / useRef -> signal.ref() read by calling it"
+        - "env.isSmall -> this.uiService.isSmall on the calendar side panel"
+        - "KPI history dialog modalRef=\"this.modalRef\""
+        - "record.data.id leftover dropped in the formula loader; a new period uses formRecord.resId"
+        - "PREFETCH_MAX defined locally in joint_event.py"
+        - "total_notify report drops report_file"
+        - "joint event gantt popover is a popover element with popover-body, not templates/gantt-popover"
+      tests: >
+        faotools/env-demo-20:20.0, fresh install with demo and the group's test tags, then -u.
+        Community (joint_calendar, total_notify, kpi_scorecard): 0 failed, 0 error(s) of 36 tests.
+        Enterprise (those plus joint_calendar_gantt): 0 failed, 0 error(s) of 36 tests.
+        The first enterprise run died on the old gantt popover; green after that fix.
+      runner: /home/feelwhy/env-sync/p6/fx1_20_5_test.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_5_c.log, /home/feelwhy/env-sync/p6/logs/fx1_20_5_e.log]
+      browser: >
+        Enterprise temporary DB fx1_20_5s (the four modules, web_enterprise, odootools_demo).
+        Headless Chromium: SMOKE_OK 20 pages, zero error dialogs, zero console errors.
+        Lists and forms for calendars, rules, alarms, periods, KPIs (formula field and
+        notebook tabs), measurements, constants, categories, tags, reminders (field filter),
+        the scorecard kanban, KPI trends, Settings (arrow_forward), the joint calendar
+        view (refresh icon), and its gantt. A full _reload_tools_demo_data died on a
+        sale-order company check outside this group (S00067 / Lone Star Furnishings);
+        the joint-calendar and reminder loaders were run on their own (2 calendars,
+        213 events, 3 reminders; 27 KPI items were already there).
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_5.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_5_smoke.log
+      temporary_db_removed: true
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
