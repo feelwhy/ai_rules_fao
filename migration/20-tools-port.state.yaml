@@ -339,7 +339,7 @@ aggregates:
   20_port: {git_sha: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b, created: true, pushed: true, last_pushed: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b}
   20_final: {git_sha: da146fab4047d5316bca535b4de66b25c9a34dbf, created: true, pushed: true, last_pushed: da146fab4047d5316bca535b4de66b25c9a34dbf}  # 2026-10-01: 20_2 + 20_c + 20_4 + 20_14 (26 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: 0968dca5ede93065e141b2f5edabd577410ecf9c, created: true, pushed: true}  # 2026-09-30: _demo_apply_all_translations + gap check; env_master a2184b17c8c refresh script
+  system_20_0: {git_sha: df91c63c5af0bca4af2ae1339968de618907b93c, created: true, pushed: true}  # 2026-10-02: historical sales stay on the salesperson's company
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
