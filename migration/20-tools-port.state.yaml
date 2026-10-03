@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-02T11:20:00+01:00
-updated_by: agent/fx2-20_5
+updated_at: 2026-10-03T11:40:00+01:00
+updated_by: agent/jc-contact-company
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -339,7 +339,7 @@ aggregates:
   20_port: {git_sha: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b, created: true, pushed: true, last_pushed: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b}
   20_final: {git_sha: da146fab4047d5316bca535b4de66b25c9a34dbf, created: true, pushed: true, last_pushed: da146fab4047d5316bca535b4de66b25c9a34dbf}  # 2026-10-01: 20_2 + 20_c + 20_4 + 20_14 (26 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: df91c63c5af0bca4af2ae1339968de618907b93c, created: true, pushed: true}  # 2026-10-02: historical sales stay on the salesperson's company
+  system_20_0: {git_sha: baf3119fbc810c3b65a6697d4bcdb4f96117e8df, created: true, pushed: true}  # 2026-10-03: joint calendar demo rules link contact and company
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -1712,7 +1712,7 @@ groups:
       stage_status: green
       at: 2026-10-02T11:20:00+01:00
       tools_20_5: c37f7cf3f3d538f9b944aac7b2bcab11990ddd69
-      system_20_0: df91c63c5af0bca4af2ae1339968de618907b93c
+      system_20_0: baf3119fbc810c3b65a6697d4bcdb4f96117e8df
       system_worktree: /home/feelwhy/Odoo/_worktrees/system-20.0-clean
       layer1:
         changed: false
@@ -1728,6 +1728,14 @@ groups:
           with a customer of another company. Odoo 20 rejects that. system 20.0
           df91c63 picks a partner of that company, or a shared partner, and sets
           company_id. Both review databases then finished the KPI history.
+        contact_company: >
+          2026-10-03, system 20.0 baf3119. Active tasks, Quotations, and Leads
+          map partner_id and company_id. Activities and Standard Meetings stay
+          unmapped (no single contact or company field). Open tasks with no
+          company take the current company. Regenerated on fx8_20_5 and
+          fx8_20_5e: tasks calendar 25 events with a contact and 69 with a
+          company; sales calendar 62 with a contact and 76 with a company.
+          Time-off rule still skipped (hr.leave missing).
       languages: "en_US only; admin, demo and portal on en_US"
       screenshots: migration/screenshots/20_5.md
       shot_rows: 51
