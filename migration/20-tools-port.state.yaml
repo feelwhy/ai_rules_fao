@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-03T13:50:00+01:00
-updated_by: agent/fx6-20_5
+updated_at: 2026-10-03T14:00:00+01:00
+updated_by: agent/fx8-20_5
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_5 Fx.7"
+    next: "20_6 Fx.1"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -337,7 +337,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 913910e6123a61ec2040eff3f9702d03efd15c1c, created: true, pushed: true, last_pushed: 913910e6123a61ec2040eff3f9702d03efd15c1c}
-  20_final: {git_sha: da146fab4047d5316bca535b4de66b25c9a34dbf, created: true, pushed: true, last_pushed: da146fab4047d5316bca535b4de66b25c9a34dbf}  # 2026-10-01: 20_2 + 20_c + 20_4 + 20_14 (26 modules)
+  20_final: {git_sha: 94b28ffc37a085a9455ed25de68d8a37233f93df, created: true, pushed: true, last_pushed: 94b28ffc37a085a9455ed25de68d8a37233f93df}  # 2026-10-03: 20_2 + 20_c + 20_4 + 20_14 + 20_5 (30 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
@@ -1516,7 +1516,7 @@ groups:
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
-    stage: Fx.6
+    stage: Fx.8
     stage_status: green
     known_breaks: [x2many_commands, ir_attachment_datas, get_param, useState, owl_xpath]
     enterprise_required: true
@@ -1857,6 +1857,54 @@ groups:
       public_20_0: 0
       origin_write_dates_unchanged: true
       preview: "https://faotools.com/apppublish//20.0/1276/"
+    fx7:
+      stage_status: green
+      at: 2026-10-03T13:55:00+01:00
+      support: b09e050d8da492fbd6d1586580a1a0af9f4c9c39
+      branch: support@19.0
+      method: >
+        Each 20.0 website TM file gained a releases block: the changelog rows the
+        history link shows (19.0 releases plus the older rows behind the 19.0
+        migration release), plus the unpublished 20.0 migration row. The flag
+        sentence is the published version-20 wording from Cloud Storage. Joint
+        Calendar adds the reminder-popup sentence and KPI adds the cyclic-formula
+        sentence, in all 42 shipped languages. Gantt and Reminder Designer are the
+        flag line alone. The live drafts stay English; apply is Px.7.
+      check_release_tm: "0 gaps across 124 files"
+      validate_term: "0 errors on the four new 20.0 rows"
+      rows: {joint_calendar: "7 + 1", joint_calendar_gantt: "4 + 1", kpi_scorecard: "10 + 1", total_notify: "9 + 1"}
+      files:
+        - support_translations/tm/website/joint_calendar_20.0.yaml
+        - support_translations/tm/website/joint_calendar_gantt_20.0.yaml
+        - support_translations/tm/website/kpi_scorecard_20.0.yaml
+        - support_translations/tm/website/total_notify_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-03T14:00:00+01:00
+      tools_20_5: 224dd34acc8cdf78a067ee5e539315da96ee7f57
+      tools_20_port: 913910e6123a61ec2040eff3f9702d03efd15c1c
+      tools_20_final_before: da146fab4047d5316bca535b4de66b25c9a34dbf
+      tools_20_final: 94b28ffc37a085a9455ed25de68d8a37233f93df
+      tools_20_0_untouched: 971c21a311ebe5682576a86396ef539c71d7c216
+      module_diff_20_final_vs_20_5: empty
+      module_diff_20_final_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is a merge commit with parents the previous 20_final (20_2 + 20_c + 20_4 + 20_14)
+        and 20_5 (clean merge, no conflicts). Its tree is those 26 modules plus the four
+        calendar, KPI, and reminder apps (30). The four folders equal 20_5 and 20_port; the
+        older folders and requirements.txt are unchanged. Cumulative check: one database
+        installing every module now on 20_final with demo and their tests, then -u, on
+        community (28 modules; no cloud_base_documents, no joint_calendar_gantt) and on
+        enterprise (all 30): 0 failed, 0 errors of 193 tests (community) and 202 (enterprise).
+        The one ERROR line in each log is the deliberate crash of complementary_contact_data
+        test_ru_read_crashes_on_varchar_then_healer_fixes_it. System worktree:
+        system-20.0-clean at 218e7d3e0c288aa63309a2569d73e8870507119e. Not a merge of the rest
+        of 20_port: item 33 stays blocked until every group starts on 20.0.
+      not_merged_to: "tools 20.0 (that is Px.2)"
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_final5_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final5_e.log]
+      runner: /home/feelwhy/env-sync/p6/fx8_20_5_cumulative.sh
+      cleanup: "temporary worktree tools-20_final removed; throwaway databases dropped"
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]

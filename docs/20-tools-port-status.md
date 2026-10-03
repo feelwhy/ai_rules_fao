@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-10-03 (20_5 Fx.6 green; four hidden 20.0 drafts; Fx.5 skipped; next is 20_5 Fx.7)
+**Last updated:** 2026-10-03 (20_5 Fx.8 green; 20_final has 30 modules; next is 20_6 Fx.1)
 
 ## Where we are
 
