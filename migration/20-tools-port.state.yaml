@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-03T11:45:00+01:00
-updated_by: agent/jc-popup
+updated_at: 2026-10-03T13:30:00+01:00
+updated_by: agent/fx3-20_5
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_5 Fx.3"
+    next: "20_5 Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b, created: true, pushed: true, last_pushed: d8e644fcad2eacf002fe4dbf2e73abe53a5b581b}
+  20_port: {git_sha: 913910e6123a61ec2040eff3f9702d03efd15c1c, created: true, pushed: true, last_pushed: 913910e6123a61ec2040eff3f9702d03efd15c1c}
   20_final: {git_sha: da146fab4047d5316bca535b4de66b25c9a34dbf, created: true, pushed: true, last_pushed: da146fab4047d5316bca535b4de66b25c9a34dbf}  # 2026-10-01: 20_2 + 20_c + 20_4 + 20_14 (26 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: baf3119fbc810c3b65a6697d4bcdb4f96117e8df, created: true, pushed: true}  # 2026-10-03: joint calendar demo rules link contact and company
@@ -1516,7 +1516,7 @@ groups:
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
-    stage: Fx.2
+    stage: Fx.3
     stage_status: green
     known_breaks: [x2many_commands, ir_attachment_datas, get_param, useState, owl_xpath]
     enterprise_required: true
@@ -1765,6 +1765,35 @@ groups:
         keep_until: 2026-10-05T11:15:00+01:00
         compose: faotools_env/local/run/fx8_20_5e/compose.yml
         purpose: "store screenshots for this serie are taken on enterprise"
+    fx3:
+      stage_status: green
+      at: 2026-10-03T13:30:00+01:00
+      tools_20_5: 224dd34acc8cdf78a067ee5e539315da96ee7f57
+      merge_to_20_port: 913910e6123a61ec2040eff3f9702d03efd15c1c
+      system_20_0: baf3119fbc810c3b65a6697d4bcdb4f96117e8df
+      method: >
+        odoo i18n export from fx8_20_5e for the four modules, compared with the
+        shipped pots. Unchanged msgid kept its msgstr. Twelve old msgids the
+        export lost are still in the source (.format inside _()) and were kept.
+        Dropped: Snooze, the Font Awesome icon help, the removed event access
+        error, and the old gantt arrow. App names, the first summary sentence,
+        and the description feature lines are translated in the 33 base
+        languages; de_CH, es_419, es_CL, fr_BE, fr_CA, fr_CH, nl_BE and pt_BR
+        take those. Summary keyword tails stay English. Module, Activity Plans
+        and Clear come from the Odoo 20 catalogs, with a hand fill where core
+        has none. Material Symbols icon e.g. checklist stays English: core Odoo
+        20 has no translation. en_GB stays English. French and Dutch Module is
+        the same word. Every entry's comment starts with "module: <name>".
+      empty_msgstr: 0
+      app_names: "Joint Calendar, Joint Calendar: Gantt, KPI Balanced Scorecard, Reminder Designer and Periodic Reporting. Russian: Совместный календарь."
+      left_english: "Material Symbols icon e.g. checklist in every catalog. en_GB stays English."
+      loaded_on:
+        - {db: fx8_20_5, url: "http://127.0.0.1:18227/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Совместный календарь"}
+        - {db: fx8_20_5e, url: "http://127.0.0.1:18228/web/login", active_langs: 43, gaps: 0, proof: "ru: Совместный календарь; de: Gemeinsamer Kalender"}
+      users_left_on: en_US
+      demo_layer: "_demo_apply_all_translations() returned [] on both review databases."
+      runner: /home/feelwhy/env-sync/p6/fx3_20_5/apply_fx3.py
+      logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_5_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_5_e.log]
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
