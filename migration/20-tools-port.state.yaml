@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-03T14:00:00+01:00
-updated_by: agent/fx8-20_5
+updated_at: 2026-10-03T14:35:00+01:00
+updated_by: agent/fx1-20_11
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -323,11 +323,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    active_group: "20_5"
+    active_group: "20_11"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_6 Fx.1"
+    next: "20_11 Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 913910e6123a61ec2040eff3f9702d03efd15c1c, created: true, pushed: true, last_pushed: 913910e6123a61ec2040eff3f9702d03efd15c1c}
+  20_port: {git_sha: 34e24e68b61a715faf1d9fc46c9023d6684b6fb1, created: true, pushed: true, last_pushed: 34e24e68b61a715faf1d9fc46c9023d6684b6fb1}  # 2026-10-03: 20_11 Fx.1 merged; unrelated dirty files left unstaged
   20_final: {git_sha: 94b28ffc37a085a9455ed25de68d8a37233f93df, created: true, pushed: true, last_pushed: 94b28ffc37a085a9455ed25de68d8a37233f93df}  # 2026-10-03: 20_2 + 20_c + 20_4 + 20_14 + 20_5 (30 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3034,7 +3034,7 @@ groups:
   "20_11":
     order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     known_breaks: [stock_move_product_uom, ir_attachment_datas, useState, chartjs_v4,
                    form_controller_props]
@@ -3153,6 +3153,43 @@ groups:
       reviews:
         bugbot: "stored product_uom group-by; remapped in _get_report_settings"
         security: "no medium+; ir.access 1:1 of 19.0 product-group crud"
+    fx1:
+      stage_status: green
+      at: 2026-10-03T14:35:00+01:00
+      tools_20_11: 80e24a0a7e1eda6cd249da7b98c9bae2bbbdb818
+      merge_to_20_port: 34e24e68b61a715faf1d9fc46c9023d6684b6fb1
+      merge_note: >
+        Clean ort merge. diff -rq of the three module folders is empty.
+        The unrelated dirty files on tools-20_port (password_manager.js,
+        project_project.xml) were left unstaged.
+      checker: >
+        16 findings vs origin/20.0 on the first run (7 fa-icon, 4 owl-static-props,
+        2 js-import, 2 js-symbol, 1 field-lit). After the port: 0.
+        odoo origin/20.0 c356f95d45c, enterprise origin/20.0 bce4d8fafdb.
+      versions: "re-prefixed 20.0.1.0.5, 20.0.1.0.10, 20.0.1.0.10. Tails unchanged."
+      ports:
+        - "Font Awesome -> Material Symbols (table_chart, show_chart, bar_chart, chevron_left/right, warning, close, calculate, save, download)"
+        - "static props -> props = useProps; standardActionServiceProps from action_plugin"
+        - "FormController drops static template (stays web.FormView). Refresh / Export / Save stay in the side panel: the embedded form has controlPanel false, so buttonTemplate would not show. The manager binds the controller and calls it."
+        - "empty views/**/*.xml asset glob dropped after the button template was removed"
+        - "saved stock group-by that is not a stock.move field and still ends in uom is read as uom_id"
+      tests: >
+        faotools/env-demo-20:20.0, community only (no enterprise lane).
+        Fresh install with demo and the group's test tags, then -u.
+        0 failed, 0 error(s) of 2 tests (the modules ship no tests/; the 2 are the core web post suites the tag run still executes).
+      runner: /home/feelwhy/env-sync/p6/fx1_20_11_test.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_11_c.log]
+      browser: >
+        Community temporary DB fx1_20_11s, plus sale_management so the Sales
+        settings app is shown (sale marks it notApp=1). Headless Chromium:
+        SMOKE_OK 14 pages, zero error dialogs, zero console errors.
+        Low Sales wizard and its pivot, Sales settings (Low Sales block),
+        both forecast client actions (table, line, bar, panel toggle, Refresh),
+        saved-report lists and forms, stats-model lists and the Help notebook.
+        The database was dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_11.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_11_smoke.log
+      temporary_db_removed: true
     note: >
       tests-prep already on origin/19.0 (5931ff03a19). Shared tools
       left on 19.0, not pulled. support TM is foreign — not committed.
