@@ -339,7 +339,7 @@ aggregates:
   20_port: {git_sha: 913910e6123a61ec2040eff3f9702d03efd15c1c, created: true, pushed: true, last_pushed: 913910e6123a61ec2040eff3f9702d03efd15c1c}
   20_final: {git_sha: da146fab4047d5316bca535b4de66b25c9a34dbf, created: true, pushed: true, last_pushed: da146fab4047d5316bca535b4de66b25c9a34dbf}  # 2026-10-01: 20_2 + 20_c + 20_4 + 20_14 (26 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
-  system_20_0: {git_sha: baf3119fbc810c3b65a6697d4bcdb4f96117e8df, created: true, pushed: true}  # 2026-10-03: joint calendar demo rules link contact and company
+  system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
 # ---------------------------------------------------------------- groups
 # stage: one of Gx.0..Gx.9, Fx.1..Fx.8, Px.1..Px.9, done
@@ -1791,7 +1791,12 @@ groups:
         - {db: fx8_20_5, url: "http://127.0.0.1:18227/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Совместный календарь"}
         - {db: fx8_20_5e, url: "http://127.0.0.1:18228/web/login", active_langs: 43, gaps: 0, proof: "ru: Совместный календарь; de: Gemeinsamer Kalender"}
       users_left_on: en_US
-      demo_layer: "_demo_apply_all_translations() returned [] on both review databases."
+      demo_layer: >
+        _demo_apply_all_translations() returned [] on both review databases.
+        KPI tags Sales, Project, Team and Person were missing from the demo
+        catalogs (the gap check does not cover them). system 20.0 218e7d3e0c288aa63309a2569d73e8870507119e
+        adds the four terms; both review databases now show Russian
+        Продажи, Проекты, Команда, Сотрудник.
       runner: /home/feelwhy/env-sync/p6/fx3_20_5/apply_fx3.py
       logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_5_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_5_e.log]
   "20_6":
