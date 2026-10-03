@@ -1737,7 +1737,7 @@ groups:
           company; sales calendar 62 with a contact and 76 with a company.
           Time-off rule still skipped (hr.leave missing).
         popup: >
-          2026-10-03, tools 20_5 53232371c8b. The reminder toast matches the
+          2026-10-03, tools 20_5 53232371c8bf9bd0b413c9e96ca116b206788760. The reminder toast matches the
           calendar one: link buttons, no Snooze, schedule plus contact or rule.
           On fx8_20_5e the standalone check event was removed. The live popup
           is joint event 1341, project.task 47 "[Vendor Name] Furniture
