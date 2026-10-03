@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-03T14:35:00+01:00
-updated_by: agent/fx1-20_11
+updated_at: 2026-10-03T15:00:00+01:00
+updated_by: agent/fx2-20_11
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_11 Fx.2"
+    next: "20_11 Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -3034,7 +3034,7 @@ groups:
   "20_11":
     order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
-    stage: Fx.1
+    stage: Fx.2
     stage_status: green
     known_breaks: [stock_move_product_uom, ir_attachment_datas, useState, chartjs_v4,
                    form_controller_props]
@@ -3190,6 +3190,60 @@ groups:
       smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_11.py
       smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_11_smoke.log
       temporary_db_removed: true
+    fx2:
+      stage_status: green
+      at: 2026-10-03T15:00:00+01:00
+      tools_20_11: 80e24a0a7e1eda6cd249da7b98c9bae2bbbdb818
+      system_20_0: 218e7d3e0c288aa63309a2569d73e8870507119e
+      system_worktree: /home/feelwhy/Odoo/_worktrees/system-20.0-clean
+      layer1:
+        changed: false
+        lint: "demo_lint.lint_roots on tools-20_11 + system-20.0-clean, 3 modules + odootools_demo: 0 issues."
+      layer2:
+        changed: false
+        loader: "_reload_tools_demo_data (25 loaders) then _load_demo_forecasts twice"
+        idempotent: true
+        counts:
+          sale_series: 2
+          sale_models: 3
+          stock_series: 2
+          stock_models: 3
+          series_products: 12
+          xxtools: 728
+          y1tools_community: 2188
+          y1tools_enterprise: 2186
+          low_sales_period: "12"
+          low_sales_type: product_product
+          demo_groups: [low_sales_report.group_low_sales_report, sales_forecast_by_periods.group_sales_forecast, stock_qty_forecast.group_stock_forecast]
+        note: >
+          series_products is 3 shared SKUs on each of the 4 Layer-1 series.
+          XXTOOLS / Y1TOOLS are a few rows past the September Gx.5 counts
+          because the loader extends history to today. Website demo had
+          activated 42 extra languages; the website was set back to en_US
+          and those languages were deactivated. admin, demo and portal
+          stay on en_US.
+      languages: "en_US only; admin, demo and portal on en_US"
+      screenshots: migration/screenshots/20_11.md
+      shot_rows: 22
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_11-low_sales_report-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_11-sales_forecast_by_periods-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_11-stock_qty_forecast-screenshots.pdf
+      overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_11.py
+      build_runner: /home/feelwhy/env-sync/p6/fx2_20_11_build.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_11_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_11_e_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_11_smoke.log]
+      browser: "SMOKE_OK 14/14 on the enterprise review database. Log logs/fx2_20_11_smoke.log"
+      review:
+        db: fx8_20_11
+        url: http://127.0.0.1:18229/web/login
+        keep_until: 2026-10-06T14:58:00+01:00
+        compose: faotools_env/local/run/fx8_20_11/compose.yml
+      review_enterprise:
+        db: fx8_20_11e
+        url: http://127.0.0.1:18230/web/login
+        keep_until: 2026-10-06T14:58:00+01:00
+        compose: faotools_env/local/run/fx8_20_11e/compose.yml
+        purpose: "store screenshots for this serie are taken on enterprise"
     note: >
       tests-prep already on origin/19.0 (5931ff03a19). Shared tools
       left on 19.0, not pulled. support TM is foreign — not committed.
