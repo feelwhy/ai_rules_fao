@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T18:23:00+01:00
-updated_by: agent/fx1-20_suite
+updated_at: 2026-10-05T18:39:00+01:00
+updated_by: agent/fx2-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -418,7 +418,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_suite Fx.2"
+    next: "20_suite Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -3009,7 +3009,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Fx.1
+    stage: Fx.2
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -3158,6 +3158,74 @@ groups:
       smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_suite.py
       smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_suite_smoke.log
       temporary_db_removed: true
+    fx2:
+      stage_status: green
+      at: 2026-10-05T18:39:00+01:00
+      tools_20_suite: 3acc0177d4b84768472cb67afd450e46e9d84e37
+      system_20_0: f2797058fe5c3242c04e41bc01e6d104ebe41e4d
+      system_worktree: /home/feelwhy/Odoo/_worktrees/system-20.0-clean
+      system_note: >
+        The worktree is detached at that SHA and still has an uncommitted
+        show_kpi_help line in odootools_demo/models/constants.py. It was
+        left unstaged. The suite loader does not read that key.
+      layer1:
+        changed: false
+        lint: "demo_lint.lint_roots on tools-20_suite + system-20.0-clean, 9 modules + odootools_demo: 0 issues."
+      layer2:
+        changed: false
+        loader: "_reload_tools_demo_data (25 loaders) then _load_demo_email_suite_wiring twice"
+        idempotent: true
+        counts:
+          addrs: 2
+          rules: 1
+          lost: 2
+          hist: 1
+          drafts: 4
+          options: 4
+          server: 1
+          send_private: true
+          from_picker: true
+          full_composer: true
+          demo_drafts: true
+          demo_lost: false
+        note: >
+          Counts match Gx.5 (addrs 2, rules 1, lost 2, hist 1, drafts 4).
+          The Mailpit server is created when the database has none. Send
+          privately, the From pickers and full-composer editing are on.
+          The lost-messages group is stamped on user_0user, who is not
+          created on a group review. Admin opens Lost Messages. The
+          standard demo user has the drafts group. Website extra languages
+          were deactivated. admin, demo and portal stay on en_US.
+      languages: "en_US only; admin, demo and portal on en_US"
+      screenshots: migration/screenshots/20_suite.md
+      shot_rows: 73
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_suite-mail_manual_routing-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-message_citing-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-message_edit-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-odoo_email_from-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-odoo_email_from_accounting-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-email_suite-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-email_suite_accounting-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-internal_thread-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_suite-internal_thread_accounting-screenshots.pdf
+      overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_suite.py
+      build_runner: /home/feelwhy/env-sync/p6/fx2_20_suite_build.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_suite_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_suite_e_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_suite_smoke.log]
+      browser: "SMOKE_OK 10/10 on the enterprise review database. Zero error dialogs, zero console errors."
+      review:
+        db: fx2_20_suite
+        url: http://127.0.0.1:18235/web/login
+        keep_until: 2026-10-08T18:39:00+01:00
+        compose: faotools_env/local/run/fx2_20_suite/compose.yml
+        modules: "the nine suite modules and odootools_demo. No web_enterprise."
+      review_enterprise:
+        db: fx2_20_suitee
+        url: http://127.0.0.1:18236/web/login
+        keep_until: 2026-10-08T18:39:00+01:00
+        compose: faotools_env/local/run/fx2_20_suitee/compose.yml
+        modules: "web_enterprise, the nine suite modules, and odootools_demo"
+        purpose: "store screenshots for this serie are taken on enterprise"
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
