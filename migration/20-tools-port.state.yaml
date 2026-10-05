@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T16:25:00+01:00
-updated_by: agent/fx2-20_7
+updated_at: 2026-10-05T17:05:00+01:00
+updated_by: agent/fx3-20_7
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -375,7 +375,26 @@ phases:
           - "migration 19.0.1.0.224 seeds serie-20 lifecycle scripts on -u"
       demo19_topology: "project 5 'Demo 19': repos tools/system/enterprise/odoo-apps-addons @19.0, workload sync_primary, templates odooallapps19.odootools.com (143) + odooallapps19e.odootools.com (144)"
       demo20_target: "tools@20_final, system@20.0, enterprise@20.0, no odoo-apps-addons; templates odooallapps20.odootools.com / odooallapps20e.odootools.com"
-      next: ["35b push faotools_env + system 20.0", "35c deploy env_master to master", "35d create Demo 20 project + base/project images", "35e community template", "35f enterprise derivation", "35g local artifact sync"]
+      "35b_push": {status: done, faotools_env: 293a81b, system_20_0: 4fe9c18, ai_rules_fao: 4bcb43e}
+      "35c_deploy_master":
+        status: done
+        result: "env_master 19.0.1.0.224 live; serie 20.0 = env.serie 7; After clone (20.0) = script 9, Make enterprise (20.0) = script 10; https://master.odootools.com/web/login 200"
+      "35d_project":
+        status: done
+        project: {id: 10, name: Demo 20, workload_class: sync_heavy, http_port: 18074, gevent_port: 19074, without_demo: false}
+        repos: {tools: 20_final, system: "20.0", enterprise: "20.0"}
+        base_image: 127.0.0.1:5000/odoo-base:20.0-202610051420   # FROM Hub odoo:20.0 (20.0-20260926)
+        project_image: 127.0.0.1:5000/env-demo-20:1
+        baked: {core: 051297970371, enterprise: 0c040be7f65c, tools: 8a9ee2164e8, system: 4fe9c18}   # core == odoo@20.0 tip; dist-packages/addons empty
+        stack: "odoo-demo-20 healthy; env_dbfilter_header active; no ERROR/CRITICAL"
+        found_and_fixed:
+          - "apply_mail / restore neutralize / invitation shells called set_param inside the 20 DB (faotools_env 28edcf7, agent refreshed via install_agent.sh, master redeployed)"
+      "35e_community_template":
+        status: in_progress
+        database: {id: 188, fqdn: odooallapps20.odootools.com, readonly: false}
+        install: "152 modules from local/demo20-community-modules.txt that exist on 20_final (243 installed with dependencies) in 4 min"
+        setup: "action_setup_demo_template via odoo shell in odoo-demo-20 (master has no generic script runner)"
+      next: ["35e finish: setup + gaps check, readonly, backup strategy", "35f enterprise derivation", "35g local artifact sync"]
       not_in_scope_here: "local/lib/common.sh repo_branch_for_serie has foreign WIP from another session; the local demo20 branch map is not changed by this item"
   "8_final_group_loops":
     status: in_progress
@@ -384,7 +403,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_7 Fx.3"
+    next: "20_7 Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -393,7 +412,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: f67ed49cf5ce, created: true, pushed: true, last_pushed: f67ed49cf5ce}  # 2026-10-05: attendance circle stays after check-in; unrelated dirty files left unstaged
+  20_port: {git_sha: 6e42468b5a50, created: true, pushed: true, last_pushed: 6e42468b5a50}  # 2026-10-05: 20_7 Fx.3 catalogs; unrelated dirty files left unstaged
   20_final: {git_sha: 8a9ee2164e85bbe3fe3fa49902fdc117234323de, created: true, pushed: true, last_pushed: 8a9ee2164e85bbe3fe3fa49902fdc117234323de}  # 2026-10-05: 20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11 (33 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3656,6 +3675,12 @@ groups:
         at: 2026-10-05T16:34:00+01:00
         tools_20_7: e2e3a0f97077
         merge_to_20_port: e0b5b106bbfb
+        change: >
+          Systray context check-in crashed: Odoo 20 calls
+          _attendance_action_change(geo, check_in_image) and returns a
+          notification. The override now takes the image and writes context_id
+          on the attendance that call opened. Rolled-back proof on fx8_20_7e:
+          Mitchell Admin check-in stored context Office. Both review stacks restarted.
       systray_circle:
         at: 2026-10-05T16:40:00+01:00
         tools_20_7: 96a8fee76ef8
@@ -3666,12 +3691,32 @@ groups:
           that as no employee and sets isDisplayed false. The call now passes
           the check-in payload. Enterprise asset cache cleared; both review
           stacks restarted.
-        change: >
-          Systray context check-in crashed: Odoo 20 calls
-          _attendance_action_change(geo, check_in_image) and returns a
-          notification. The override now takes the image and writes context_id
-          on the attendance that call opened. Rolled-back proof on fx8_20_7e:
-          Mitchell Admin check-in stored context Office. Both review stacks restarted.
+    fx3:
+      stage_status: green
+      at: 2026-10-05T17:05:00+01:00
+      tools_20_7: e15521ca644f
+      merge_to_20_port: 6e42468b5a50
+      method: >
+        odoo i18n export from fx8_20_7e for the three modules, compared with
+        the shipped pots. Unchanged msgid kept its msgstr. App names, the
+        first summary sentence, and the description feature lines are
+        translated. Summary keyword tails stay English. de_CH, es_419, es_CL,
+        fr_BE, fr_CA, fr_CH, nl_BE and pt_BR take the base language. en_GB
+        stays English. Module, ID, Display Name and Activity Plans come from
+        core. Selection keys exported beside a translated label are not terms.
+        The two .format sentences stay: the export drops them while the source
+        still has them. The Font Awesome icon strings are replaced by the
+        Material Symbols ones, keeping the existing translation of the rest.
+        Every entry's comment starts with "module: <name>".
+      empty_msgstr: 0
+      app_names: "Flexible Timetables and Shifts, Flexible Timetables and Shifts: Gantt, Advanced Menu Management. Russian: Гибкие расписания и смены, Гибкие расписания и смены: Гант, Расширенное управление меню."
+      left_english: "en_GB stays English. ID stays the English word where core has no other word."
+      loaded_on:
+        - {db: fx8_20_7, url: "http://127.0.0.1:18233/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Гибкие расписания и смены"}
+        - {db: fx8_20_7e, url: "http://127.0.0.1:18234/web/login", active_langs: 43, gaps: 0, proof: "ru: Гибкие расписания и смены: Гант; de: Flexible Zeitpläne und Schichten: Gantt"}
+      users_left_on: en_US
+      runner: /home/feelwhy/env-sync/p6/fx3_20_7/apply_fx3.py
+      logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_7_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_7_e.log]
     note: >
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
