@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T17:20:00+01:00
-updated_by: agent/fx6-20_7
+updated_at: 2026-10-05T17:32:00+01:00
+updated_by: agent/fx8-20_7
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -403,7 +403,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_7 Fx.7"
+    next: "20_7 Px.1"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -413,7 +413,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 6e42468b5a50, created: true, pushed: true, last_pushed: 6e42468b5a50}  # 2026-10-05: 20_7 Fx.3 catalogs; unrelated dirty files left unstaged
-  20_final: {git_sha: 8a9ee2164e85bbe3fe3fa49902fdc117234323de, created: true, pushed: true, last_pushed: 8a9ee2164e85bbe3fe3fa49902fdc117234323de}  # 2026-10-05: 20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11 (33 modules)
+  20_final: {git_sha: b361c623d63324870b1031e5befeb2246aa75c0a, created: true, pushed: true, last_pushed: b361c623d63324870b1031e5befeb2246aa75c0a}  # 2026-10-05: previous 20_final plus 20_7 (36 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
@@ -3776,6 +3776,52 @@ groups:
       public_20_0: 0
       origin_write_dates_unchanged: true
       preview: "https://faotools.com/apppublish//20.0/1285/"
+    fx7:
+      stage_status: green
+      at: 2026-10-05T17:32:00+01:00
+      support: 6349fd55d27bbadc8a5ab17b99440e0aa47804e3
+      branch: support@19.0
+      method: >
+        Each 20.0 website TM file gained a releases block: the changelog rows
+        already in the 19.0 file, plus the unpublished 20.0 migration row.
+        That row is the flag line alone, matching live releases 1172, 1173 and
+        1174. The flag sentence is the published version-20 wording from
+        joint_calendar_gantt, in all 42 shipped languages. The live drafts stay
+        English; apply is Px.7. The unrelated support dirt was left unstaged.
+      check_release_tm: "0 gaps across 130 files"
+      validate_term: "0 errors on the three new 20.0 flag rows"
+      rows: {itlibertas_timesheet: "9 + 1", itlibertas_timesheet_gantt: "5 + 1", odoo_menu_management: "5 + 1"}
+      files:
+        - support_translations/tm/website/itlibertas_timesheet_20.0.yaml
+        - support_translations/tm/website/itlibertas_timesheet_gantt_20.0.yaml
+        - support_translations/tm/website/odoo_menu_management_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-05T17:32:00+01:00
+      tools_20_7: e15521ca644ff344b6c397e426fdcb8f93c2be9d
+      tools_20_port: 6e42468b5a50
+      tools_20_final_before: 8a9ee2164e85bbe3fe3fa49902fdc117234323de
+      tools_20_final: b361c623d63324870b1031e5befeb2246aa75c0a
+      tools_20_0_untouched: 971c21a311ebe5682576a86396ef539c71d7c216
+      module_diff_20_final_vs_20_7: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is a merge commit with parents the previous 20_final
+        (20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11) and 20_7. Its tree is those
+        33 modules plus the three timetable apps (36). The three folders equal
+        20_7. requirements.txt is unchanged. Cumulative check: one database
+        installing every module now on 20_final with demo and their tests, then
+        -u, on community (33 modules; no cloud_base_documents, no
+        joint_calendar_gantt, no itlibertas_timesheet_gantt) and on enterprise
+        (all 36): 0 failed, 0 errors of 193 tests (community) and 202
+        (enterprise). The new modules ship no tests, so the counts match 20_11.
+        The one ERROR line in each log is the deliberate crash of
+        complementary_contact_data test_ru_read_crashes_on_varchar_then_healer_fixes_it.
+        System worktree mounted; odootools_demo was not installed. Throwaway
+        databases dropped. Review databases were not touched. Not a merge of
+        the rest of 20_port, and not a merge onto tools 20.0.
+      runner: /home/feelwhy/env-sync/p6/fx8_20_7_cumulative.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_final7_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final7_e.log]
     note: >
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
