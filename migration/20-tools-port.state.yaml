@@ -310,8 +310,13 @@ phases:
       checker_at_baked_tip: "/home/feelwhy/env-sync/p6/checker-tools-20.0-tip.json — 305 = 50 old kinds + 255 new kinds, identical delta"
       infra_audit: "docs/20-final-delta.md § Serie-specific infrastructure audit (turnstile >=19, _DBFILTER_SERIE_MAJORS, serie_20, env_dbfilter_header odoo.service.db, common.sh branch map, demo lists)"
     "33_init_20_final":
-      status: blocked
-      blocked_on: "fresh 20.0 build must start with no custom errors; today it dies at import (F5). Unblocks after Fx.1 across the groups."
+      status: superseded
+      superseded_at: 2026-10-05T11:40:00+01:00
+      superseded_by: >
+        Owner 2026-10-05: 20_final grows one group at a time at Fx.8 (cumulative install and
+        tests of everything on 20_final). Phase 7 proceeds once that cumulative 20_final is
+        green; the master template grows with 20_final instead of waiting for all 18 groups.
+      blocked_on_before: "fresh 20.0 build must start with no custom errors; today it dies at import (F5). Unblocks after Fx.1 across the groups."
       owner_decision_required: false
       decision: >
         F11 — DECIDED by the owner 2026-09-29: a saas-19.4 database is never -u'd onto 20.0.
@@ -319,7 +324,41 @@ phases:
         and stay untouched; the 20.0 cumulative base is the first green 20.0 fresh build
         from 20_port, and the phase-8 Fx.5 review DBs accumulate from that base.
       decided_at: 2026-09-29T12:26:00+01:00
-  "7_master_infrastructure": {status: pending}
+  "7_master_infrastructure":
+    status: in_progress
+    gate: "20_final cumulative green (owner 2026-10-05, replaces item 33)"
+    "34_system_and_lifecycle":
+      status: done
+      at: 2026-10-05T14:33:51+01:00
+      runner: /home/feelwhy/env-sync/p6/p7_34_system.sh   # c|e; DB p7s34<ed>, dropped
+      logs: [/home/feelwhy/env-sync/p6/logs/p7_34_c.log, /home/feelwhy/env-sync/p6/logs/p7_34_e.log]
+      pins:
+        image: faotools/env-demo-20:20.0
+        tools_20_final: 8a9ee2164e85bbe3fe3fa49902fdc117234323de   # 33 modules (20_2, 20_c, 20_4, 20_14, 20_5, 20_11)
+        system_20_0_tested: f2797058fe5c3242c04e41bc01e6d104ebe41e4d   # + the worktree changes committed as 4fe9c18
+        system_20_0: 4fe9c18      # local, not pushed
+        faotools_env: 58f0013     # local, not pushed
+      result:
+        system_tests: "0 failed, 0 errors of 87 on community and on enterprise"
+        template_refresh: "-u base, then TEMPLATE_TRANSLATIONS_REFRESH_SCRIPT: 43 languages active, no gaps"
+        make_enterprise_20: "enterprise only: -i of MAKE_ENTERPRISE_MODULES_BY_MAJOR[20] then the script; faotools.env.edition=enterprise"
+        after_clone_20: "new database.uuid, expiration +30 days, 0 active mail servers, catchall blank, demo user present"
+        update: "-u of the system modules green"
+        env_master_tests: "0 failed of 370 (run_env_master_tests.sh)"
+        checker_system_20_0: "6 deliberate findings: two 19/20 guarded fallbacks (get_param, website.default_website), a guarded request_var import, the demo_lint fixture, test_demo_capture fa-edit/fa-save selectors (knowsystem 20_15 Fx.1 decides), known _demo_pwm_http_session false positive"
+      fixes:
+        - "verifalia: get_param -> get_str; ir.model.access.csv -> ir.access.csv (missed at 4.3)"
+        - "faotools_enterprise hook: skip the 20 catalog template, not the 19 one"
+        - "odootools_demo: task-number helpers renamed _demo_tnum_*; total_notify's _demo_tn_refresh overrode _demo_tn_refresh, so no project code was ever stamped when total_notify was installed"
+        - "odootools_demo: portal.password.key.name translate=True so the column is jsonb at install (LOWER(name->>'en_US') ordering died on varchar before any loader)"
+        - "odootools_demo: Material icon names on the settings buttons"
+        - "tests: field translate callable replaces the removed get_trans_terms; linter test skips absent scoring modules; total_notify next date outside a template is today"
+        - "odootools_demo and verifalia manifests re-prefixed 20.0.1.0.2 / 20.0.1.1.1 (stored version unchanged)"
+        - "faotools_env: after_clone_20.py, make_enterprise_20.py (set_str, 20 skip lists); hooks.py selects them for serie >= 20"
+      open:
+        - "make_enterprise_19/20 and faotools_enterprise grant Documents/Sign manager to security.role id 12; no such role on a 20 template, only user 2 gets the groups. Which role is meant is unverified."
+        - "serie_20 record, _DBFILTER_SERIE_MAJORS, env_dbfilter_header, turnstile overlay: item 35"
+    "35_demo20_project": {status: pending}
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
