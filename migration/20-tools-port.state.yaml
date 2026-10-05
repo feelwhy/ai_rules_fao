@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T12:10:00+01:00
-updated_by: agent/fx8-20_11
+updated_at: 2026-10-05T12:45:00+01:00
+updated_by: agent/fx1-20_7
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -323,11 +323,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    active_group: "20_11"
+    active_group: "20_7"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_11 Px.1"
+    next: "20_7 Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -336,7 +336,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 14bc39b21df5adb00915ecfceb5b53ca17717f93, created: true, pushed: true, last_pushed: 14bc39b21df5adb00915ecfceb5b53ca17717f93}  # 2026-10-05: 20_11 Fx.3 merged; unrelated dirty files left unstaged
+  20_port: {git_sha: f0dd6af6ac5b3b9962bb3813b69252bf00fe7191, created: true, pushed: true, last_pushed: f0dd6af6ac5b3b9962bb3813b69252bf00fe7191}  # 2026-10-05: 20_7 Fx.1 merged; unrelated dirty files left unstaged
   20_final: {git_sha: 8a9ee2164e85bbe3fe3fa49902fdc117234323de, created: true, pushed: true, last_pushed: 8a9ee2164e85bbe3fe3fa49902fdc117234323de}  # 2026-10-05: 20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11 (33 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3382,7 +3382,7 @@ groups:
   "20_7":
     order: 12
     modules: [itlibertas_timesheet, itlibertas_timesheet_gantt, odoo_menu_management]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     known_breaks: [_track_subtype, self_readable_fields, self_writeable_fields,
                    get_param, Registry.clear_cache, tools.ormcache, useState,
@@ -3477,6 +3477,50 @@ groups:
       reviews:
         bugbot: "no bugs"
         security: "no medium+; ir.access matches 19.0 domains; hide_menu_ids hardening"
+    fx1:
+      stage_status: green
+      at: 2026-10-05T12:45:00+01:00
+      tools_20_7: 13479961558cc0dc20a61796d299fc1095f279dc
+      merge_to_20_port: f0dd6af6ac5b3b9962bb3813b69252bf00fe7191
+      merge_note: >
+        Clean ort merge. diff -rq of the three module folders is empty.
+        The unrelated dirty files on tools-20_port (password_manager.js,
+        project_project.xml) were left unstaged.
+      checker: >
+        20 findings vs origin/20.0 on the first run (11 fa-icon, 4 owl-static-props,
+        2 ctrl-hook, 1 patch-props, 1 view-anchor, 1 js-import). After the port: 0.
+        odoo origin/20.0 c356f95d45c, enterprise origin/20.0 bce4d8fafdb.
+        The work-schedule report_file was not in that first list; install failed on it.
+        The checker now reports a quoted report_file (ai_rules e3a9ca6).
+      versions: "re-prefixed 20.0.1.1.14, 20.0.1.0.5, 20.0.1.0.7. Tails unchanged."
+      ports:
+        - "Font Awesome -> Material Symbols (group, home, emergency, calculate, check, arrow_forward, business, close, table_chart, login, east, check_box, square, search, block)"
+        - "static props -> props = useProps on the timetable table, the timetable field, and both menu components"
+        - "standardActionServiceProps from action_plugin"
+        - "Attendance barcode geolocation is scan_barcode(latitude, longitude); the old scan_barcode_with_geolocation route is gone"
+        - "Activity menu no longer reads this.props; ActivityMenu declares none"
+        - "Attendance search Context group-by follows the Employee filter; groupby_name is gone"
+        - "Gantt popover is a popover element, not a templates child of gantt"
+        - "ir.actions.report report_file dropped"
+        - "List Generate uses activeActions.create; ListController no longer has canCreate"
+        - "Settings link to the Gantt app points at the 20.0 store page"
+      tests: >
+        faotools/env-demo-20:20.0. Community: itlibertas_timesheet and odoo_menu_management.
+        Enterprise: those plus itlibertas_timesheet_gantt. Fresh install with demo and the
+        group's test tags, then -u. 0 failed, 0 error(s) of 2 tests on each edition
+        (the modules ship no tests/; the 2 are the core web post suites).
+      runner: /home/feelwhy/env-sync/p6/fx1_20_7_test.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_7_c.log, /home/feelwhy/env-sync/p6/logs/fx1_20_7_e.log]
+      browser: >
+        Enterprise temporary DB fx1_20_7s. Headless Chromium: SMOKE_OK 12 pages,
+        zero error dialogs, zero console errors. Timetables list, Generate dialog,
+        timetable form and its table widget, Shifts calendar and Gantt, a new shift
+        form, Menu Management, the work-schedule dialog, Employees settings
+        (Flexible Timetables block), and the context list and a new context form.
+        The database was dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_7.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_7_smoke.log
+      temporary_db_removed: true
     note: >
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
