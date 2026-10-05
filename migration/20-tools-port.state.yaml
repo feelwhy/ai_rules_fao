@@ -12,7 +12,7 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T12:57:00+01:00
+updated_at: 2026-10-05T16:25:00+01:00
 updated_by: agent/fx2-20_7
 
 # ---------------------------------------------------------------- pins
@@ -393,7 +393,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: f0dd6af6ac5b3b9962bb3813b69252bf00fe7191, created: true, pushed: true, last_pushed: f0dd6af6ac5b3b9962bb3813b69252bf00fe7191}  # 2026-10-05: 20_7 Fx.1 merged; unrelated dirty files left unstaged
+  20_port: {git_sha: 7443948f964fe9572bc8cc28fa532336b1bcb03b, created: true, pushed: true, last_pushed: 7443948f964fe9572bc8cc28fa532336b1bcb03b}  # 2026-10-05: Shifts Approval on for a new install; unrelated dirty files left unstaged
   20_final: {git_sha: 8a9ee2164e85bbe3fe3fa49902fdc117234323de, created: true, pushed: true, last_pushed: 8a9ee2164e85bbe3fe3fa49902fdc117234323de}  # 2026-10-05: 20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11 (33 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3643,6 +3643,15 @@ groups:
         compose: faotools_env/local/run/fx8_20_7e/compose.yml
         modules: "web_enterprise, itlibertas_timesheet, itlibertas_timesheet_gantt, odoo_menu_management, odootools_demo"
         purpose: "store screenshots for this serie are taken on enterprise"
+      review_fix:
+        at: 2026-10-05T16:25:00+01:00
+        tools_20_7: b22b3490bde8cb15499a945cdc14d7499a00ec1e
+        merge_to_20_port: 7443948f964fe9572bc8cc28fa532336b1bcb03b
+        change: >
+          Shifts Approval is on for a new install. post_init_hook makes Employee
+          imply group_timetable_approval. An upgrade does not put it back after
+          someone switches it off. Applied on fx8_20_7 and fx8_20_7e; both stacks
+          restarted. Reload the settings page.
     note: >
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
