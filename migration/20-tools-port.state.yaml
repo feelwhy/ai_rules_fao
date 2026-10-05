@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T17:15:00+01:00
-updated_by: agent/fx4-20_7
+updated_at: 2026-10-05T17:20:00+01:00
+updated_by: agent/fx6-20_7
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -403,7 +403,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_7 Fx.5"
+    next: "20_7 Fx.7"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -3744,6 +3744,38 @@ groups:
         Not repeated. The Fx.2 smoke on fx8_20_7e was 12/12. Later review fixes
         (check-in image argument, systray circle) were walked on that database.
         Review databases were not touched.
+    fx5:
+      stage_status: skipped
+      at: 2026-10-05
+      reason: "Owner said go on with Fx.6. The review databases from Fx.2 were already the walk."
+    fx6:
+      stage_status: green
+      at: 2026-10-05T17:20:00+01:00
+      tools_20_7: e15521ca644ff344b6c397e426fdcb8f93c2be9d
+      tools_20_port: 6e42468b5a50
+      method: >
+        Standalone copy of each published 19.0 description. version 20.0, prepublish true,
+        force_no_git true, not_supported false, no pre_publish_origin_id, documentation_url
+        cleared, website_published false. Videos are copy=False, so none were carried.
+        short_summary unchanged. Releases were not copied; each draft has one new
+        migration release. Manifest tails already match the published 19.0 pages
+        (1.1.14, 1.0.5, 1.0.7).
+      drafts:
+        - {tech_name: itlibertas_timesheet, origin: 1064, draft: 1285, exact_version: 1.1.14, release: 1172}
+        - {tech_name: itlibertas_timesheet_gantt, origin: 1065, draft: 1283, exact_version: 1.0.5, release: 1173}
+        - {tech_name: odoo_menu_management, origin: 1063, draft: 1284, exact_version: 1.0.7, release: 1174}
+      releases: >
+        migration true, state 0_work, not published, no check activity, release_date
+        2026-10-05. Pre-release history is each module's 19.0 releases plus the older
+        history behind its 19.0 migration release (timesheets 9 rows, gantt 5, menu 5).
+        Public text is the flag line alone on all three. Material Symbols, the Gantt
+        popover element, and Shifts Approval starting on for a new installation stay
+        in the internal notes. An upgrade does not turn Shifts Approval back on.
+      pics: {itlibertas_timesheet: 12, itlibertas_timesheet_gantt: 1, odoo_menu_management: 8}
+      features: {itlibertas_timesheet: 3, itlibertas_timesheet_gantt: 1, odoo_menu_management: 5}
+      public_20_0: 0
+      origin_write_dates_unchanged: true
+      preview: "https://faotools.com/apppublish//20.0/1285/"
     note: >
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
