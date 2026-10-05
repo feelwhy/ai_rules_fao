@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T11:40:00+01:00
-updated_by: agent/fx3-20_11
+updated_at: 2026-10-05T11:55:00+01:00
+updated_by: agent/fx4-20_11
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_11 Fx.4"
+    next: "20_11 Fx.5"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -3034,7 +3034,7 @@ groups:
   "20_11":
     order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
-    stage: Fx.3
+    stage: Fx.4
     stage_status: green
     known_breaks: [stock_move_product_uom, ir_attachment_datas, useState, chartjs_v4,
                    form_controller_props]
@@ -3271,6 +3271,32 @@ groups:
       users_left_on: en_US
       runner: /home/feelwhy/env-sync/p6/fx3_20_11/apply_fx3.py
       logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_11_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_11_e.log]
+    fx4:
+      stage_status: green
+      at: 2026-10-05T11:55:00+01:00
+      image: faotools/env-demo-20:20.0
+      core: 853a1f86126b9f841e3bba5b3153dbc37ac1bffc
+      tools_20_11: ae1477b916652efae50f561f4eec85a3bde6b9de
+      tools_20_port: 14bc39b21df5adb00915ecfceb5b53ca17717f93
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      runner: /home/feelwhy/env-sync/p6/fx4_20_11_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_11_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_11_e.log]
+      matrix_dbs_dropped: true
+      community: >
+        low_sales_report, sales_forecast_by_periods, stock_qty_forecast. Each own closure:
+        --without-demo=True -i, --with-demo -i, then -u. Then the three together
+        --with-demo --test-enable. 0 failed, 0 error(s) of 2 tests (the modules ship no
+        tests/; the 2 are the core web post suites). 7 of 7 legs, MATRIX_OK.
+      enterprise: >
+        The same three, with the enterprise addons path mounted. 0 failed, 0 error(s) of 2 tests.
+        7 of 7 legs, MATRIX_OK.
+      cumulative: "The three modules installed together. No 20.0 all-apps database (item 33 still blocked)."
+      log_gate: >
+        No ERROR or CRITICAL line on either edition. WARNING only: markdown2 is not
+        installed (mail, and ai on enterprise).
+      browser: >
+        Not repeated. No Python or JS change. The Fx.2 smoke on fx8_20_11e still stands.
+        Review databases were not touched.
     note: >
       tests-prep already on origin/19.0 (5931ff03a19). Shared tools
       left on 19.0, not pulled. support TM is foreign — not committed.
