@@ -393,7 +393,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 7443948f964fe9572bc8cc28fa532336b1bcb03b, created: true, pushed: true, last_pushed: 7443948f964fe9572bc8cc28fa532336b1bcb03b}  # 2026-10-05: Shifts Approval on for a new install; unrelated dirty files left unstaged
+  20_port: {git_sha: e0b5b106bbfb, created: true, pushed: true, last_pushed: e0b5b106bbfb}  # 2026-10-05: context check-in accepts the Odoo 20 image argument; unrelated dirty files left unstaged
   20_final: {git_sha: 8a9ee2164e85bbe3fe3fa49902fdc117234323de, created: true, pushed: true, last_pushed: 8a9ee2164e85bbe3fe3fa49902fdc117234323de}  # 2026-10-05: 20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11 (33 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3650,8 +3650,18 @@ groups:
         change: >
           Shifts Approval is on for a new install. post_init_hook makes Employee
           imply group_timetable_approval. An upgrade does not put it back after
-          someone switches it off. Applied on fx8_20_7 and fx8_20_7e; both stacks
+          someone switches it off.           Applied on fx8_20_7 and fx8_20_7e; both stacks
           restarted. Reload the settings page.
+      context_checkin:
+        at: 2026-10-05T16:34:00+01:00
+        tools_20_7: e2e3a0f97077
+        merge_to_20_port: e0b5b106bbfb
+        change: >
+          Systray context check-in crashed: Odoo 20 calls
+          _attendance_action_change(geo, check_in_image) and returns a
+          notification. The override now takes the image and writes context_id
+          on the attendance that call opened. Rolled-back proof on fx8_20_7e:
+          Mitchell Admin check-in stored context Office. Both review stacks restarted.
     note: >
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
