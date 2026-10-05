@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T17:05:00+01:00
-updated_by: agent/fx3-20_7
+updated_at: 2026-10-05T17:15:00+01:00
+updated_by: agent/fx4-20_7
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -403,7 +403,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_7 Fx.4"
+    next: "20_7 Fx.5"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -3717,6 +3717,33 @@ groups:
       users_left_on: en_US
       runner: /home/feelwhy/env-sync/p6/fx3_20_7/apply_fx3.py
       logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_7_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_7_e.log]
+    fx4:
+      stage_status: green
+      at: 2026-10-05T17:15:00+01:00
+      image: faotools/env-demo-20:20.0
+      core: 853a1f86126b9f841e3bba5b3153dbc37ac1bffc
+      tools_20_7: e15521ca644ff344b6c397e426fdcb8f93c2be9d
+      tools_20_port: 6e42468b5a50
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      runner: /home/feelwhy/env-sync/p6/fx4_20_7_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_7_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_7_e.log]
+      matrix_dbs_dropped: true
+      community: >
+        itlibertas_timesheet, odoo_menu_management. Gantt is omitted (it needs web_gantt).
+        Each own closure: --without-demo=True -i, --with-demo -i, then -u. Then the two
+        together --with-demo --test-enable. 0 failed, 0 error(s) of 2 tests (the modules
+        ship no tests/; the 2 are the core web post suites). 5 of 5 legs, MATRIX_OK.
+      enterprise: >
+        Those two plus itlibertas_timesheet_gantt, with the enterprise addons path mounted.
+        0 failed, 0 error(s) of 2 tests. 7 of 7 legs, MATRIX_OK.
+      cumulative: "The edition's modules installed together. No 20.0 all-apps database (item 33 still blocked)."
+      log_gate: >
+        No ERROR or CRITICAL line on either edition. WARNING only: markdown2 is not
+        installed (mail, and ai on enterprise).
+      browser: >
+        Not repeated. The Fx.2 smoke on fx8_20_7e was 12/12. Later review fixes
+        (check-in image argument, systray circle) were walked on that database.
+        Review databases were not touched.
     note: >
       Attendance patches fully replace core methods without super() while core moved to
       makeRpcWithGeolocation and renamed searchReadEmployee. H6 walked on gx8_20_7.
