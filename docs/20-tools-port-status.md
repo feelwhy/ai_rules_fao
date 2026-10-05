@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-10-05 (20_11 Fx.6 green; hidden 20.0 drafts 1280-1282; next is 20_11 Fx.7)
+**Last updated:** 2026-10-05 (20_11 Fx.8 green; 33 modules on 20_final; next is 20_11 Px.1)
 
 ## Where we are
 
@@ -178,7 +178,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 8 | `20_4` | 4 | `Gx.9` **green** | B1; http://localhost:18206; merged `18ee0d5a1d0`; OWL leftovers; Extra Security hints; role avatars |
 | 9 | `20_12` | 3 | `Gx.9` **green** | B1 `b12_190810`; http://127.0.0.1:18207; merged `1cb1794876c`; child chips + small tooltip close |
 | 10 | `20_suite` | 9 | `Gx.9` **green** | B1 `bsu_26732` 0/112; :18208; `msg_vals` / `history.commit`; lost form no suite Route |
-| 11 | `20_11` | 3 | `Fx.6` **green** | hidden drafts 1280-1282; flag line only; https://faotools.com/apppublish//20.0/1280/ |
+| 11 | `20_11` | 3 | `Fx.8` **green** | on `20_final` `8a9ee216`; changelog TM 0 gaps; cumulative 0 failed |
 | 12 | `20_7` | 3 | `Gx.9` **green** | :18210; `record.resId`; `bool(icon)`; empty-print UserError; `report.url` |
 | 13 | `20_15` | 7 | `Gx.9` **green** | :18211; B1 `b15_153856` 0/109; merged `21995388ffe`; `htmlFieldProps`; `builderOptionsTemplate`; `savable_selectors`; IntegerField extras; docs search skip |
 | 14 | `20_16` | 9 | `Gx.9` **green** | owner walk demo20e; B1 0/61; i18n step-5 session walk; visibility inherit dropped |

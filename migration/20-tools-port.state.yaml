@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T12:00:00+01:00
-updated_by: agent/fx6-20_11
+updated_at: 2026-10-05T12:10:00+01:00
+updated_by: agent/fx8-20_11
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -327,7 +327,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_11 Fx.7"
+    next: "20_11 Px.1"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -337,7 +337,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 14bc39b21df5adb00915ecfceb5b53ca17717f93, created: true, pushed: true, last_pushed: 14bc39b21df5adb00915ecfceb5b53ca17717f93}  # 2026-10-05: 20_11 Fx.3 merged; unrelated dirty files left unstaged
-  20_final: {git_sha: 94b28ffc37a085a9455ed25de68d8a37233f93df, created: true, pushed: true, last_pushed: 94b28ffc37a085a9455ed25de68d8a37233f93df}  # 2026-10-03: 20_2 + 20_c + 20_4 + 20_14 + 20_5 (30 modules)
+  20_final: {git_sha: 8a9ee2164e85bbe3fe3fa49902fdc117234323de, created: true, pushed: true, last_pushed: 8a9ee2164e85bbe3fe3fa49902fdc117234323de}  # 2026-10-05: 20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11 (33 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
@@ -3034,7 +3034,7 @@ groups:
   "20_11":
     order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
-    stage: Fx.6
+    stage: Fx.8
     stage_status: green
     known_breaks: [stock_move_product_uom, ir_attachment_datas, useState, chartjs_v4,
                    form_controller_props]
@@ -3328,6 +3328,54 @@ groups:
       public_20_0: 0
       origin_write_dates_unchanged: true
       preview: "https://faotools.com/apppublish//20.0/1280/"
+    fx7:
+      stage_status: green
+      at: 2026-10-05T12:10:00+01:00
+      support: 81e32863b67ff5a6831f118eac8c67765ec754bb
+      branch: support@19.0
+      method: >
+        Each 20.0 website TM file gained a releases block: the changelog rows the
+        history link shows (the rows already in the 19.0 file), plus the unpublished
+        20.0 migration row. That row is the flag line alone, matching live releases
+        1169, 1170 and 1171. The flag sentence is the published version-20 wording
+        from Cloud Storage, in all 42 shipped languages. The live drafts stay English;
+        apply is Px.7.
+      check_release_tm: "0 gaps across 127 files"
+      validate_term: "0 errors on the three new 20.0 rows"
+      rows: {low_sales_report: "5 + 1", sales_forecast_by_periods: "7 + 1", stock_qty_forecast: "8 + 1"}
+      files:
+        - support_translations/tm/website/low_sales_report_20.0.yaml
+        - support_translations/tm/website/sales_forecast_by_periods_20.0.yaml
+        - support_translations/tm/website/stock_qty_forecast_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-05T12:10:00+01:00
+      tools_20_11: ae1477b916652efae50f561f4eec85a3bde6b9de
+      tools_20_port: 14bc39b21df5adb00915ecfceb5b53ca17717f93
+      tools_20_final_before: 94b28ffc37a085a9455ed25de68d8a37233f93df
+      tools_20_final: 8a9ee2164e85bbe3fe3fa49902fdc117234323de
+      tools_20_0_untouched: 971c21a311ebe5682576a86396ef539c71d7c216
+      module_diff_20_final_vs_20_11: empty
+      module_diff_20_final_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is a merge commit with parents the previous 20_final
+        (20_2 + 20_c + 20_4 + 20_14 + 20_5) and 20_11 (clean merge, no conflicts).
+        Its tree is those 30 modules plus the three forecast apps (33). The three
+        folders equal 20_11 and 20_port; the older folders and requirements.txt are
+        unchanged. Cumulative check: one database installing every module now on
+        20_final with demo and their tests, then -u, on community (31 modules; no
+        cloud_base_documents, no joint_calendar_gantt) and on enterprise (all 33):
+        0 failed, 0 errors of 193 tests (community) and 202 (enterprise). The one
+        ERROR line in each log is the deliberate crash of complementary_contact_data
+        test_ru_read_crashes_on_varchar_then_healer_fixes_it. System worktree:
+        system-20.0-clean at f2797058fe5c3242c04e41bc01e6d104ebe41e4d; odootools_demo
+        was not installed. Not a merge of the rest of 20_port: item 33 stays blocked
+        until every group starts on 20.0.
+      not_merged_to: "tools 20.0 (that is Px.2)"
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_final11_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final11_e.log]
+      runner: /home/feelwhy/env-sync/p6/fx8_20_11_cumulative.sh
+      cleanup: "throwaway databases dropped"
     note: >
       tests-prep already on origin/19.0 (5931ff03a19). Shared tools
       left on 19.0, not pulled. support TM is foreign — not committed.
