@@ -358,7 +358,25 @@ phases:
       open:
         - "make_enterprise_19/20 and faotools_enterprise grant Documents/Sign manager to security.role id 12; no such role on a 20 template, only user 2 gets the groups. Which role is meant is unverified."
         - "serie_20 record, _DBFILTER_SERIE_MAJORS, env_dbfilter_header, turnstile overlay: item 35"
-    "35_demo20_project": {status: pending}
+    "35_demo20_project":
+      status: in_progress
+      "35a_code":
+        status: done
+        faotools_env: 293a81b      # local, not pushed; env_master 19.0.1.0.224
+        result:
+          env_master_tests: "0 failed of 372"
+          dbfilter_on_20: "faotools/env-demo-20:20.0: router, web.controllers.session, auth_oauth, list_dbs, cron_database_list, cron fence all patched; no CRITICAL. 19 image bindings unchanged."
+          base_image_20: "rendered odoo-base Dockerfile builds on Hub odoo:20.0 (20.0-20260926, noble, wkhtmltopdf patched qt, dbfilter 20.0.1.0.0)"
+        changes:
+          - "serie_20 record; _DBFILTER_SERIE_MAJORS += 20"
+          - "env_dbfilter_header: odoo.modules.db / odoo.http.router on 20; rebinds from-imported copies (20+ only)"
+          - "project core overlay on 20+: rm core + empty dist-packages/addons before cp (serie-core.Dockerfile parity)"
+          - "Turnstile overlay == 19 only"
+          - "migration 19.0.1.0.224 seeds serie-20 lifecycle scripts on -u"
+      demo19_topology: "project 5 'Demo 19': repos tools/system/enterprise/odoo-apps-addons @19.0, workload sync_primary, templates odooallapps19.odootools.com (143) + odooallapps19e.odootools.com (144)"
+      demo20_target: "tools@20_final, system@20.0, enterprise@20.0, no odoo-apps-addons; templates odooallapps20.odootools.com / odooallapps20e.odootools.com"
+      next: ["35b push faotools_env + system 20.0", "35c deploy env_master to master", "35d create Demo 20 project + base/project images", "35e community template", "35f enterprise derivation", "35g local artifact sync"]
+      not_in_scope_here: "local/lib/common.sh repo_branch_for_serie has foreign WIP from another session; the local demo20 branch map is not changed by this item"
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
