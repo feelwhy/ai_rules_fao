@@ -393,7 +393,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: e0b5b106bbfb, created: true, pushed: true, last_pushed: e0b5b106bbfb}  # 2026-10-05: context check-in accepts the Odoo 20 image argument; unrelated dirty files left unstaged
+  20_port: {git_sha: f67ed49cf5ce, created: true, pushed: true, last_pushed: f67ed49cf5ce}  # 2026-10-05: attendance circle stays after check-in; unrelated dirty files left unstaged
   20_final: {git_sha: 8a9ee2164e85bbe3fe3fa49902fdc117234323de, created: true, pushed: true, last_pushed: 8a9ee2164e85bbe3fe3fa49902fdc117234323de}  # 2026-10-05: 20_2 + 20_c + 20_4 + 20_14 + 20_5 + 20_11 (33 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3656,6 +3656,16 @@ groups:
         at: 2026-10-05T16:34:00+01:00
         tools_20_7: e2e3a0f97077
         merge_to_20_port: e0b5b106bbfb
+      systray_circle:
+        at: 2026-10-05T16:40:00+01:00
+        tools_20_7: 96a8fee76ef8
+        merge_to_20_port: f67ed49cf5ce
+        change: >
+          After check-in the circle vanished until refresh. Our checking()
+          called _searchReadEmployeeFill() with no employee. Odoo 20 treats
+          that as no employee and sets isDisplayed false. The call now passes
+          the check-in payload. Enterprise asset cache cleared; both review
+          stacks restarted.
         change: >
           Systray context check-in crashed: Odoo 20 calls
           _attendance_action_change(geo, check_in_image) and returns a
