@@ -390,11 +390,26 @@ phases:
         found_and_fixed:
           - "apply_mail / restore neutralize / invitation shells called set_param inside the 20 DB (faotools_env 28edcf7, agent refreshed via install_agent.sh, master redeployed)"
       "35e_community_template":
-        status: in_progress
-        database: {id: 188, fqdn: odooallapps20.odootools.com, readonly: false}
+        status: done
+        database: {id: 188, fqdn: odooallapps20.odootools.com, readonly: true, make_enterprise_schedule: true, enterprise_template_id: 189}
         install: "152 modules from local/demo20-community-modules.txt that exist on 20_final (243 installed with dependencies) in 4 min"
-        setup: "action_setup_demo_template via odoo shell in odoo-demo-20 (master has no generic script runner)"
-      next: ["35e finish: setup + gaps check, readonly, backup strategy", "35f enterprise derivation", "35g local artifact sync"]
+        setup: "action_setup_demo_template via odoo shell in odoo-demo-20 (master has no generic script runner): result True, 0 translation gaps, 43 languages active"
+        counts: {sticky_note: 13, smart_warning: 6, kpi_item: 27, joint_calendar: 2, total_notify: 3, password_key: 15, security_role: 7, clouds_folder: 117, project_codes: 3, active_users: 13}
+        login: "https://odooallapps20.odootools.com demo/faotools -> 0user, backend 200"
+      "35f_enterprise_template":
+        status: done
+        database: {id: 189, fqdn: odooallapps20e.odootools.com, readonly: true}
+        result: "template_refresh 4249 (clone + make_enterprise_20 + swap): 267 modules incl. web_enterprise, documents, sign, cloud_base_documents, joint_calendar_gantt, faotools_enterprise; faotools.env.edition=enterprise; 43 languages; demo login ok, backend 200"
+      "35g_local_sync":
+        status: blocked
+        blocked_on:
+          - "local/lib/common.sh TARGET_ROWS demo20/demo20e are source=local; the file has another session's uncommitted docker-repair WIP"
+          - "local odooallapps20/20e are the saas-19.4 evidence DBs (F11: kept untouched); a sync would replace them"
+          - "no backup strategy on Demo 20 yet, so no bundle under /data/backups/demo-20/ (Demo 19 uses '05:30 Demo 19')"
+      not_done_yet:
+        - "browser first-click on the master templates (each 20_final group passed its own Fx.2 smoke)"
+        - "weekly image pipeline will include Demo 20 (item 36 adds the candidate gate first)"
+        - "make_enterprise role id 12 still unverified"
       not_in_scope_here: "local/lib/common.sh repo_branch_for_serie has foreign WIP from another session; the local demo20 branch map is not changed by this item"
   "8_final_group_loops":
     status: in_progress
