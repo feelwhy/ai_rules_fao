@@ -394,18 +394,29 @@ phases:
         database: {id: 188, fqdn: odooallapps20.odootools.com, readonly: true, make_enterprise_schedule: true, enterprise_template_id: 189}
         install: "152 modules from local/demo20-community-modules.txt that exist on 20_final (243 installed with dependencies) in 4 min"
         setup: "action_setup_demo_template via odoo shell in odoo-demo-20 (master has no generic script runner): result True, 0 translation gaps, 43 languages active"
-        counts: {sticky_note: 13, smart_warning: 6, kpi_item: 27, joint_calendar: 2, total_notify: 3, password_key: 15, security_role: 7, clouds_folder: 117, project_codes: 3, active_users: 13}
+        counts: {sticky_note: 13, smart_warning: 6, kpi_item: 27, joint_calendar: 2, total_notify: 3, password_key: 15, security_role: 7, clouds_folder: 116, project_codes: 3, active_users: 13}
+        rebuilt: "2026-10-05 19:00 clean community (see fixes_found_live); first build had 243 modules incl. 69 enterprise"
         login: "https://odooallapps20.odootools.com demo/faotools -> 0user, backend 200"
       "35f_enterprise_template":
         status: done
         database: {id: 189, fqdn: odooallapps20e.odootools.com, readonly: true}
         result: "template_refresh 4249 (clone + make_enterprise_20 + swap): 267 modules incl. web_enterprise, documents, sign, cloud_base_documents, joint_calendar_gantt, faotools_enterprise; faotools.env.edition=enterprise; 43 languages; demo login ok, backend 200"
       "35g_local_sync":
-        status: blocked
-        blocked_on:
-          - "local/lib/common.sh TARGET_ROWS demo20/demo20e are source=local; the file has another session's uncommitted docker-repair WIP"
-          - "local odooallapps20/20e are the saas-19.4 evidence DBs (F11: kept untouched); a sync would replace them"
-          - "no backup strategy on Demo 20 yet, so no bundle under /data/backups/demo-20/ (Demo 19 uses '05:30 Demo 19')"
+        status: done
+        at: 2026-10-05T19:48:00+01:00
+        backup_strategy: {id: 13, name: "06:30 Demo 20", schedule_time_utc: 5.5, retention: "same as 05:30 Demo 19 (weekly 35/70, monthly 90/180, yearly 1000/2000 days local/Drive)", database: 188}
+        local:
+          rows: "demo20 = bundle /data/backups/demo-20/odooallapps20.odootools.com, demo20e = stream pg-pg16 (faotools_env 16e14a6, own lines only; the other session's common.sh WIP left unstaged)"
+          branch_map: "PRE_RELEASE_UPSTREAM_BRANCH 20.0, PORT_BRANCH 20_final (master parity)"
+          evidence_dbs: "local saas-19.4 DBs renamed odooallapps20_saas194 / odooallapps20e_saas194, filestores in ~/env-sync/filestore/saas194-evidence, env-review keep until 2027-01-03"
+          synced: "demo20 dump_261005184124_manual, demo20e streamed_261005184736; both 'instant start', admin/admin, backend 200, 0 ERROR since sync"
+      "35h_workload":
+        status: done
+        result: "Demo 20 = sync_primary like Demo 19 (6 workers, 16g, 4.5 cpus, 80 conns), stack re-applied; label renamed 'Heavy demos' (key unchanged), env_master 19.0.1.0.225 (10bb213)"
+      fixes_found_live:
+        - "Odoo 20 creates filestore dirs 0751 (ir_attachment.DIRECTORY_MODE): user env could not tar them, first dump failed. db_dump streams through new root helper faotools-tar-filestore (16e14a6), agent refreshed"
+        - "community installs with enterprise on the project addons path auto-installed 69 enterprise modules into odooallapps20: env_master 19.0.1.0.226 (2fdcc0b) passes --addons-path without enterprise for -i on non-enterprise DBs. Template 188 dropped and rebuilt clean: 174 modules, 0 enterprise, setup True / 0 gaps / 43 languages, same demo counts; admin password + mail re-applied; 189 re-derived (250 modules, edition enterprise); polluted backup 172 deleted"
+        - "local post-neutralize set_param -> set_str fallback (783c8bb); before it admin/admin was not set on local 20 targets"
       not_done_yet:
         - "browser first-click on the master templates (each 20_final group passed its own Fx.2 smoke)"
         - "weekly image pipeline will include Demo 20 (item 36 adds the candidate gate first)"
