@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T17:32:00+01:00
-updated_by: agent/fx8-20_7
+updated_at: 2026-10-05T18:23:00+01:00
+updated_by: agent/fx1-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -414,11 +414,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    active_group: "20_7"
+    active_group: "20_suite"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_7 Px.1"
+    next: "20_suite Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -427,7 +427,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 6e42468b5a50, created: true, pushed: true, last_pushed: 6e42468b5a50}  # 2026-10-05: 20_7 Fx.3 catalogs; unrelated dirty files left unstaged
+  20_port: {git_sha: 511caf67b555864a7a6833e91d70a14db4b79173, created: true, pushed: true, last_pushed: 511caf67b555864a7a6833e91d70a14db4b79173}  # 2026-10-05: 20_suite Fx.1; unrelated dirty files left unstaged
   20_final: {git_sha: b361c623d63324870b1031e5befeb2246aa75c0a, created: true, pushed: true, last_pushed: b361c623d63324870b1031e5befeb2246aa75c0a}  # 2026-10-05: previous 20_final plus 20_7 (36 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3009,7 +3009,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -3118,6 +3118,46 @@ groups:
       reviews:
         bugbot: "no bugs"
         security: "no medium+; notify restore and ir.access match 19.0"
+    fx1:
+      stage_status: green
+      at: 2026-10-05T18:23:00+01:00
+      tools_20_suite: 3acc0177d4b84768472cb67afd450e46e9d84e37
+      merge_to_20_port: 511caf67b555864a7a6833e91d70a14db4b79173
+      merge_note: >
+        Clean ort merge. The unrelated dirty files on tools-20_port
+        (password_manager.js, project_project.xml) were left unstaged.
+      checker: >
+        First run vs origin/20.0: 10 findings (5 fa-icon, 3 icon-name, 1 owl-ref,
+        1 ctrl-hook). After those ports, 2 owl-this hits on t-model.proxy, which
+        is the 20.0 binding (core autocomplete), not a bare model scope.
+        Checker lookbehind now ignores a hyphen (ai_rules 3b17350). Re-run: 0.
+        odoo origin/20.0 c356f95d45c, enterprise origin/20.0 bce4d8fafdb.
+      versions: >
+        Re-prefixed 20.0.1.2.4, 20.0.1.2.18, 20.0.1.0.8, 20.0.1.0.4, 20.0.1.0.4,
+        20.0.1.0.3, 20.0.1.0.3, 20.0.1.0.2, 20.0.1.0.3. Tails unchanged.
+      ports:
+        - "Font Awesome and oi-arrow-right -> Material names (mail, shuffle, format_quote, save, search, add_circle, close, arrow_forward)"
+        - "t-custom-model -> t-model.proxy on the scheduled-date radios"
+        - "mail_attachment_delete forwards access_token_by_attachment_id and keep_on_messages"
+        - "decorateEmojis takes an Element; richBody uses bodyEl.cloneNode and getInnerHtml"
+        - "Cite kanban click is [data-icon='add_circle']"
+      tests: >
+        faotools/env-demo-20:20.0. Community and enterprise, same nine modules
+        (accounting bridges pull account). Fresh install with demo and the group's
+        test tags, then -u. 0 failed, 0 error(s) of 114 tests on each edition.
+        0 ERROR lines.
+      runner: /home/feelwhy/env-sync/p6/fx1_20_suite_test.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_suite_c.log, /home/feelwhy/env-sync/p6/logs/fx1_20_suite_e.log]
+      browser: >
+        Enterprise temporary DB fx1_20_suites with web_enterprise. Headless
+        Chromium: SMOKE_OK 10/10, zero error dialogs, zero console errors.
+        Discuss, Messaging Suite settings, Email From rules, Lost Messages and
+        Route manual, Send privately, the full composer From and CC fields,
+        Send Later (Later today), the cite wizard, and inline message edit.
+        The database was dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_suite.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_suite_smoke.log
+      temporary_db_removed: true
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
