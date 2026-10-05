@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-10-05 (20_7 Fx.1 green; checker 0; first-click 12/12; next is 20_7 Fx.2)
+**Last updated:** 2026-10-05 (20_7 Fx.2 green; review http://127.0.0.1:18234; next is 20_7 Fx.3)
 
 ## Where we are
 
@@ -179,7 +179,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 9 | `20_12` | 3 | `Gx.9` **green** | B1 `b12_190810`; http://127.0.0.1:18207; merged `1cb1794876c`; child chips + small tooltip close |
 | 10 | `20_suite` | 9 | `Gx.9` **green** | B1 `bsu_26732` 0/112; :18208; `msg_vals` / `history.commit`; lost form no suite Route |
 | 11 | `20_11` | 3 | `Fx.8` **green** | on `20_final` `8a9ee216`; changelog TM 0 gaps; cumulative 0 failed |
-| 12 | `20_7` | 3 | `Fx.1` **green** | on 20.0; checker 0; first-click 12/12; no review URL yet |
+| 12 | `20_7` | 3 | `Fx.2` **green** | review http://127.0.0.1:18234 (enterprise) and :18233; kept until 2026-10-08 12:55 |
 | 13 | `20_15` | 7 | `Gx.9` **green** | :18211; B1 `b15_153856` 0/109; merged `21995388ffe`; `htmlFieldProps`; `builderOptionsTemplate`; `savable_selectors`; IntegerField extras; docs search skip |
 | 14 | `20_16` | 9 | `Gx.9` **green** | owner walk demo20e; B1 0/61; i18n step-5 session walk; visibility inherit dropped |
 | 15 | `20_3` | 5 | `Gx.9` **green** | owner walk demo20e; B1 0/4; mappingproxy mass action; jstree off-proxy; RFQ `uom_id` |
