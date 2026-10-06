@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 7a4912247c7a328254883f0f330e25a9ec30c5d8, created: true, pushed: true, last_pushed: 7a4912247c7a328254883f0f330e25a9ec30c5d8}  # 2026-10-06: 20_suite invoice Cc uses partner_cc_ids; unrelated dirty files left unstaged
+  20_port: {git_sha: 8f84815c0818cb86a966d2f4e7bda7705da089a5, created: true, pushed: true, last_pushed: 8f84815c0818cb86a966d2f4e7bda7705da089a5}  # 2026-10-06: 20_suite hide followers chip when sending privately; unrelated dirty files left unstaged
   20_final: {git_sha: b87e88fe968ed72349a9941c2e482a9d1c9a67df, created: true, pushed: true, last_pushed: b87e88fe968ed72349a9941c2e482a9d1c9a67df}  # 2026-10-06: merged tools 20.0 store commits d996e28b441
   "20.0": {git_sha: cbc47c06c25a2ce53f5e93a8b9a6d46492f32dbe, created: true, pushed: true}  # 2026-10-06: 20_c merged onto the 20_2 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3406,6 +3406,15 @@ groups:
           composer. Template email_cc and partner_cc fill Cc, not To.
           BCC stays on email_suite.show_cc_bcc. email_suite_accounting
           tests 0 failed of 7. Both review databases upgraded and restarted.
+      followers_chip:
+        at: 2026-10-06T15:49:00+01:00
+        tools_20_suite: ff2438079ebc90331d95978cdbe118982674df98
+        merge_to_20_port: 8f84815c0818cb86a966d2f4e7bda7705da089a5
+        change: >
+          With Send privately on, the quick composer hides Odoo's
+          "N Followers" chip. Those followers are not recipients of a
+          private message. internal_thread tests 0 failed of 7. Both
+          review databases upgraded and restarted.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
