@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 8f84815c0818cb86a966d2f4e7bda7705da089a5, created: true, pushed: true, last_pushed: 8f84815c0818cb86a966d2f4e7bda7705da089a5}  # 2026-10-06: 20_suite hide followers chip when sending privately; unrelated dirty files left unstaged
+  20_port: {git_sha: 2f7c2faf84a6fee07de9e1c9b82d1711d33afac5, created: true, pushed: true, last_pushed: 2f7c2faf84a6fee07de9e1c9b82d1711d33afac5}  # 2026-10-06: 20_suite invoice Cc field aligned with To; unrelated dirty files left unstaged
   20_final: {git_sha: 04fdc154def5e76319b2d437d19eb665c5e38a73, created: true, pushed: true, last_pushed: 04fdc154def5e76319b2d437d19eb665c5e38a73}  # 2026-10-06: merged tools 20.0 3ffd6f516f6 (20_c store commits)
   "20.0": {git_sha: ad68ee093c51ff79a38a985382aafeedd2014139, created: true, pushed: true}  # 2026-10-06: 20_14 merged onto the published branch
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3535,6 +3535,14 @@ groups:
           With Send privately on, the quick composer hides Odoo's
           "N Followers" chip. Those followers are not recipients of a
           private message. internal_thread tests 0 failed of 7. Both
+          review databases upgraded and restarted.
+      invoice_cc_layout:
+        at: 2026-10-06T17:17:00+01:00
+        tools_20_suite: 5a6f5765fa947f24a05a54d957ee67f33e375ef8
+        merge_to_20_port: 2f7c2faf84a6fee07de9e1c9b82d1711d33afac5
+        change: >
+          The invoice Send wizard shows partner_cc_ids on its own row,
+          aligned with To, instead of the composer Cc toggle. Both
           review databases upgraded and restarted.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
