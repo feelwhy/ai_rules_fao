@@ -492,7 +492,7 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Px.2
+    stage: Px.3
     stage_status: green
     frozen: true
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
@@ -820,6 +820,18 @@ groups:
       modules: [smart_warnings, sticky_notes, complementary_contact_data,
                 complementary_employee_data, complementary_lead_data]
       frozen_group_branch: "20_2 stays at this SHA; later fixes start on 20.0"
+    px3:
+      stage_status: green
+      at: 2026-10-06T13:12:00+01:00
+      drafts_still_hidden: true
+      releases:
+        - {id: 1136, name: 20.0.1.0.15, commits: 7, url: "https://faotools.com/web#id=1136&model=module.release&view_type=form"}
+        - {id: 1133, name: 20.0.1.0.11, commits: 9, url: "https://faotools.com/web#id=1133&model=module.release&view_type=form"}
+        - {id: 1134, name: 20.0.1.0.8, commits: 7, url: "https://faotools.com/web#id=1134&model=module.release&view_type=form"}
+        - {id: 1135, name: 20.0.1.0.3, commits: 5, url: "https://faotools.com/web#id=1135&model=module.release&view_type=form"}
+        - {id: 1137, name: 20.0.1.0.3, commits: 5, url: "https://faotools.com/web#id=1137&model=module.release&view_type=form"}
+      contact_version: "complementary_contact_data manifest is 20.0.1.0.8 because of migrations/20.0.1.0.8; the release was moved from 1.0.7 to 1.0.8 before publish"
+      github_update: not_run
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
