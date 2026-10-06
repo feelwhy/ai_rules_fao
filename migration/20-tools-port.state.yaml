@@ -419,8 +419,28 @@ phases:
         - "local post-neutralize set_param -> set_str fallback (783c8bb); before it admin/admin was not set on local 20 targets"
       not_done_yet:
         - "browser first-click on the master templates (each 20_final group passed its own Fx.2 smoke)"
-        - "weekly image pipeline will include Demo 20 (item 36 adds the candidate gate first)"
         - "make_enterprise role id 12 still unverified"
+    "36_candidate_gate":
+      status: done_except_browser_gate
+      at: 2026-10-06T10:55:00+01:00
+      code: "faotools_env 557c4cc (env_master 19.0.1.0.227 live, agent refreshed)"
+      how: >
+        env.project.image_gate. Gated projects never auto-apply: the weekly pipeline,
+        the daily cron 'Env: daily candidate ref check' (03:00 UTC; GitHub heads of core
+        + every repo branch vs the commits baked into the image) and the Build candidate
+        button build a candidate. It runs -u all and the tests of every non-enterprise
+        repo (tags from the addons baked into the image) on a throwaway clone of each
+        template, on the candidate image, plus a log gate (WARNING/ERROR/CRITICAL from
+        the tested modules' loggers). Green -> alarm candidate_ready + Promote button
+        (image_tag, project_apply). Red -> critical alarm candidate_red with commits and
+        failing lines; serving image untouched. Discard clears it.
+      agent: "build_image reports revs; db_run_odoo image override (.faotools-run-image.yml), test_repos, gate_errors/gate_warnings/gate_lines"
+      tests: "agent 238 passed; env_master 0 failed of 380 (test_candidate_gate x5)"
+      demo20: "image_gate on; first candidate 127.0.0.1:5000/env-demo-20:2 testing on both templates, serving :1 untouched (2026-10-06 10:59)"
+      open:
+        - "browser gate not built: the worker has no headless browser; the gate is tests + log gate only"
+        - "first candidate result pending (alarm when done); Promote is manual"
+        - "image_revs of the serving image :1 is empty (built before revs existed); the first Promote sets the baseline for the daily check"
       not_in_scope_here: "local/lib/common.sh repo_branch_for_serie has foreign WIP from another session; the local demo20 branch map is not changed by this item"
   "8_final_group_loops":
     status: in_progress
