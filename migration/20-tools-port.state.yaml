@@ -807,10 +807,9 @@ groups:
       drafts_match_fx6: true
       releases_match_fx7: true
       screenshot_qa: >
-        User declared the five Partners Contact Full Details frames fixed
-        (2026-10-06). Corrected PNGs are in
-        C:/Users/feel1/Downloads/20_2-partners-contact-full-details. They are not
-        on the draft attachments yet.
+        The five Partners Contact Full Details frames on draft 1254 were
+        replaced at 2026-10-06 12:05 (attachments 471794-471798).
+        contact_full_details.png is 1130x804 and the Russian alert is gone.
     px2:
       stage_status: green
       at: 2026-10-06T13:06:00+01:00
