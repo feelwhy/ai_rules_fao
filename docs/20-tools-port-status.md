@@ -177,7 +177,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 7 | `20_10` | 4 | `Gx.9` **green** | B1; http://localhost:18205; `list.set`; `view_task_card`; `cr` not `rc` |
 | 8 | `20_4` | 4 | `Gx.9` **green** | B1; http://localhost:18206; merged `18ee0d5a1d0`; OWL leftovers; Extra Security hints; role avatars |
 | 9 | `20_12` | 3 | `Gx.9` **green** | B1 `b12_190810`; http://127.0.0.1:18207; merged `1cb1794876c`; child chips + small tooltip close |
-| 10 | `20_suite` | 9 | `Fx.3` **green** | http://127.0.0.1:18236/web/login until 2026-10-08 18:39; community :18235; 73 screenshot rows |
+| 10 | `20_suite` | 9 | `Fx.4` **green** | http://127.0.0.1:18236/web/login until 2026-10-08 18:39; community :18235; 73 screenshot rows |
 | 11 | `20_11` | 3 | `Fx.8` **green** | on `20_final` `8a9ee216`; changelog TM 0 gaps; cumulative 0 failed |
 | 12 | `20_7` | 3 | `Fx.8` **green** | on `20_final` `b361c623`; changelog TM 0 gaps; cumulative 0 failed |
 | 13 | `20_15` | 7 | `Gx.9` **green** | :18211; B1 `b15_153856` 0/109; merged `21995388ffe`; `htmlFieldProps`; `builderOptionsTemplate`; `savable_selectors`; IntegerField extras; docs search skip |

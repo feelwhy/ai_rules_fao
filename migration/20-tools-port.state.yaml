@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-06T19:39:00+01:00
-updated_by: agent/fx3-20_suite
+updated_at: 2026-10-06T20:14:00+01:00
+updated_by: agent/fx4-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -468,7 +468,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_suite Fx.4"
+    next: "20_suite Fx.5"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -3338,7 +3338,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Fx.3
+    stage: Fx.4
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -3662,6 +3662,33 @@ groups:
       screenshot_rows: "Enterprise email-from addresses and the three rules were written back after the demo reload (sales@faotools.com, support@faotools.com, apps@odootools.com). Lost messages and drafts were not removed."
       runner: /home/feelwhy/env-sync/p6/fx3_20_suite/apply_fx3.py
       load_runner: /home/feelwhy/env-sync/p6/fx3_20_suite/load_fx3.py
+    fx4:
+      stage_status: green
+      at: 2026-10-06T20:14:00+01:00
+      image: faotools/env-demo-20:20.0
+      core: 853a1f86126b9f841e3bba5b3153dbc37ac1bffc
+      tools_20_suite: b51e852fefb7e72b16b61224f60f12b11ddac117
+      tools_20_port: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      runner: /home/feelwhy/env-sync/p6/fx4_20_suite_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_suite_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_suite_e.log]
+      matrix_dbs_dropped: true
+      community: >
+        The nine suite modules. Each own closure: --without-demo=True -i,
+        --with-demo -i, then -u. Then the nine together --with-demo
+        --test-enable. 0 failed, 0 error(s) of 116 tests. 19 of 19 legs, MATRIX_OK.
+      enterprise: >
+        The same nine, with the enterprise addons path mounted. 0 failed,
+        0 error(s) of 116 tests. 19 of 19 legs, MATRIX_OK.
+      cumulative: "The nine modules installed together. No 20.0 all-apps database (item 33 still blocked)."
+      log_gate: >
+        No ERROR or CRITICAL line on either edition. WARNING: markdown2 is not
+        installed (mail, and ai on enterprise); a search icon in message_citing
+        has no title; partner_cc_ids and the unused partner_cc_allowed share
+        the label Cc on the invoice wizard.
+      browser: >
+        Not repeated. No Python or JS change. The Fx.2 reviews were not touched
+        and both login pages still answer.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
