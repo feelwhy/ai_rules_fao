@@ -802,7 +802,7 @@ groups:
         20_port: item 33 stays blocked until every group starts on 20.0.
       not_merged_to: "tools 20.0 (that is Px.2)"
     px1:
-      stage_status: blocked
+      stage_status: green
       at: 2026-10-06T12:14:00+01:00
       drafts_match_fx6: true
       releases_match_fx7: true
