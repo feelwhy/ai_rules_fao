@@ -934,7 +934,7 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Px.2
+    stage: Px.3
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
@@ -1201,6 +1201,21 @@ groups:
         Uncommitted project_custom_fields/views/project_project.xml on the
         20_c worktree moves custom_type_id from after partner_id to before
         user_id. It is not in this publish.
+    px3:
+      stage_status: green
+      at: 2026-10-06T15:55:00+01:00
+      drafts_still_hidden: true
+      github_update: not_run
+      releases:
+        - {id: 1144, name: 20.0.1.0.11, commits: 5, url: "https://faotools.com/web#id=1144&model=module.release&view_type=form"}
+        - {id: 1143, name: 20.0.1.0.5, commits: 5, url: "https://faotools.com/web#id=1143&model=module.release&view_type=form"}
+        - {id: 1141, name: 20.0.1.0.5, commits: 5, url: "https://faotools.com/web#id=1141&model=module.release&view_type=form"}
+        - {id: 1142, name: 20.0.1.0.2, commits: 5, url: "https://faotools.com/web#id=1142&model=module.release&view_type=form"}
+        - {id: 1145, name: 20.0.1.0.6, commits: 6, url: "https://faotools.com/web#id=1145&model=module.release&view_type=form"}
+        - {id: 1146, name: 20.0.1.0.4, commits: 5, url: "https://faotools.com/web#id=1146&model=module.release&view_type=form"}
+        - {id: 1147, name: 20.0.1.0.5, commits: 5, url: "https://faotools.com/web#id=1147&model=module.release&view_type=form"}
+        - {id: 1148, name: 20.0.1.0.6, commits: 7, url: "https://faotools.com/web#id=1148&model=module.release&view_type=form"}
+      skipped_commits: "19.0 ancestry and the scaffold 971c21a were fetched and not linked"
     review:
       at: 2026-09-30T12:45:00+01:00
       tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
