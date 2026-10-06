@@ -421,9 +421,9 @@ phases:
         - "browser first-click on the master templates (each 20_final group passed its own Fx.2 smoke)"
         - "make_enterprise role id 12 still unverified"
     "36_candidate_gate":
-      status: done_except_browser_gate
-      at: 2026-10-06T10:55:00+01:00
-      code: "faotools_env 557c4cc (env_master 19.0.1.0.227 live, agent refreshed)"
+      status: rebuilding
+      at: 2026-10-06T12:07:00+01:00
+      code: "faotools_env 77d2747 (env_master 19.0.1.0.228 live, agent refreshed); system 60491b9; tools 337dbab4e23"
       how: >
         env.project.image_gate. Gated projects never auto-apply: the weekly pipeline,
         the daily cron 'Env: daily candidate ref check' (03:00 UTC; GitHub heads of core
@@ -436,12 +436,31 @@ phases:
         failing lines; serving image untouched. Discard clears it.
       agent: "build_image reports revs; db_run_odoo image override (.faotools-run-image.yml), test_repos, gate_errors/gate_warnings/gate_lines"
       tests: "agent 238 passed; env_master 0 failed of 380 (test_candidate_gate x5)"
-      demo20: "image_gate on; first candidate 127.0.0.1:5000/env-demo-20:2 testing on both templates, serving :1 untouched (2026-10-06 10:59)"
+      demo20: "image_gate on; candidate :2 red (tests + PDF/password warnings); serving :1 untouched; candidate :3 build task 4274 running (2026-10-06 12:07)"
       open:
-        - "browser gate not built: the worker has no headless browser; the gate is tests + log gate only"
-        - "first candidate result pending (alarm when done); Promote is manual"
+        - "candidate :3 must go green (tests, log gate, Chromium Contacts first-click) before Promote; serving image stays :1 until then"
         - "image_revs of the serving image :1 is empty (built before revs existed); the first Promote sets the baseline for the daily check"
       not_in_scope_here: "local/lib/common.sh repo_branch_for_serie has foreign WIP from another session; the local demo20 branch map is not changed by this item"
+    "37_topical_version":
+      status: done
+      at: 2026-10-06T11:10:00+01:00
+      live:
+        ticketing.support_topical_odoo_version: {id: 74, value: "20", write: "already 20 before this change; not written again"}
+        ticketing.support_max_demo_version: {id: 73, value: "16", write: "left unchanged"}
+        modules_website.sitemap_min_version: {id: 140, value: "16", write: "left unchanged"}
+      code: "support fallbacks 17/18 -> 20: module.description._return_version_selection, app.template.action_get_competitor_stats, res.config.settings default. Tests read the same fallback."
+      consumers:
+        _seo_canonical_url: "does not read the parameter. Every version canonicalises to /apps/<slug>."
+        sitemap: "_enumerate_pages lists stable /apps/<slug> for supported published templates, not /apps/<version>/<id>."
+        store_parse: "max_version only skips the version scan when last_detected_version already equals it. Apps below 20 are still scanned; the highest store badge above the current one is stored, with no cap at 20."
+      tests: "module_descriptor 0 failed, 0 errors of 2 (test_module_descriptor_19). Ran on odoo@19.0 with worktrees tools-19.0 and enterprise-19.0; shared enterprise stays 20.0 and shared tools stays 18.0."
+    "38_major_prepublication":
+      status: done
+      at: 2026-10-06T11:17:00+01:00
+      code: "module.description.action_prepare_major_draft (dry_run default), action_publish_major_release, action_apply_major_prepublication, action_prepare_major_github_update (does not call git)"
+      rules: "standalone 20.0 copy of a published 19.0 row; no origin; prepublish + force_no_git; not_supported stays False; documentation_url cleared; videos not copied; exact_version kept; one 0_work migration release with the flag line; second call returns the same draft; 19.0 snapshot must match; worklist.md + upload_manifest.json"
+      tests: "module_descriptor 0 failed, 0 errors of 6 (includes the item 37 selection tests)"
+      not_run_live: "no 20.0 description was created on faotools.com"
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
@@ -4575,7 +4594,7 @@ groups:
 # ---------------------------------------------------------------- live records
 # One entry per module once phase 8 starts. Never reuse a stale id after a failed apply.
 live:
-  topical_version_raised: false     # ticketing.support_topical_odoo_version, owner-gated
+  topical_version_raised: true      # id 74 already "20" (2026-10-06); max demo id 73 left at 16
   descriptions: {}                  # tech_name -> {prepublish_id, release_id, github_sha,
                                     #               tm_applied_at, promoted_at}
 
