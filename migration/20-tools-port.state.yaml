@@ -492,8 +492,8 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Fx.8
-    stage_status: green
+    stage: Px.1
+    stage_status: blocked
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
     # addon from the 4 running containers that bind-mount /home/feelwhy/Odoo/tools.
@@ -800,6 +800,18 @@ groups:
         of 31 tests, community and enterprise). Not a merge of the whole
         20_port: item 33 stays blocked until every group starts on 20.0.
       not_merged_to: "tools 20.0 (that is Px.2)"
+    px1:
+      stage_status: blocked
+      at: 2026-10-06T12:14:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      screenshot_qa: >
+        Blocked. Draft pics are 1130px and the 31 file names match the shot list,
+        but contact_full_details.png (attachment 470704) and
+        list_of_contact_options.png (470708) show the English Azure Interior form
+        with a Russian Smart Alert: "Проверьте платёжные реквизиты перед следующим
+        счетом". Store shots stay English. Do not publish until those frames are
+        recaptured in en_US.
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
