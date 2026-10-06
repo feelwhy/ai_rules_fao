@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 02129d3c02b48954058447787e0151313a17d564, created: true, pushed: true, last_pushed: 02129d3c02b48954058447787e0151313a17d564}  # 2026-10-06: 20_suite cited header is bold underlined Original message; unrelated dirty files left unstaged
+  20_port: {git_sha: 254bfd9d0431fd91acaa81867fddbef1074b350f, created: true, pushed: true, last_pushed: 254bfd9d0431fd91acaa81867fddbef1074b350f}  # 2026-10-06: 20_suite deleted-message history click; unrelated dirty files left unstaged
   20_final: {git_sha: 04fdc154def5e76319b2d437d19eb665c5e38a73, created: true, pushed: true, last_pushed: 04fdc154def5e76319b2d437d19eb665c5e38a73}  # 2026-10-06: merged tools 20.0 3ffd6f516f6 (20_c store commits)
   "20.0": {git_sha: ad68ee093c51ff79a38a985382aafeedd2014139, created: true, pushed: true}  # 2026-10-06: 20_14 merged onto the published branch
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3552,6 +3552,14 @@ groups:
           Demo cited header is a bold underlined "Original message:".
           The setting is HTML so that formatting is kept. Both review
           databases updated and restarted.
+      deleted_history_click:
+        at: 2026-10-06T17:40:00+01:00
+        tools_20_suite: 15e8a8200dea2ceb014010d744754be9bedb5118
+        merge_to_20_port: 254bfd9d0431fd91acaa81867fddbef1074b350f
+        change: >
+          The deleted-message placeholder click uses this.onClickRemovedMessage.
+          A bare name was undefined in the 20.0 template, so opening the
+          history crashed. Both review asset bundles cleared and restarted.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
