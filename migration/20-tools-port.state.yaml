@@ -478,8 +478,8 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 254bfd9d0431fd91acaa81867fddbef1074b350f, created: true, pushed: true, last_pushed: 254bfd9d0431fd91acaa81867fddbef1074b350f}  # 2026-10-06: 20_suite deleted-message history click; unrelated dirty files left unstaged
-  20_final: {git_sha: 04fdc154def5e76319b2d437d19eb665c5e38a73, created: true, pushed: true, last_pushed: 04fdc154def5e76319b2d437d19eb665c5e38a73}  # 2026-10-06: merged tools 20.0 3ffd6f516f6 (20_c store commits)
-  "20.0": {git_sha: ad68ee093c51ff79a38a985382aafeedd2014139, created: true, pushed: true}  # 2026-10-06: 20_14 merged onto the published branch
+  20_final: {git_sha: af0d2118c73966791dc56da2f2fbeecc97d70d9c, created: true, pushed: true, last_pushed: af0d2118c73966791dc56da2f2fbeecc97d70d9c}  # 2026-10-06: merged tools 20.0 5e18ceb4d9d (20_14 store commits)
+  "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
 # ---------------------------------------------------------------- groups
@@ -1375,7 +1375,7 @@ groups:
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
               dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
-    stage: Px.4
+    stage: Px.9
     stage_status: green
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
@@ -1847,6 +1847,56 @@ groups:
         - {id: 1274, url: "https://faotools.com/apps/nas-synology-qnap-truenas-odoo-integration", version: "20.0.1.0.2"}
       origins_unchanged: [1031, 1032, 1033, 1034, 1035, 1036, 1106, 1108, 1109]
       github_update: not_run
+    px5:
+      stage_status: green
+      at: 2026-10-06T17:20:00+01:00
+      by: owner
+      check: "github_to_update false on all nine; nine [#auto] commits on tools 20.0 ending 5e18ceb4d9d"
+    px6:
+      stage_status: green
+      at: 2026-10-06T17:30:00+01:00
+      tools_20_0: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e
+      commits: 9
+      check: >
+        Fast-forwarded the 20.0 worktree. 145 files, only the nine modules'
+        manifests, index.html, and description images. Manifest versions and
+        prices match the live pages (398 / 89 / 44). index.html is ASCII with
+        no self-closed or empty icon tags. cloud_base_conf_2.png and
+        cloud_base_conf_3.png are new in cloud_base.
+    px7:
+      stage_status: green
+      at: 2026-10-06T17:40:00+01:00
+      history_fix: >
+        The nine 20.0 migration releases had no migration_release_ids, so the
+        pages showed only the 20.0 row. Linked them with the predecessor rule
+        (19.0 rows dated on or before the migration release, plus the history
+        behind 19.0 migration rows): cloud_base 67, owncloud 11, dropbox 6,
+        google_drive 7, onedrive 8, documents 15, s3 4, box 4, nas 4. The live
+        site has no _major_predecessor_releases, so the rule ran inline.
+      tm: "support f05e86d8: cloud_base_20.0.yaml pics 34 and 35 (name + alt) in all 42 languages"
+      apply: "support.translations._apply_description on faotools.com for the nine 20.0 files; 0 release rows unmatched"
+      pages: "387 URLs (9 apps x 43), 0 English flag sentences left, 0 self-closed icons, 19.0 history shown"
+      captions_left_english:
+        - "pic 10860 on draft 1267, Amazon S3 setup step 2: name and alt are the file name '3. minio_cloud_client.png'. Not on the 19.0 page. Owner decides: delete it or give it a real title."
+        - "pic 10708 (OneDrive feature): '<i class=fa fa-share-alt></i> Odoo attachments are in OneDrive or SharePoint' is English on 19.0 as well."
+        - "many setup-step alt texts (QNAP, Box, MinIO, Amazon S3, Azure, Dropbox) are English on 19.0 as well."
+    px8:
+      stage_status: green
+      at: 2026-10-06T17:45:00+01:00
+      merged: af0d2118c73966791dc56da2f2fbeecc97d70d9c
+      pushed: origin/20_final
+      module_diff_20_final_vs_20_0: "empty for the nine folders"
+      candidate: >
+        Demo 20 candidate env-demo-20:2 is red: 0 failed tests on both
+        templates; the log gate has one WARNING each, odootools_demo "Skip demo
+        template setup" on the test clone. Built from tools 04fdc154def, before
+        this merge. Serving image stays env-demo-20:1. Not promoted.
+    px9:
+      stage_status: handed
+      at: 2026-10-06T17:45:00+01:00
+      store_branch: tools 20.0
+      store_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e
+      note: "Owner publishes on the Odoo store."
     review:
       db: fx8_20_14
       url: http://127.0.0.1:18226/web/login
