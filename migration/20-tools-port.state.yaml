@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 2f7c2faf84a6fee07de9e1c9b82d1711d33afac5, created: true, pushed: true, last_pushed: 2f7c2faf84a6fee07de9e1c9b82d1711d33afac5}  # 2026-10-06: 20_suite invoice Cc field aligned with To; unrelated dirty files left unstaged
+  20_port: {git_sha: 02129d3c02b48954058447787e0151313a17d564, created: true, pushed: true, last_pushed: 02129d3c02b48954058447787e0151313a17d564}  # 2026-10-06: 20_suite cited header is bold underlined Original message; unrelated dirty files left unstaged
   20_final: {git_sha: 04fdc154def5e76319b2d437d19eb665c5e38a73, created: true, pushed: true, last_pushed: 04fdc154def5e76319b2d437d19eb665c5e38a73}  # 2026-10-06: merged tools 20.0 3ffd6f516f6 (20_c store commits)
   "20.0": {git_sha: ad68ee093c51ff79a38a985382aafeedd2014139, created: true, pushed: true}  # 2026-10-06: 20_14 merged onto the published branch
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3544,6 +3544,14 @@ groups:
           The invoice Send wizard shows partner_cc_ids on its own row,
           aligned with To, instead of the composer Cc toggle. Both
           review databases upgraded and restarted.
+      citing_header:
+        at: 2026-10-06T17:30:00+01:00
+        tools_20_suite: db03f5a4c910b2ca91e3832bf5ccc687ee23d800
+        merge_to_20_port: 02129d3c02b48954058447787e0151313a17d564
+        change: >
+          Demo cited header is a bold underlined "Original message:".
+          The setting is HTML so that formatting is kept. Both review
+          databases updated and restarted.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
