@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-06T13:48:00+01:00
-updated_by: agent/fx2-20_suite
+updated_at: 2026-10-06T19:39:00+01:00
+updated_by: agent/fx3-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -468,7 +468,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_suite Fx.3"
+    next: "20_suite Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: c3a2aa54edc994de4b0e90ac2d7482d213911a8d, created: true, pushed: true, last_pushed: c3a2aa54edc994de4b0e90ac2d7482d213911a8d}  # 2026-10-06: 20_suite extra details keep From, Reply-To and Cc; unrelated dirty files left unstaged
+  20_port: {git_sha: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46, created: true, pushed: true, last_pushed: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46}  # 2026-10-06: 20_suite Fx.3 translations; unrelated dirty files left unstaged
   20_final: {git_sha: af0d2118c73966791dc56da2f2fbeecc97d70d9c, created: true, pushed: true, last_pushed: af0d2118c73966791dc56da2f2fbeecc97d70d9c}  # 2026-10-06: merged tools 20.0 5e18ceb4d9d (20_14 store commits)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3338,7 +3338,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Fx.2
+    stage: Fx.3
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -3632,8 +3632,36 @@ groups:
         change: >
           Extra details stored only BCC, because Cc is partner_cc_ids and
           From/Reply-To were never copied. A stored BCC line also hid the
-          fallback. New sends record all four. The two lead messages that
+          fallback.           New sends record all four. The two lead messages that
           only had BCC were filled in. Enterprise review restarted.
+    fx3:
+      stage_status: green
+      at: 2026-10-06T19:39:00+01:00
+      tools_20_suite: b51e852fefb7e72b16b61224f60f12b11ddac117
+      merge_to_20_port: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46
+      method: >
+        odoo trans_export from fx2_20_suitee for the nine modules, compared
+        with the shipped pots. Unchanged msgid kept its msgstr. Demo-only
+        email.suite.draft strings were left out of the pot. Dropped msgids
+        whose text is gone: the old CC/BCC composer strings, Outgoing Mails,
+        Email Templates, Account Move Send Wizard, and the Font Awesome icon
+        help. The Material Symbols icon help keeps that translation. App
+        names, the first summary sentence, and the description feature lines
+        are translated in the 33 base languages; de_CH, es_419, es_CL, fr_BE,
+        fr_CA, fr_CH, nl_BE and pt_BR take those. Summary keyword tails stay
+        English. Cc, Outgoing Mail, Email Template, Module and Activity Plans
+        come from core .po when core has another word. en_GB stays English.
+        Every entry's comment starts with "module: <name>".
+      empty_msgstr: 0
+      app_names: "Odoo Messaging Suite, Odoo Messaging Suite: Invoices, Message/Note Editing, Message Citing, Lost Messages Routing, Private Thread, Private Thread: Invoices, Odoo Email From, Odoo Email From: Invoices. Russian: Комплект сообщений Odoo, Комплект сообщений Odoo: Счета, Редактирование сообщений и заметок, Цитирование сообщений, Маршрутизация потерянных сообщений, Приватная переписка, Приватная переписка: Счета, Odoo: адрес отправителя, Odoo: адрес отправителя счетов."
+      left_english: "en_GB stays English. No stays the English word where core has no other word."
+      loaded_on:
+        - {db: fx2_20_suite, url: "http://127.0.0.1:18235/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Комплект сообщений Odoo"}
+        - {db: fx2_20_suitee, url: "http://127.0.0.1:18236/web/login", active_langs: 43, gaps: 0, proof: "ru: Комплект сообщений Odoo; de: Odoo-Nachrichtensuite; Hide Cc ru: Скрыть копию"}
+      users_left_on: en_US
+      screenshot_rows: "Enterprise email-from addresses and the three rules were written back after the demo reload (sales@faotools.com, support@faotools.com, apps@odootools.com). Lost messages and drafts were not removed."
+      runner: /home/feelwhy/env-sync/p6/fx3_20_suite/apply_fx3.py
+      load_runner: /home/feelwhy/env-sync/p6/fx3_20_suite/load_fx3.py
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
