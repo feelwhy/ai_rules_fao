@@ -478,7 +478,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 8f84815c0818cb86a966d2f4e7bda7705da089a5, created: true, pushed: true, last_pushed: 8f84815c0818cb86a966d2f4e7bda7705da089a5}  # 2026-10-06: 20_suite hide followers chip when sending privately; unrelated dirty files left unstaged
-  20_final: {git_sha: b87e88fe968ed72349a9941c2e482a9d1c9a67df, created: true, pushed: true, last_pushed: b87e88fe968ed72349a9941c2e482a9d1c9a67df}  # 2026-10-06: merged tools 20.0 store commits d996e28b441
+  20_final: {git_sha: 04fdc154def5e76319b2d437d19eb665c5e38a73, created: true, pushed: true, last_pushed: 04fdc154def5e76319b2d437d19eb665c5e38a73}  # 2026-10-06: merged tools 20.0 3ffd6f516f6 (20_c store commits)
   "20.0": {git_sha: cbc47c06c25a2ce53f5e93a8b9a6d46492f32dbe, created: true, pushed: true}  # 2026-10-06: 20_c merged onto the 20_2 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
@@ -934,8 +934,8 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Px.4
-    stage_status: green
+    stage: Px.8
+    stage_status: in_progress
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
     # ported onto 20_c as 47d58c3ad8a and rematched 20_port.
@@ -1232,6 +1232,43 @@ groups:
         - {id: 1262, url: "https://faotools.com/apps/odoo-custom-fields-for-tasks", version: "20.0.1.0.6"}
       origins_unchanged: [1019, 1020, 1021, 1022, 1023, 1024, 1025, 1026]
       github_update: not_run
+    px6:
+      stage_status: green
+      at: 2026-10-06T16:20:00+01:00
+      tools_20_0: 3ffd6f516f6f8af0a86bd3ee005a0fab00e1069c
+      commits: 8
+      check: >
+        Fast-forwarded the 20.0 worktree. Eight [#auto] commits, 86 files, only
+        these eight modules' manifests, index.html, and description images.
+        Manifest versions match the live pages. index.html is ASCII. Module
+        prices match the descriptions (0.00 for the two extensions; the page
+        shows the bundled 38). Related-app store links still point at
+        apps.odoo.com 19.0.
+    px7:
+      stage_status: green
+      at: 2026-10-06T16:22:00+01:00
+      apply: "already on the live pages from the Fx.7 TM; verified, not re-applied"
+      pages: >
+        Six apps show the 20.0 changelog in Russian, with a space inside the
+        flag icon. Contact Us and the e-shop extension have no releases tab,
+        same as their 19.0 pages. Release 1142 ru_RU is not the English flag
+        sentence. Contact-us captions differ (Lead custom fields... vs
+        Пользовательские поля лида...).
+    px8:
+      stage_status: in_progress
+      at: 2026-10-06T16:23:00+01:00
+      merged: 04fdc154def5e76319b2d437d19eb665c5e38a73
+      pushed: origin/20_final
+      includes: tools 20.0 3ffd6f516f6
+      candidate: >
+        Demo 20 candidate_state building, env.task 4310 (Build image). Serving
+        image stays env-demo-20:1. Not promoted.
+    px9:
+      stage_status: handed
+      at: 2026-10-06T16:24:00+01:00
+      store_branch: tools 20.0
+      store_sha: 3ffd6f516f6f8af0a86bd3ee005a0fab00e1069c
+      note: "Owner publishes on the Odoo store. Demo image promote waits for a green candidate."
     review:
       at: 2026-09-30T12:45:00+01:00
       tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
@@ -1338,7 +1375,7 @@ groups:
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
               dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
-    stage: Fx.8
+    stage: Px.1
     stage_status: green
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
@@ -1755,6 +1792,17 @@ groups:
         item 33 stays blocked until every group starts on 20.0.
       not_merged_to: "tools 20.0 (that is Px.2)"
       logs: [/home/feelwhy/env-sync/p6/logs/fx8_final14_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final14_e.log]
+    px1:
+      stage_status: green
+      at: 2026-10-06T16:45:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      screenshot_qa: >
+        80 pictures, every one has a file. The two Cloud Storage settings
+        shots (sequences 34 and 35) are attached and 1130 wide, in English.
+        The NAS attachment-box shot and the NAS folder shot match their
+        captions. No videos. Drafts stay hidden.
+    review:
       runner: /home/feelwhy/env-sync/p6/fx8_20_14_cumulative.sh
       cleanup: "temporary worktree tools-20_final removed; throwaway databases dropped"
     review:
