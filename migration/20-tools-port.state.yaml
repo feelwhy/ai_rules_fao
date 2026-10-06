@@ -934,7 +934,7 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Px.3
+    stage: Px.4
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
@@ -1216,6 +1216,22 @@ groups:
         - {id: 1147, name: 20.0.1.0.5, commits: 5, url: "https://faotools.com/web#id=1147&model=module.release&view_type=form"}
         - {id: 1148, name: 20.0.1.0.6, commits: 7, url: "https://faotools.com/web#id=1148&model=module.release&view_type=form"}
       skipped_commits: "19.0 ancestry and the scaffold 971c21a were fetched and not linked"
+    px4:
+      stage_status: green
+      at: 2026-10-06T16:06:00+01:00
+      method: action_apply_prepublishment
+      force_no_git: "left false; do not set it back"
+      pages:
+        - {id: 1255, url: "https://faotools.com/apps/odoo-custom-fields-core", version: "20.0.1.0.11"}
+        - {id: 1257, url: "https://faotools.com/apps/odoo-custom-fields-for-contacts", version: "20.0.1.0.5"}
+        - {id: 1256, url: "https://faotools.com/apps/odoo-custom-fields-for-opportunities", version: "20.0.1.0.5"}
+        - {id: 1258, url: "https://faotools.com/apps/odoo-contact-us-form-custom-fields", version: "20.0.1.0.2"}
+        - {id: 1259, url: "https://faotools.com/apps/odoo-custom-fields-for-products", version: "20.0.1.0.6"}
+        - {id: 1260, url: "https://faotools.com/apps/odoo-products-custom-fields-e-shop", version: "20.0.1.0.4"}
+        - {id: 1261, url: "https://faotools.com/apps/odoo-custom-fields-for-projects", version: "20.0.1.0.5"}
+        - {id: 1262, url: "https://faotools.com/apps/odoo-custom-fields-for-tasks", version: "20.0.1.0.6"}
+      origins_unchanged: [1019, 1020, 1021, 1022, 1023, 1024, 1025, 1026]
+      github_update: not_run
     review:
       at: 2026-09-30T12:45:00+01:00
       tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
