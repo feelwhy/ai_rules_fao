@@ -12,7 +12,7 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-05T18:39:00+01:00
+updated_at: 2026-10-06T13:48:00+01:00
 updated_by: agent/fx2-20_suite
 
 # ---------------------------------------------------------------- pins
@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 511caf67b555864a7a6833e91d70a14db4b79173, created: true, pushed: true, last_pushed: 511caf67b555864a7a6833e91d70a14db4b79173}  # 2026-10-05: 20_suite Fx.1; unrelated dirty files left unstaged
+  20_port: {git_sha: 2251af06c2f37c1ac9757c094de0b5136513a31e, created: true, pushed: true, last_pushed: 2251af06c2f37c1ac9757c094de0b5136513a31e}  # 2026-10-06: 20_suite hide native Cc; unrelated dirty files left unstaged
   20_final: {git_sha: b361c623d63324870b1031e5befeb2246aa75c0a, created: true, pushed: true, last_pushed: b361c623d63324870b1031e5befeb2246aa75c0a}  # 2026-10-05: previous 20_final plus 20_7 (36 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -850,10 +850,9 @@ groups:
         - {id: 1042, write_date: "2026-10-06 12:05:06", exact_version: "1.0.3"}
       pages: "each /apps/20.0/<id> is 200 on the stable slug; each /apps/19.0/<id> still shows its 19.0 version"
       github_guard: >
-        Apply cleared force_no_git. The live cron "Module Descriptions Updates & Github"
-        (ir.cron 9, nextcall 2026-10-06 13:30:30 UTC) would have pushed these five.
-        force_no_git was set back to true so that cron skips the push. Px.5 clears it
-        again and runs the full GitHub update.
+        Removed 2026-10-06 12:45 UTC on owner command. force_no_git is false and
+        github_to_update is true on 1253, 1251, 1254, 1250, 1252. Do not set the
+        guard back. The GitHub button returns with no push while it is on.
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
@@ -3330,6 +3329,17 @@ groups:
         compose: faotools_env/local/run/fx2_20_suitee/compose.yml
         modules: "web_enterprise, the nine suite modules, and odootools_demo"
         purpose: "store screenshots for this serie are taken on enterprise"
+      hide_cc:
+        at: 2026-10-06T13:48:00+01:00
+        tools_20_suite: 014cdcc2f592781817667b6d28283c6d1aaceced
+        merge_to_20_port: 2251af06c2f37c1ac9757c094de0b5136513a31e
+        change: >
+          Odoo 20 already has Cc in the chatter and the full composer
+          (it arrived in saas-19.4; 19.0 has none). The suite no longer
+          adds its own CC field there. Settings gains Hide Cc, off by
+          default. BCC stays. The invoice Send wizard still adds CC,
+          because that wizard has no Cc of its own. email_suite tests
+          0 failed of 29. Both suite review stacks restarted.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
