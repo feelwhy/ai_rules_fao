@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: e1cc6485d32d58ed6e5a94205f5c5cf9a3a96fc7, created: true, pushed: true, last_pushed: e1cc6485d32d58ed6e5a94205f5c5cf9a3a96fc7}  # 2026-10-06: 20_suite Cc is its own composer row; unrelated dirty files left unstaged
+  20_port: {git_sha: c3a2aa54edc994de4b0e90ac2d7482d213911a8d, created: true, pushed: true, last_pushed: c3a2aa54edc994de4b0e90ac2d7482d213911a8d}  # 2026-10-06: 20_suite extra details keep From, Reply-To and Cc; unrelated dirty files left unstaged
   20_final: {git_sha: af0d2118c73966791dc56da2f2fbeecc97d70d9c, created: true, pushed: true, last_pushed: af0d2118c73966791dc56da2f2fbeecc97d70d9c}  # 2026-10-06: merged tools 20.0 5e18ceb4d9d (20_14 store commits)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3625,6 +3625,15 @@ groups:
         change: >
           The full composer shows partner_cc_ids on its own row. The Cc
           switch on the right of To is hidden. Enterprise review upgraded.
+      extra_details:
+        at: 2026-10-06T18:58:00+01:00
+        tools_20_suite: 65922a9b7fe0e7702f032614a33d4a0dd0e50af1
+        merge_to_20_port: c3a2aa54edc994de4b0e90ac2d7482d213911a8d
+        change: >
+          Extra details stored only BCC, because Cc is partner_cc_ids and
+          From/Reply-To were never copied. A stored BCC line also hid the
+          fallback. New sends record all four. The two lead messages that
+          only had BCC were filled in. Enterprise review restarted.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
