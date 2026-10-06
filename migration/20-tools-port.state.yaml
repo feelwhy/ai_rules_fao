@@ -478,8 +478,8 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 7a4912247c7a328254883f0f330e25a9ec30c5d8, created: true, pushed: true, last_pushed: 7a4912247c7a328254883f0f330e25a9ec30c5d8}  # 2026-10-06: 20_suite invoice Cc uses partner_cc_ids; unrelated dirty files left unstaged
-  20_final: {git_sha: b361c623d63324870b1031e5befeb2246aa75c0a, created: true, pushed: true, last_pushed: b361c623d63324870b1031e5befeb2246aa75c0a}  # 2026-10-05: previous 20_final plus 20_7 (36 modules)
-  "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
+  20_final: {git_sha: b87e88fe968ed72349a9941c2e482a9d1c9a67df, created: true, pushed: true, last_pushed: b87e88fe968ed72349a9941c2e482a9d1c9a67df}  # 2026-10-06: merged tools 20.0 store commits d996e28b441
+  "20.0": {git_sha: d996e28b4413d2b3aa31f797b87fcca080d855ed, created: true, pushed: true}  # 2026-10-06: five [#auto] store commits after 12eb085df47
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
 # ---------------------------------------------------------------- groups
@@ -492,8 +492,8 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Px.4
-    stage_status: green
+    stage: Px.8
+    stage_status: blocked
     frozen: true
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
@@ -853,6 +853,34 @@ groups:
         Removed 2026-10-06 12:45 UTC on owner command. force_no_git is false and
         github_to_update is true on 1253, 1251, 1254, 1250, 1252. Do not set the
         guard back. The GitHub button returns with no push while it is on.
+    px6:
+      stage_status: green
+      at: 2026-10-06T13:55:00+01:00
+      tools_20_0: d996e28b4413d2b3aa31f797b87fcca080d855ed
+      commits: 5
+      check: >
+        Fast-forwarded the 20.0 worktree. Five [#auto] commits, 59 files, only
+        these modules' manifests, index.html, and description images. Versions
+        match the live pages. index.html is ASCII. Smart Alerts price in the
+        manifest is 38, the same as the live description. Related-app store
+        links still point at apps.odoo.com 19.0.
+    px7:
+      stage_status: green
+      at: 2026-10-06T13:58:00+01:00
+      apply: "support.translations._apply_description on faotools.com for the five 20.0 YAML files"
+      pages: "210 language URLs, 0 English changelog sentences left, no self-closed icons"
+      notes: >
+        Length and protected-term warnings were already in the YAML. The Russian
+        contact caption is not the English title.
+    px8:
+      stage_status: blocked
+      at: 2026-10-06T13:58:00+01:00
+      merged: b87e88fe968ed72349a9941c2e482a9d1c9a67df
+      pushed: origin/20_final
+      candidate: >
+        Demo 20 candidate env-demo-20:2 is red. Tests were 0 failed. The log gate
+        has one warning: odootools_demo skips template setup on the test clone.
+        That candidate was built from tools 337dbab, before this merge. Not promoted.
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
@@ -906,7 +934,7 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Fx.8
+    stage: Px.1
     stage_status: green
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
@@ -1146,7 +1174,16 @@ groups:
         stays blocked until every group starts on 20.0.
       not_merged_to: "tools 20.0 (that is Px.2)"
       logs: [/home/feelwhy/env-sync/p6/logs/fx8_final_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final_e.log]
-    demo_show_product_types:
+    px1:
+      stage_status: green
+      at: 2026-10-06T15:40:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      screenshot_qa: >
+        33 pictures, all 1130 wide, no transparent bottom strip. The contact,
+        task, portal and shop frames are English. Custom Fields Core has no
+        pictures, as on 19.0. No videos.
+    review:
       at: 2026-09-30T12:45:00+01:00
       tools_20_c: a9f166aab21186d4a4e312b307ff550152742707
       merge_to_20_port: ef02f9e5b8a87868459fc90782d672975013cfe9

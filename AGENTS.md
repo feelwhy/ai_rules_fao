@@ -1821,8 +1821,8 @@ resuming session must be able to map `Px.6` to concrete actions without reading 
 | `Px.1` publication readiness | re-read the live draft; reconcile it row by row against the `Fx.6` / `Fx.7` intent; screenshot QA passes |
 | `Px.2` code publication | merge the group to the published branch, push, verify the remote tree and module list, freeze the group branch |
 | `Px.3` release publication | publish the migration release (`state=3_published`) on the draft **while it is still hidden**, run `action_get_commits`, link only the relevant commits, no Quick GitHub Update |
-| `Px.4` description publication | `action_apply_prepublishment` on the standalone draft — it promotes that record in place and **that write is what makes the page public**; verify no current-serie record changed |
-| `Px.5` full GitHub update | the **full** update, server-side inside Odoo (`odoo shell` on the container or the UI button), never through MCP, never the quick variant |
+| `Px.4` description publication | `action_apply_prepublishment` on the standalone draft — it promotes that record in place and **that write is what makes the page public**; verify no current-serie record changed. Leave `force_no_git` **False**. Do not set it back on |
+| `Px.5` full GitHub update | the **full** update, server-side inside Odoo (`odoo shell` on the container or the UI button), never through MCP, never the quick variant. Before the button: `force_no_git` is False and `github_to_update` is True on every record in the group |
 | `Px.6` GitHub output gate | fast-forward the local published branch, inspect the generated manifest / `index.html` / images commit, run the packaging and static checks |
 | `Px.7` live translations | TM-first apply of description, `pics` and `releases` payloads through the loader; prove `ru_RU` ≠ `en_US` per page, caption and release, and that the HTML is closed |
 | `Px.8` master sync | merge the published branch into `_final`, run the candidate full matrix, and stop; promote / redeploy master only on the next confirmation, then verify containers and public demo URLs |
@@ -1844,6 +1844,14 @@ resuming session must be able to map `Px.6` to concrete actions without reading 
 Ordering the other way round was tried on 2026-09-12 and reverted the same day: the justification
 ("verify the destructive apply before anything is public") does not survive reading the method. The
 pre-apply snapshot is still worth writing for the origin-linked case, and is not needed here.
+
+**After `Px.4`, `force_no_git` stays False.** The apply already clears it. Do not set it back
+to True to hold the GitHub cron or for any other reason. `_update_in_git` returns with no
+error and no push when `force_no_git` is True or `github_to_update` is False
+(`github_connector/models/module_description.py`). The button still writes
+`last_github_update`, so a click looks like it ran. Before `Px.5`, on every description
+in the group: `force_no_git` is False and `github_to_update` is True. Incident 2026-10-06,
+`20_2`: the guard was put back after apply and the owner's GitHub Update did nothing.
 
 ### Confirmation model
 
