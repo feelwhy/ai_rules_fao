@@ -479,7 +479,7 @@ aggregates:
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 8f84815c0818cb86a966d2f4e7bda7705da089a5, created: true, pushed: true, last_pushed: 8f84815c0818cb86a966d2f4e7bda7705da089a5}  # 2026-10-06: 20_suite hide followers chip when sending privately; unrelated dirty files left unstaged
   20_final: {git_sha: 04fdc154def5e76319b2d437d19eb665c5e38a73, created: true, pushed: true, last_pushed: 04fdc154def5e76319b2d437d19eb665c5e38a73}  # 2026-10-06: merged tools 20.0 3ffd6f516f6 (20_c store commits)
-  "20.0": {git_sha: cbc47c06c25a2ce53f5e93a8b9a6d46492f32dbe, created: true, pushed: true}  # 2026-10-06: 20_c merged onto the 20_2 store commits
+  "20.0": {git_sha: ad68ee093c51ff79a38a985382aafeedd2014139, created: true, pushed: true}  # 2026-10-06: 20_14 merged onto the published branch
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
 # ---------------------------------------------------------------- groups
@@ -1375,7 +1375,7 @@ groups:
     order: 3
     modules: [owncloud_odoo, google_drive_odoo, onedrive, cloud_base, cloud_base_documents,
               dropbox, amazon_s3_odoo, box_odoo, nas_odoo]
-    stage: Px.1
+    stage: Px.2
     stage_status: green
     blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_14
@@ -1792,6 +1792,8 @@ groups:
         item 33 stays blocked until every group starts on 20.0.
       not_merged_to: "tools 20.0 (that is Px.2)"
       logs: [/home/feelwhy/env-sync/p6/logs/fx8_final14_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final14_e.log]
+      runner: /home/feelwhy/env-sync/p6/fx8_20_14_cumulative.sh
+      cleanup: "temporary worktree tools-20_final removed; throwaway databases dropped"
     px1:
       stage_status: green
       at: 2026-10-06T16:45:00+01:00
@@ -1802,9 +1804,16 @@ groups:
         shots (sequences 34 and 35) are attached and 1130 wide, in English.
         The NAS attachment-box shot and the NAS folder shot match their
         captions. No videos. Drafts stay hidden.
-    review:
-      runner: /home/feelwhy/env-sync/p6/fx8_20_14_cumulative.sh
-      cleanup: "temporary worktree tools-20_final removed; throwaway databases dropped"
+    px2:
+      stage_status: green
+      at: 2026-10-06T16:50:00+01:00
+      published_branch: tools 20.0
+      sha: ad68ee093c51ff79a38a985382aafeedd2014139
+      merge: "20_14 3f9d0210f95 into 20.0 3ffd6f516f6"
+      pushed: origin/20.0
+      modules: [cloud_base, owncloud_odoo, dropbox, google_drive_odoo, onedrive,
+                cloud_base_documents, amazon_s3_odoo, box_odoo, nas_odoo]
+      frozen_group_branch: "20_14 stays at 3f9d0210f95; later fixes start on 20.0"
     review:
       db: fx8_20_14
       url: http://127.0.0.1:18226/web/login
