@@ -492,7 +492,7 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Px.3
+    stage: Px.4
     stage_status: green
     frozen: true
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
@@ -832,6 +832,28 @@ groups:
         - {id: 1137, name: 20.0.1.0.3, commits: 5, url: "https://faotools.com/web#id=1137&model=module.release&view_type=form"}
       contact_version: "complementary_contact_data manifest is 20.0.1.0.8 because of migrations/20.0.1.0.8; the release was moved from 1.0.7 to 1.0.8 before publish"
       github_update: not_run
+    px4:
+      stage_status: green
+      at: 2026-10-06T13:25:00+01:00
+      method: action_apply_prepublishment
+      promoted_in_place:
+        - {id: 1253, tech_name: smart_warnings, version: "20.0.1.0.15", url: "https://faotools.com/apps/odoo-smart-alerts"}
+        - {id: 1251, tech_name: sticky_notes, version: "20.0.1.0.11", url: "https://faotools.com/apps/odoo-sticky-notes"}
+        - {id: 1254, tech_name: complementary_contact_data, version: "20.0.1.0.8", url: "https://faotools.com/apps/odoo-partners-contact-full-details"}
+        - {id: 1250, tech_name: complementary_employee_data, version: "20.0.1.0.3", url: "https://faotools.com/apps/odoo-employees-contact-full-details"}
+        - {id: 1252, tech_name: complementary_lead_data, version: "20.0.1.0.3", url: "https://faotools.com/apps/odoo-opportunities-contact-full-details"}
+      origins_unchanged:
+        - {id: 1038, write_date: "2026-10-06 12:05:01", exact_version: "1.0.15"}
+        - {id: 1039, write_date: "2026-10-06 12:05:03", exact_version: "1.0.11"}
+        - {id: 1040, write_date: "2026-10-06 12:09:19", exact_version: "1.0.7"}
+        - {id: 1041, write_date: "2026-10-06 12:05:05", exact_version: "1.0.3"}
+        - {id: 1042, write_date: "2026-10-06 12:05:06", exact_version: "1.0.3"}
+      pages: "each /apps/20.0/<id> is 200 on the stable slug; each /apps/19.0/<id> still shows its 19.0 version"
+      github_guard: >
+        Apply cleared force_no_git. The live cron "Module Descriptions Updates & Github"
+        (ir.cron 9, nextcall 2026-10-06 13:30:30 UTC) would have pushed these five.
+        force_no_git was set back to true so that cron skips the push. Px.5 clears it
+        again and runs the full GitHub update.
     review:
       db: fx8_20_2
       url: http://127.0.0.1:18220/web/login
