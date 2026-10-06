@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 2251af06c2f37c1ac9757c094de0b5136513a31e, created: true, pushed: true, last_pushed: 2251af06c2f37c1ac9757c094de0b5136513a31e}  # 2026-10-06: 20_suite hide native Cc; unrelated dirty files left unstaged
+  20_port: {git_sha: 7a4912247c7a328254883f0f330e25a9ec30c5d8, created: true, pushed: true, last_pushed: 7a4912247c7a328254883f0f330e25a9ec30c5d8}  # 2026-10-06: 20_suite invoice Cc uses partner_cc_ids; unrelated dirty files left unstaged
   20_final: {git_sha: b361c623d63324870b1031e5befeb2246aa75c0a, created: true, pushed: true, last_pushed: b361c623d63324870b1031e5befeb2246aa75c0a}  # 2026-10-05: previous 20_final plus 20_7 (36 modules)
   "20.0": {git_sha: 971c21a311ebe5682576a86396ef539c71d7c216, created: true, pushed: true}
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -3337,9 +3337,20 @@ groups:
           Odoo 20 already has Cc in the chatter and the full composer
           (it arrived in saas-19.4; 19.0 has none). The suite no longer
           adds its own CC field there. Settings gains Hide Cc, off by
-          default. BCC stays. The invoice Send wizard still adds CC,
-          because that wizard has no Cc of its own. email_suite tests
-          0 failed of 29. Both suite review stacks restarted.
+          default. BCC stays. email_suite tests 0 failed of 29. Both
+          suite review stacks restarted.
+      invoice_cc:
+        at: 2026-10-06T14:00:00+01:00
+        tools_20_suite: 3f774d17fb5b3d7930fe5837efdce813bd4b540d
+        merge_to_20_port: 7a4912247c7a328254883f0f330e25a9ec30c5d8
+        change: >
+          The invoice Send wizard uses Odoo's partner_cc_ids and posts
+          them with message_post(partner_cc_ids=...). Hide Cc
+          (email_suite.hide_cc) hides that field and drops those
+          partners, the same setting as the chatter and the full
+          composer. Template email_cc and partner_cc fill Cc, not To.
+          BCC stays on email_suite.show_cc_bcc. email_suite_accounting
+          tests 0 failed of 7. Both review databases upgraded and restarted.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
