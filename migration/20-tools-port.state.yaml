@@ -468,7 +468,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_6 Fx.2"
+    next: "20_6 Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -2435,7 +2435,7 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: Fx.1
+    stage: Fx.2
     stage_status: green
     known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
     enterprise_required: false
@@ -2585,6 +2585,63 @@ groups:
       smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_6.py
       smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_6_smoke.log
       temporary_db_removed: true
+    fx2:
+      stage_status: green
+      at: 2026-10-07T12:16:00+01:00
+      tools_20_6: 3b5a0e0b15237d7c9854b3adaced42f4b7b0f8eb
+      system_20_0: f2797058fe5c3242c04e41bc01e6d104ebe41e4d
+      system_worktree: /home/feelwhy/Odoo/_worktrees/system-20.0-clean
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      system_note: >
+        The worktree is detached at that SHA and still has an uncommitted
+        show_kpi_help line in odootools_demo/models/constants.py. It was
+        left unstaged. The stock and product-code loaders do not read that key.
+      layer1:
+        changed: false
+        lint: "demo_lint.lint_roots on tools-20_6 + system-20.0-clean, 3 modules + odootools_demo: 0 issues."
+      layer2:
+        changed: false
+        loader: "_reload_tools_demo_data then _load_demo_stock and _load_demo_product_dynamic_code twice"
+        idempotent: true
+        counts:
+          warehouses: 5
+          extra_xmlids: 18
+          white_pos_quants: 10
+          black_pos_quants: 7
+          demo_super: true
+          icp_levels: 3
+          pdc_positions: 5
+          pdc_rules: 7
+          demo_user: true
+        note: >
+          Warehouses 5, white quants 10, black quants 7, demo is Super
+          Warehouse Manager, and the hierarchy default is 3 levels, matching
+          Gx.5. extra_xmlids 18 is every odootools_demo.demo_stock_* row
+          (Gx.5 counted 10 extra locations). Product Dynamic Codes stamps
+          5 positions and 7 rules. Website extra languages were deactivated.
+          admin, demo and portal stay on en_US.
+      languages: "en_US only; admin, demo and portal on en_US"
+      screenshots: migration/screenshots/20_6.md
+      shot_rows: 25
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_6-product_stock_balance-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_6-stock_limitation-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_6-product_dynamic_code-screenshots.pdf
+      overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_6.py
+      build_runner: /home/feelwhy/env-sync/p6/fx2_20_6_build.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_6_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_6_e_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_6_smoke.log]
+      browser: "SMOKE_OK 10/10 on the enterprise review database."
+      review:
+        db: fx8_20_6
+        url: http://127.0.0.1:18237/web/login
+        keep_until: 2026-10-10T12:13:00+01:00
+        compose: faotools_env/local/run/fx8_20_6/compose.yml
+      review_enterprise:
+        db: fx8_20_6e
+        url: http://127.0.0.1:18238/web/login
+        keep_until: 2026-10-10T12:15:00+01:00
+        compose: faotools_env/local/run/fx8_20_6e/compose.yml
+        purpose: "store screenshots for this serie are taken on enterprise"
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
