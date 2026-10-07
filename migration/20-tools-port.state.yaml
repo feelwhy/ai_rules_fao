@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T13:56:00+01:00
-updated_by: agent/px2-20_suite
+updated_at: 2026-10-07T13:58:00+01:00
+updated_by: agent/px3-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -3782,7 +3782,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Px.2
+    stage: Px.3
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -4305,6 +4305,26 @@ groups:
                  20.0.1.0.3, 20.0.1.0.3, 20.0.1.0.4, 20.0.1.0.3]
       folder_parity: "the nine folders equal tools-20_suite"
       frozen_group_branch: "20_suite stays at b51e852fefb; later fixes start on 20.0"
+    px3:
+      stage_status: green
+      at: 2026-10-07T13:58:00+01:00
+      drafts_still_hidden: true
+      force_no_git: true
+      github_update: not_run
+      releases:
+        - {id: 1178, tech: message_edit, commits: 5, url: "https://faotools.com/web#id=1178&model=module.release&view_type=form"}
+        - {id: 1181, tech: mail_manual_routing, commits: 4, url: "https://faotools.com/web#id=1181&model=module.release&view_type=form"}
+        - {id: 1182, tech: message_citing, commits: 5, url: "https://faotools.com/web#id=1182&model=module.release&view_type=form"}
+        - {id: 1186, tech: email_suite, commits: 11, url: "https://faotools.com/web#id=1186&model=module.release&view_type=form"}
+        - {id: 1179, tech: internal_thread, commits: 6, url: "https://faotools.com/web#id=1179&model=module.release&view_type=form"}
+        - {id: 1180, tech: internal_thread_accounting, commits: 4, url: "https://faotools.com/web#id=1180&model=module.release&view_type=form"}
+        - {id: 1183, tech: odoo_email_from, commits: 4, url: "https://faotools.com/web#id=1183&model=module.release&view_type=form"}
+        - {id: 1187, tech: email_suite_accounting, commits: 6, url: "https://faotools.com/web#id=1187&model=module.release&view_type=form"}
+        - {id: 1184, tech: odoo_email_from_accounting, commits: 4, url: "https://faotools.com/web#id=1184&model=module.release&view_type=form"}
+      note: >
+        Published while the nine drafts stayed hidden. Linked only the 20_suite
+        commits that touch each module. Scaffold 971c21a and older 19.0 history
+        fetched from the 20.0 branch were left unlinked. GitHub update was not run.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
