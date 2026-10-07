@@ -2926,7 +2926,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Px.4
+    stage: Px.9
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -3523,6 +3523,55 @@ groups:
         Standalone apply cleared prepublish, not_supported and force_no_git.
         The stable pages now show version 20. The 19.0 pages still render
         without that line. GitHub update was not run.
+    px5:
+      stage_status: green
+      at: 2026-10-07T13:43:00+01:00
+      by: owner
+      check: "github_to_update false on all four; four [#auto] commits on tools 20.0 ending 8b0585464d8"
+    px6:
+      stage_status: green
+      at: 2026-10-07T13:50:00+01:00
+      tools_20_0: 8b0585464d8ae66f55c3bad23210989bbda27367
+      commits: 4
+      check: >
+        Fast-forwarded the 20.0 worktree. 47 files, only the four modules'
+        manifests, index.html, and description images. Versions and prices
+        match the live pages (198 / 10 / 38 / 38). index.html is ASCII with
+        no empty icon tags.
+    px7:
+      stage_status: green
+      at: 2026-10-07T13:55:00+01:00
+      history: "already linked: password manager 32, custom fields 5, roles 13, task numbers 4"
+      apply: "support.translations._apply_description on faotools.com for the four 20.0 files; 0 unmatched children"
+      pages: "172 URLs (4 apps x 43), 0 English changelog sentences left, 0 empty icons, 19.0 history shown. en_GB keeps the English sentence."
+      skipped: >
+        12 French strings (fr, fr_BE, fr_CA, fr_CH) were not written because
+        they translate the product name Security User Roles. The English
+        source of those strings is not on the live French pages.
+    px8:
+      stage_status: green
+      at: 2026-10-07T13:55:00+01:00
+      merged: 5bb835bbf7e39e6edd56b938eb65ec6b1a09c1b1
+      pushed: origin/20_final
+      origin_tip: 2c50405aecc3659735c232c6eb267b58e4162872
+      also_pushed: "20_6 merge 2c50405aecc landed on 20_final before the push"
+      module_diff_20_final_vs_20_0: "empty for the four folders"
+      candidate: >
+        Demo 20 candidate env-demo-20:2 is green and was not promoted.
+        Both templates: 0 failed (278 and 287 tests), log gate clean, browser
+        OK. Built from tools d15280b0f67, before these store files. Serving
+        image stays env-demo-20:1.
+    px9:
+      stage_status: handed
+      at: 2026-10-07T13:55:00+01:00
+      store_branch: tools 20.0
+      store_sha: 8b0585464d8ae66f55c3bad23210989bbda27367
+      pages:
+        - https://faotools.com/apps/odoo-password-manager
+        - https://faotools.com/apps/odoo-password-manager-custom-fields
+        - https://faotools.com/apps/odoo-security-user-roles
+        - https://faotools.com/apps/odoo-task-auto-numbering-and-search
+      note: "Owner publishes on the Odoo store."
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
