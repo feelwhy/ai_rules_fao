@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T19:00:00+01:00
-updated_by: agent/px2-20_6
+updated_at: 2026-10-07T19:30:00+01:00
+updated_by: agent/fx1-store-links
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -478,6 +478,12 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
+    fx1_store_links: >
+      Every Fx.1 rewrites apps.odoo.com/apps/modules/19.0/ and ticket_version=19.0 to 20.0
+      in views, Python and manifests, and the checker kind serie-link is clean against
+      origin/20.0 (rule 22 F15, rule 36). Swept 2026-10-07 on all 21 tools 20 branches:
+      284 links in 212 files, one commit per branch, pushed. Runner
+      ~/env-sync/p6/retarget_store_links_20.py (not source).
     next: "20_9 Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}

@@ -220,6 +220,16 @@ notebook tab the contract names (`selenium/standalone-chromium` on the
 and zero console errors before the URL leaves the chat. The 20_2 runner is the template
 (`~/env-sync/p6/selenium/smoke_20_2.py`, not source).
 
+**`Fx.1` retargets every store and live-test link to the released serie.** A module copied
+from 19.0 still sends its settings page to `apps.odoo.com/apps/modules/19.0/<tech>/` and asks the
+store's Live Test for `ticket_version=19.0`. In the same `Fx.1` as the re-prefix, rewrite both to
+`20.0` in views, Python and manifests (not `static/description/`, which the GitHub update writes),
+then run the checker kind `serie-link` against `origin/20.0` and require zero findings. Open the
+group's Settings section in the `Fx.1` browser pass and check that each add-on link names `20.0`.
+Rule 22 F15.
+Incident 2026-10-07: every 20.0 settings page that offers an add-on still linked the 19.0 store,
+on all 21 tools 20 branches.
+
 **`Fx.2` also stands up the 20.0 enterprise review database and hands the screenshot
 overview.** Store screenshots for this serie are taken on enterprise, not community, so
 each group's `Fx.2` creates `fx8_<group>e` on `faotools/env-demo-20:20.0` with the

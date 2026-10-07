@@ -219,6 +219,16 @@ notebook tab the contract names (`selenium/standalone-chromium` on the
 and zero console errors before the URL leaves the chat. The 20_2 runner is the template
 (`~/env-sync/p6/selenium/smoke_20_2.py`, not source).
 
+**`Fx.1` retargets every store and live-test link to the released serie.** A module copied
+from 19.0 still sends its settings page to `apps.odoo.com/apps/modules/19.0/<tech>/` and asks the
+store's Live Test for `ticket_version=19.0`. In the same `Fx.1` as the re-prefix, rewrite both to
+`20.0` in views, Python and manifests (not `static/description/`, which the GitHub update writes),
+then run the checker kind `serie-link` against `origin/20.0` and require zero findings. Open the
+group's Settings section in the `Fx.1` browser pass and check that each add-on link names `20.0`.
+Rule 22 F15.
+Incident 2026-10-07: every 20.0 settings page that offers an add-on still linked the 19.0 store,
+on all 21 tools 20 branches.
+
 **`Fx.2` also stands up the 20.0 enterprise review database and hands the screenshot
 overview.** Store screenshots for this serie are taken on enterprise, not community, so
 each group's `Fx.2` creates `fx8_<group>e` on `faotools/env-demo-20:20.0` with the
@@ -234,6 +244,18 @@ the module's `static/description/`. That is the shot list. Do not capture in thi
 `fx8_<group>e` alike. A review database without `sale_management`, `website_sale`,
 `crm`, `stock`, `purchase`, `project`, `account`, `hr` and `contacts` shows a thinner
 demo than the template the customer will get, and it cannot be handed over.
+
+**`Fx.8` assumes the Demo 20 templates already carry every module now on `20_final`.**
+The cumulative install proves the code. It does not replace the template. In the same
+chunk, install any of the group's modules that the community template does not yet
+have (community addons path, `--with-demo`), then run `action_setup_demo_template`
+so the family's loaders and refreshers stamp topical demo. Every refresher the family
+owns is called from `action_amend_demo_data`, not only from the one-shot loader.
+Then recreate the enterprise template from that community database the same way as
+the first Demo 20 pair: clone, `make_enterprise` for 20.0, swap the enterprise
+pointer. Both editions must show the family's demo counts. A community template
+that is missing the group, or an enterprise template that was not rebuilt from it,
+is not a green `Fx.8`.
 
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
