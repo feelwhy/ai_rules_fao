@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T10:33:00+01:00
-updated_by: agent/fx6-20_suite
+updated_at: 2026-10-07T13:55:00+01:00
+updated_by: agent/px1-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -468,7 +468,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_6 Fx.5"
+    next: "20_6 Px.1"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -478,7 +478,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: c6b16a40cd09866ab2e0063b670bf0bc03960319, created: true, pushed: true, last_pushed: c6b16a40cd09866ab2e0063b670bf0bc03960319}  # 2026-10-07: 20_6 Fx.3 translations; unrelated dirty files left unstaged
-  20_final: {git_sha: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9, created: true, pushed: true, last_pushed: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9}  # 2026-10-07: merged 20_suite b51e852fefb (messaging suite)
+  20_final: {git_sha: 2c50405aecc3659735c232c6eb267b58e4162872, created: true, pushed: true, last_pushed: 2c50405aecc3659735c232c6eb267b58e4162872}  # 2026-10-07: merged 20_6 68858f48be5 (stock codes)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
@@ -2435,7 +2435,7 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: Fx.4
+    stage: Fx.8
     stage_status: green
     known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
     enterprise_required: false
@@ -3701,7 +3701,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Fx.8
+    stage: Px.1
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -4194,6 +4194,22 @@ groups:
         of abda8584e9d. Not a merge onto tools 20.0.
       runner: /home/feelwhy/env-sync/p6/fx8_20_suite_cumulative.sh
       logs: [/home/feelwhy/env-sync/p6/logs/fx8_suite_c.log, /home/feelwhy/env-sync/p6/logs/fx8_suite_e.log]
+    px1:
+      stage_status: green
+      at: 2026-10-07T13:55:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      perfect_for_restored:
+        - "1295 first card now says Odoo's Cc and BCC, and the option to hide Cc. The admin card no longer hides Cc together with Forward."
+        - "1296 first card now says Odoo's Cc and an extra Bcc field, instead of the same Cc/Bcc."
+      page_copy: >
+        Summary, features and all 73 picture titles match the 20.0 TM.
+        Keyword tails include Hide Cc. The other seven pages have no Hide Cc
+        wording. 19.0 pages 1155 and 1164 still say CC/BCC and the same Cc/Bcc.
+      screenshot_qa: >
+        73 pictures, all with files and 1130 wide, no transparent bottom strip.
+        No videos. Drafts stay hidden, force_no_git true. History counts match
+        Fx.6 (5, 2, 6, 4, 15, 7, 6, 3, 3).
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
