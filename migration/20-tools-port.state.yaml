@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-06T20:14:00+01:00
-updated_by: agent/fx4-20_suite
+updated_at: 2026-10-07T10:33:00+01:00
+updated_by: agent/fx6-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -468,7 +468,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_suite Fx.5"
+    next: "20_suite Fx.7"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -3338,7 +3338,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Fx.4
+    stage: Fx.6
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -3689,6 +3689,51 @@ groups:
       browser: >
         Not repeated. No Python or JS change. The Fx.2 reviews were not touched
         and both login pages still answer.
+    fx5:
+      stage_status: skipped
+      at: 2026-10-07
+      reason: "Owner said move on with Fx.6. The review databases from Fx.2 were already the walk."
+    fx6:
+      stage_status: green
+      at: 2026-10-07T10:33:00+01:00
+      tools_20_suite: b51e852fefb7e72b16b61224f60f12b11ddac117
+      tools_20_port: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46
+      method: >
+        Standalone copy of each published 19.0 description. version 20.0, prepublish true,
+        force_no_git true, not_supported false, no pre_publish_origin_id, documentation_url
+        cleared, website_published false. Videos are copy=False, so none were carried.
+        short_summary unchanged. Releases were not copied; each draft has one new
+        migration release. Four tails were raised to the 20.0 manifest: email_suite
+        1.0.8 (page was 1.0.5), email_suite_accounting 1.0.4 (1.0.2), internal_thread
+        1.0.5 (1.0.4), message_citing 1.0.9 (1.0.8). The other five already matched.
+      drafts:
+        - {tech_name: email_suite, origin: 1155, draft: 1295, exact_version: 1.0.8, release: 1186}
+        - {tech_name: email_suite_accounting, origin: 1164, draft: 1296, exact_version: 1.0.4, release: 1187}
+        - {tech_name: internal_thread, origin: 1103, draft: 1287, exact_version: 1.0.5, release: 1179}
+        - {tech_name: internal_thread_accounting, origin: 1104, draft: 1288, exact_version: 1.0.3, release: 1180}
+        - {tech_name: mail_manual_routing, origin: 1037, draft: 1289, exact_version: 1.2.18, release: 1181}
+        - {tech_name: message_citing, origin: 1077, draft: 1290, exact_version: 1.0.9, release: 1182}
+        - {tech_name: message_edit, origin: 1105, draft: 1286, exact_version: 1.2.5, release: 1178}
+        - {tech_name: odoo_email_from, origin: 1162, draft: 1291, exact_version: 1.0.3, release: 1183}
+        - {tech_name: odoo_email_from_accounting, origin: 1168, draft: 1292, exact_version: 1.0.3, release: 1184}
+      releases: >
+        migration true, state 0_work, not published, release_date 2026-10-07.
+        Pre-release history is each module's 19.0 releases plus the older history
+        behind its 19.0 migration release (suite 5, suite invoices 2, private thread 6,
+        private invoices 4, lost messages 15, citing 7, editing 6, email from 3,
+        email from invoices 3). Public text: Messaging Suite and its invoice bridge
+        add the Cc line. The other seven ship the flag line alone. The followers
+        chip, the HTML cited header, extra details, the draft-send fix, the
+        deleted-history click, and Material Symbols stay in the internal notes.
+      pics: {email_suite: 38, email_suite_accounting: 1, internal_thread: 3, internal_thread_accounting: 1, mail_manual_routing: 6, message_citing: 4, message_edit: 12, odoo_email_from: 7, odoo_email_from_accounting: 1}
+      features: {email_suite: 11, email_suite_accounting: 2, internal_thread: 3, internal_thread_accounting: 2, mail_manual_routing: 7, message_citing: 2, message_edit: 4, odoo_email_from: 6, odoo_email_from_accounting: 1}
+      public_20_0: 0
+      origin_write_dates_unchanged: false
+      origin_note: >
+        Published columns on the nine 19.0 pages are unchanged. write_date moved
+        during the copy on email_suite_accounting, odoo_email_from, and
+        odoo_email_from_accounting. The other six origins kept 2026-10-07 09:14:07.
+      preview: "https://faotools.com/apppublish//20.0/1295/"
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
