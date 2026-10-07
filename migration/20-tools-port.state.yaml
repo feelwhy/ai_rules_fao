@@ -478,7 +478,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_6 Px.1"
+    next: "20_9 Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -487,7 +487,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: c6b16a40cd09866ab2e0063b670bf0bc03960319, created: true, pushed: true, last_pushed: c6b16a40cd09866ab2e0063b670bf0bc03960319}  # 2026-10-07: 20_6 Fx.3 translations; unrelated dirty files left unstaged
+  20_port: {git_sha: 235a4f52d3729299270a423d8d5ab806dab35d8c, created: true, pushed: true, last_pushed: 235a4f52d3729299270a423d8d5ab806dab35d8c}  # 2026-10-07: 20_9 Fx.1; unrelated dirty files left unstaged
   20_final: {git_sha: 2c50405aecc3659735c232c6eb267b58e4162872, created: true, pushed: true, last_pushed: 2c50405aecc3659735c232c6eb267b58e4162872}  # 2026-10-07: merged 20_6 68858f48be5 (stock codes)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -2790,7 +2790,7 @@ groups:
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
               odoo_typo_reporter]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     known_breaks: [website_root_interaction, ir_attachment_datas, request_website,
                    website_default_website]
@@ -2908,6 +2908,42 @@ groups:
       reviews:
         bugbot: "no bugs"
         security: "no medium+; ir.access preserves 19.0 ops; no access-or/grant"
+    fx1:
+      stage_status: green
+      at: 2026-10-07T14:32:00+01:00
+      tools_20_9: 02ff2eeaf15d34ea9edeb56222305776b490d47b
+      merge_to_20_port: 235a4f52d3729299270a423d8d5ab806dab35d8c
+      merge_note: >
+        Clean ort merge. diff of the five module folders against 20_9 is empty.
+        The unrelated dirty files on tools-20_port (password_manager.js,
+        project_project.xml) were left unstaged.
+      checker: >
+        15 findings vs origin/20.0 on the first run (8 fa-icon, 2 owl-ref,
+        2 owl-static-props, 2 python-api, 1 view-anchor). After the port: 0.
+        odoo origin/20.0 c356f95d45c, enterprise origin/20.0 9e5c3e9044f.
+      versions: "re-prefixed 20.0.1.0.4, 20.0.1.0.5, 20.0.1.0.5, 20.0.1.0.14, 20.0.1.0.3. Tails unchanged."
+      ports:
+        - "Font Awesome -> Material Symbols (description, arrow_forward, refresh, download, flag, terminal, send, content_paste, qr_code, close, check_circle, warning, progress_activity)."
+        - "t-custom-ref -> signal.ref(); useDateTimePicker takes target root and inputRefs startDate"
+        - "static props -> props = useProps"
+        - "LangChange click reads ev.currentTarget (20.0 passes the event only)"
+        - "CRM settings inherit crm.res_config_settings_view_form so the app anchor is on the parent"
+        - "QR image is BinaryBytes; the typo JSON payload stays a base64 string"
+      tests: >
+        faotools/env-demo-20:20.0, community only (no enterprise lane).
+        Fresh install with demo and the group's test tags, then -u.
+        0 failed, 0 error(s) of 26 tests. No ERROR or CRITICAL line.
+      runner: /home/feelwhy/env-sync/p6/fx1_20_9_test.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_9_c.log]
+      browser: >
+        Community temporary DB fx1_20_9s. Headless Chromium: SMOKE_OK 10 pages,
+        zero error dialogs, zero console errors. Contact form, lead form, CRM
+        settings (CRM Duplicates), website settings (URLs shortener), short URL
+        list and form, typo reports, and the public website. The database was
+        dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_9.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_9_smoke.log
+      temporary_db_removed: true
   "20_10":
     order: 7
     modules: [task_checklist, crm_checklist, sale_order_checklist, purchase_order_checklist]
