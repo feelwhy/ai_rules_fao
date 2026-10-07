@@ -1936,7 +1936,7 @@ groups:
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
-    stage: Px.3
+    stage: Px.4
     stage_status: green
     known_breaks: [x2many_commands, ir_attachment_datas, get_param, useState, owl_xpath]
     enterprise_required: true
@@ -2367,6 +2367,23 @@ groups:
         Published while the four drafts stayed hidden. Linked only the 20_5
         commits that touch each module. Older 19.0 history fetched from the
         20.0 branch was left unlinked. GitHub update was not run.
+    px4:
+      stage_status: green
+      at: 2026-10-07T11:17:00+01:00
+      applied_in_place: [1276, 1277, 1278, 1279]
+      force_no_git: false
+      github_to_update: true
+      children_unchanged: true
+      origins_unchanged: [1027, 1028, 1029, 1030]
+      pages:
+        - https://faotools.com/apps/odoo-joint-calendar
+        - https://faotools.com/apps/odoo-joint-calendar-gantt
+        - https://faotools.com/apps/odoo-kpi-balanced-scorecard
+        - https://faotools.com/apps/odoo-reminder-designer-and-periodic-reporting
+      note: >
+        Standalone apply cleared prepublish, not_supported and force_no_git.
+        The stable pages now show version 20 and the migration line. The 19.0
+        pages still render without that line. GitHub update was not run.
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
