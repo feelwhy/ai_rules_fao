@@ -464,11 +464,11 @@ phases:
   "8_final_group_loops":
     status: in_progress
     pilot: "20_2"
-    active_group: "20_suite"
+    active_group: "20_6"
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_suite Px.1"
+    next: "20_6 Fx.2"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46, created: true, pushed: true, last_pushed: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46}  # 2026-10-06: 20_suite Fx.3 translations; unrelated dirty files left unstaged
+  20_port: {git_sha: bc0c290bb619ab00e21b0fc9e9cb5b18eed048c9, created: true, pushed: true, last_pushed: bc0c290bb619ab00e21b0fc9e9cb5b18eed048c9}  # 2026-10-07: 20_6 Fx.1; unrelated dirty files left unstaged
   20_final: {git_sha: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9, created: true, pushed: true, last_pushed: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9}  # 2026-10-07: merged 20_suite b51e852fefb (messaging suite)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -2435,7 +2435,7 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: Gx.9
+    stage: Fx.1
     stage_status: green
     known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
     enterprise_required: false
@@ -2549,6 +2549,42 @@ groups:
       reviews:
         bugbot: "no bugs"
         security: "no medium+; _access_domain AND + Super skip + user rows r"
+    fx1:
+      stage_status: green
+      at: 2026-10-07T11:50:00+01:00
+      tools_20_6: 3b5a0e0b15237d7c9854b3adaced42f4b7b0f8eb
+      merge_to_20_port: bc0c290bb619ab00e21b0fc9e9cb5b18eed048c9
+      merge_note: >
+        Clean ort merge. diff of the three module folders against 20_6 is empty.
+        The unrelated dirty files on tools-20_port (password_manager.js,
+        project_project.xml) were left unstaged.
+      checker: >
+        19 findings vs origin/20.0 on the first run (8 owl-ref, 7 fa-icon,
+        2 js-symbol, 2 owl-static-props). After the port: 0.
+        odoo origin/20.0 c356f95d45c, enterprise origin/20.0 bce4d8fafdb.
+      versions: "re-prefixed 20.0.1.1.9, 20.0.1.0.4, 20.0.1.0.5. Tails unchanged."
+      ports:
+        - "Font Awesome -> Material Symbols (arrow_forward, inventory_2, keyboard_double_arrow_down, expand_less/expand_more, keyboard_arrow_right). Expand and collapse use psb_expanded / psb_collapsed so the click logic no longer depends on icon class names."
+        - "t-custom-ref -> signal.ref(); useDateTimePicker takes target rootStart and inputRefs startDate/endDate"
+        - "static props -> props = useProps. Sale line widget uses standardWidgetProps."
+        - "location ids read record.resId (FormRecord no longer puts id in data)"
+      tests: >
+        faotools/env-demo-20:20.0, community only (no enterprise lane).
+        Fresh install with demo and the group's test tags, then -u.
+        0 failed, 0 error(s) of 9 tests (7 module tests plus the 2 core web
+        post suites the tag run still executes). No ERROR or CRITICAL line.
+      runner: /home/feelwhy/env-sync/p6/fx1_20_6_test.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_6_c.log]
+      browser: >
+        Community temporary DB fx1_20_6s, plus sale_management. Headless
+        Chromium: SMOKE_OK 10 pages, zero error dialogs, zero console errors.
+        Product form (location hierarchy), a storable variant (Update reference),
+        Inventory settings, General settings (Product Dynamic Codes), the code
+        constructor and a new rule, a location form, a user Preferences page,
+        and a quotation. The database was dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_6.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_6_smoke.log
+      temporary_db_removed: true
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
