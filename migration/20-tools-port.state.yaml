@@ -468,7 +468,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_suite Fx.7"
+    next: "20_suite Px.1"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -478,7 +478,7 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46, created: true, pushed: true, last_pushed: 9a4c4d6a6b4d0dc30ba6173d0281e233c9582b46}  # 2026-10-06: 20_suite Fx.3 translations; unrelated dirty files left unstaged
-  20_final: {git_sha: af0d2118c73966791dc56da2f2fbeecc97d70d9c, created: true, pushed: true, last_pushed: af0d2118c73966791dc56da2f2fbeecc97d70d9c}  # 2026-10-06: merged tools 20.0 5e18ceb4d9d (20_14 store commits)
+  20_final: {git_sha: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9, created: true, pushed: true, last_pushed: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9}  # 2026-10-07: merged 20_suite b51e852fefb (messaging suite)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
 
@@ -3397,7 +3397,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Fx.6
+    stage: Fx.8
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -3827,6 +3827,69 @@ groups:
         shots_to_recheck: [composer_cc_bcc.png, email_suite_optional_features.png, message_extra_details.png, invoice_email_suite.png]
         other_seven: "No CC wording on their pages. Unchanged."
         origin_text_unchanged: "1155 and 1164 summaries still read the 19.0 text; only write_date moved."
+    fx7:
+      stage_status: green
+      at: 2026-10-07T11:32:00+01:00
+      support: 9ed8c120484695eb8e9c4f9d5ab9e4adcce729f4
+      branch: support@19.0
+      method: >
+        Each 20.0 website TM file gained a releases block: the changelog rows
+        already in the 19.0 file, plus the unpublished 20.0 migration row.
+        Seven modules ship the flag line alone. Messaging Suite and its invoice
+        bridge also ship the Cc line, and every English sentence Fx.6 changed
+        (summary, perfect_for, feature subheader and body, picture name and alt)
+        is in the 20.0 TM in all 42 shipped languages. en_GB stays English.
+        de_CH uses ss. Arabic keeps the Latin word Odoo. Keyword tails stay
+        English; the 19.0 files have no summary_key_words field. The live drafts
+        stay English; apply is Px.7. Unrelated support dirt was left unstaged.
+      check_release_tm: "0 gaps across 139 files"
+      validate_term: "0 errors on email_suite_20.0.yaml and email_suite_accounting_20.0.yaml"
+      rows: >
+        message_edit 6+1, message_citing 7+1, mail_manual_routing 15+1,
+        internal_thread 6+1, internal_thread_accounting 4+1, odoo_email_from 3+1,
+        odoo_email_from_accounting 3+1, email_suite 5+1 (flag and Cc),
+        email_suite_accounting 2+1 (flag and Cc).
+      live_drafts: "not updated; other languages still show the copied 19.0 wording until Px.7"
+      files:
+        - support_translations/tm/website/email_suite_20.0.yaml
+        - support_translations/tm/website/email_suite_accounting_20.0.yaml
+        - support_translations/tm/website/internal_thread_20.0.yaml
+        - support_translations/tm/website/internal_thread_accounting_20.0.yaml
+        - support_translations/tm/website/mail_manual_routing_20.0.yaml
+        - support_translations/tm/website/message_citing_20.0.yaml
+        - support_translations/tm/website/message_edit_20.0.yaml
+        - support_translations/tm/website/odoo_email_from_20.0.yaml
+        - support_translations/tm/website/odoo_email_from_accounting_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-07T11:32:00+01:00
+      tools_20_suite: b51e852fefb7e72b16b61224f60f12b11ddac117
+      tools_20_port: abda8584e9d
+      tools_20_final_before: af0d2118c73966791dc56da2f2fbeecc97d70d9c
+      tools_20_final: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9
+      tools_20_0_untouched: 0d7c5e14860f4aa0fe3e4dc83f37fda2706a7307
+      module_diff_20_final_vs_20_suite: empty
+      module_diff_20_final_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is a merge commit with parents the previous 20_final and
+        20_suite. Its tree is the 36 modules already there plus the nine
+        messaging apps (45). The nine folders equal 20_suite and 20_port.
+        requirements.txt is unchanged. No other folder changed. Cumulative
+        check: one database installing every module now on 20_final with demo
+        and their tests, then -u, on community (42 modules; no
+        cloud_base_documents, no joint_calendar_gantt, no
+        itlibertas_timesheet_gantt) and on enterprise (all 45): 0 failed,
+        0 errors of 307 tests (community) and 316 (enterprise). The one ERROR
+        line in each log is the deliberate crash of complementary_contact_data
+        test_ru_read_crashes_on_varchar_then_healer_fixes_it. The invoice
+        wizard still warns that partner_cc_ids and the unused partner_cc_allowed
+        share the label Cc. System worktree mounted; odootools_demo was not
+        installed. Throwaway databases dropped. Review databases were not
+        touched. 20_port was not re-merged: 20_suite was already an ancestor
+        of abda8584e9d. Not a merge onto tools 20.0.
+      runner: /home/feelwhy/env-sync/p6/fx8_20_suite_cumulative.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_suite_c.log, /home/feelwhy/env-sync/p6/logs/fx8_suite_e.log]
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
