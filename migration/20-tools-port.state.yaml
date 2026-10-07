@@ -2873,7 +2873,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Px.1
+    stage: Px.2
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -3426,6 +3426,18 @@ groups:
       screenshot_qa: >
         37 pictures, all with files and 1130 wide. Two custom-field titles
         use an empty fa-gears icon, the same as the published 19.0 shots.
+    px2:
+      stage_status: green
+      at: 2026-10-07T13:22:00+01:00
+      published_branch: tools 20.0
+      sha: b4e47d37fc985e1198e8ed9afd260af0ae44a314
+      merge: "20_4 6f07e960633 into 20.0 83b9514bf36"
+      pushed: origin/20.0
+      modules: [odoo_password_manager, odoo_password_manager_custom_fields,
+                security_user_roles, task_numbers]
+      versions: [20.0.1.3.26, 20.0.1.0.7, 20.0.1.1.12, 20.0.1.0.6]
+      folder_parity: "the four folders equal tools-20_4"
+      frozen_group_branch: "20_4 stays at 6f07e960633; later fixes start on 20.0"
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
