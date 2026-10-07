@@ -2816,7 +2816,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Fx.8
+    stage: Px.1
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -3352,6 +3352,23 @@ groups:
         - /mnt/c/Users/feel1/Downloads/20_4-odoo_password_manager_custom_fields-screenshots.pdf
         - /mnt/c/Users/feel1/Downloads/20_4-security_user_roles-screenshots.pdf
         - /mnt/c/Users/feel1/Downloads/20_4-task_numbers-screenshots.pdf
+    px1:
+      stage_status: green
+      at: 2026-10-07T11:55:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      lines_restored: >
+        Live releases 1149 and 1151 had only the flag line. Restored the
+        sentences already in the 20.0 TM: the login dialog opens once, and
+        blank period lines are no longer saved next to dated ones. Custom
+        Fields and Task Numbering stay the flag line. Drafts stay hidden.
+      page_copy: >
+        Feature text does not describe the old stacked login or saving blank
+        periods beside dated ones. The Custom Fields summary links to the
+        20.0 Password Manager draft. No videos on the drafts.
+      screenshot_qa: >
+        37 pictures, all with files and 1130 wide. Two custom-field titles
+        use an empty fa-gears icon, the same as the published 19.0 shots.
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
