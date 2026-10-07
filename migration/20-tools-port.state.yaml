@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T13:58:00+01:00
-updated_by: agent/px3-20_suite
+updated_at: 2026-10-07T15:54:00+01:00
+updated_by: agent/px4-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -3874,7 +3874,7 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Px.3
+    stage: Px.4
     stage_status: green
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
@@ -4417,6 +4417,28 @@ groups:
         Published while the nine drafts stayed hidden. Linked only the 20_suite
         commits that touch each module. Scaffold 971c21a and older 19.0 history
         fetched from the 20.0 branch were left unlinked. GitHub update was not run.
+    px4:
+      stage_status: green
+      at: 2026-10-07T15:54:00+01:00
+      applied_in_place: [1286, 1289, 1290, 1295, 1287, 1288, 1291, 1296, 1292]
+      force_no_git: false
+      github_to_update: true
+      children_unchanged: true
+      origins_unchanged: [1105, 1037, 1077, 1155, 1103, 1104, 1162, 1164, 1168]
+      pages:
+        - https://faotools.com/apps/odoo-message-note-editing
+        - https://faotools.com/apps/odoo-lost-messages-routing
+        - https://faotools.com/apps/odoo-message-citing
+        - https://faotools.com/apps/odoo-messaging-suite
+        - https://faotools.com/apps/odoo-private-thread
+        - https://faotools.com/apps/odoo-private-thread-invoices
+        - https://faotools.com/apps/odoo-email-from
+        - https://faotools.com/apps/odoo-messaging-suite-invoices
+        - https://faotools.com/apps/odoo-email-from-accounting
+      note: >
+        Standalone apply cleared prepublish, not_supported and force_no_git.
+        The stable pages now show version 20. Child counts and the 19.0 pages
+        are unchanged. GitHub update was not run.
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
