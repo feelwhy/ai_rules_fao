@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T19:30:00+01:00
-updated_by: agent/fx1-store-links
+updated_at: 2026-10-07T19:56:00+01:00
+updated_by: agent/px3-20_6
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -2451,7 +2451,7 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: Px.2
+    stage: Px.3
     stage_status: green
     known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
     enterprise_required: false
@@ -2818,6 +2818,20 @@ groups:
       versions: [20.0.1.1.9, 20.0.1.0.4, 20.0.1.0.5]
       folder_parity: "the three folders equal tools-20_6"
       frozen_group_branch: "20_6 stays at 68858f48be5; later fixes start on 20.0"
+    px3:
+      stage_status: green
+      at: 2026-10-07T19:56:00+01:00
+      drafts_still_hidden: true
+      force_no_git: true
+      github_update: not_run
+      releases:
+        - {id: 1191, tech: product_stock_balance, commits: 6, url: "https://faotools.com/web#id=1191&model=module.release&view_type=form"}
+        - {id: 1192, tech: stock_limitation, commits: 6, url: "https://faotools.com/web#id=1192&model=module.release&view_type=form"}
+        - {id: 1193, tech: product_dynamic_code, commits: 6, url: "https://faotools.com/web#id=1193&model=module.release&view_type=form"}
+      note: >
+        Published while the three drafts stayed hidden. Linked the five 20_6
+        commits and the 20.0 link-fix commit 51e8ab78c55 (live_test_url). Scaffold
+        971c21a and older 19.0 history were left unlinked. GitHub update was not run.
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
