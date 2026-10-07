@@ -2900,7 +2900,7 @@ groups:
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
               odoo_password_manager_custom_fields]
-    stage: Px.3
+    stage: Px.4
     stage_status: green
     known_breaks: [ir_attachment_datas, useState, order_field_to_sql_query]
     enterprise_required: false
@@ -3480,6 +3480,23 @@ groups:
       note: >
         Published while the four drafts stayed hidden. Linked only the 20_4
         commits that touch each module. GitHub update was not run.
+    px4:
+      stage_status: green
+      at: 2026-10-07T13:35:00+01:00
+      applied_in_place: [1263, 1264, 1265, 1266]
+      force_no_git: false
+      github_to_update: true
+      children_unchanged: true
+      origins_unchanged: [1015, 1016, 1017, 1018]
+      pages:
+        - https://faotools.com/apps/odoo-password-manager
+        - https://faotools.com/apps/odoo-password-manager-custom-fields
+        - https://faotools.com/apps/odoo-security-user-roles
+        - https://faotools.com/apps/odoo-task-auto-numbering-and-search
+      note: >
+        Standalone apply cleared prepublish, not_supported and force_no_git.
+        The stable pages now show version 20. The 19.0 pages still render
+        without that line. GitHub update was not run.
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
