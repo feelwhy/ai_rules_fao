@@ -2695,6 +2695,87 @@ groups:
       browser: >
         Not repeated. No Python or JS change. The Fx.2 reviews were not touched
         and both login pages still answer.
+    fx5:
+      stage_status: skipped
+      at: 2026-10-07
+      reason: "Owner said do Fx.6, Fx.7 and Fx.8. The review databases from Fx.2 were already the walk."
+    fx6:
+      stage_status: green
+      at: 2026-10-07T13:44:00+01:00
+      tools_20_6: 68858f48be5210d894f26e465abb83e05f261d38
+      method: >
+        Standalone copy of each published 19.0 description. version 20.0, prepublish true,
+        force_no_git true, not_supported false, no pre_publish_origin_id, documentation_url
+        cleared, website_published false, is_published false. video_ids empty.
+        short_summary unchanged. Releases were not copied; each draft has one new
+        migration release. Manifest tails already match the published 19.0 pages
+        (1.1.9, 1.0.4, 1.0.5). Not published.
+      drafts:
+        - {tech_name: product_stock_balance, origin: 1078, draft: 1297, exact_version: 1.1.9, release: 1191}
+        - {tech_name: stock_limitation, origin: 1079, draft: 1298, exact_version: 1.0.4, release: 1192}
+        - {tech_name: product_dynamic_code, origin: 1080, draft: 1299, exact_version: 1.0.5, release: 1193}
+      releases: >
+        migration true, state 0_work, not published, no check activity, release_date
+        2026-10-07. Public text is the flag line alone on all three. Material Symbols,
+        the date-picker signal refs, useProps, record.resId, and the untitled
+        arrow_forward span stay internal notes.
+      pics: {product_stock_balance: 8, stock_limitation: 10, product_dynamic_code: 7}
+      features: {product_stock_balance: 5, stock_limitation: 3, product_dynamic_code: 3}
+      public_20_0: 0
+      origin_write_dates_unchanged: true
+      origin_write_dates:
+        - {id: 1078, write_date: "2026-10-07 12:06:36.335245"}
+        - {id: 1079, write_date: "2026-10-07 12:06:38.803005"}
+        - {id: 1080, write_date: "2026-10-07 12:06:40.589605"}
+    fx7:
+      stage_status: green
+      at: 2026-10-07T13:48:00+01:00
+      support: 29173c869a937514055772702af0f7514bce2682
+      branch: support@19.0
+      method: >
+        Each 20.0 website TM file gained a releases block: the changelog rows already
+        in the 19.0 file, plus the unpublished 20.0 migration row. That row is the
+        flag line alone, matching live releases 1191, 1192 and 1193. The flag
+        sentence is copied from the low_sales_report 20.0 TM, in all 42 shipped
+        languages. en_GB is the English sentence. de_CH has no eszett. The live
+        drafts stay English; apply is Px.7.
+      check_release_tm: "0 gaps across 142 files"
+      validate_term: "0 issues on the three new 20.0 rows"
+      rows: {product_stock_balance: "13 + 1", stock_limitation: "4 + 1", product_dynamic_code: "4 + 1"}
+      files:
+        - support_translations/tm/website/product_stock_balance_20.0.yaml
+        - support_translations/tm/website/stock_limitation_20.0.yaml
+        - support_translations/tm/website/product_dynamic_code_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-07T13:53:00+01:00
+      tools_20_6: 68858f48be5210d894f26e465abb83e05f261d38
+      tools_20_port: c6b16a40cd09866ab2e0063b670bf0bc03960319
+      tools_20_final_before: 5bb835bbf7e39e6edd56b938eb65ec6b1a09c1b1
+      tools_20_final: 2c50405aecc3659735c232c6eb267b58e4162872
+      tools_20_0_untouched: 8b0585464d8ae66f55c3bad23210989bbda27367
+      module_diff_20_final_vs_20_6: empty
+      module_diff_20_final_vs_20_port: empty
+      requirements: unchanged
+      cumulative: >
+        20_final is a merge commit with parents 5bb835bbf7e (previous 20_final)
+        and 20_6 68858f48be5. Clean ort merge, no conflicts. 48 modules. The three
+        stock-codes folders equal 20_6 and 20_port; the older folders and
+        requirements.txt are unchanged. Cumulative check: one database installing
+        every module now on 20_final with demo and their tests, then -u, on
+        community (45 modules; no cloud_base_documents, joint_calendar_gantt, or
+        itlibertas_timesheet_gantt) and on enterprise (all 48): 0 failed, 0 errors
+        of 314 tests (community) and 323 (enterprise). The one ERROR line in each
+        log is the deliberate crash of complementary_contact_data
+        test_ru_read_crashes_on_varchar_then_healer_fixes_it. The smart_warnings
+        broken-placeholder traceback is the test's own expected failure path.
+        Reviews fx8_20_6 and fx8_20_6e were not touched (login 200). Throwaway
+        databases dropped. Not a merge of the rest of 20_port, and not a merge
+        into tools 20.0.
+      not_merged_to: "tools 20.0 (that is Px.2)"
+      logs: [/home/feelwhy/env-sync/p6/logs/fx8_20_6_c.log, /home/feelwhy/env-sync/p6/logs/fx8_20_6_e.log]
+      runner: /home/feelwhy/env-sync/p6/fx8_20_6_cumulative.sh
+      cleanup: "throwaway databases dropped"
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,

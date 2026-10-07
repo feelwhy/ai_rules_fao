@@ -172,7 +172,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 2 | `20_c` | 8 | `Gx.9` **green** | merged to `20_port` (`e5c5d4ad5c0`). Defect 6 ported (`cfb985df48f`). |
 | 3 | `20_14` | 9 | `Gx.9` **green** | merged to `20_port` `2be60303496` |
 | 4 | `20_5` | 4 | `Gx.9` **green** | B1; http://localhost:18202; access-or + access-grant |
-| 5 | `20_6` | 3 | `Fx.4` **green** | http://127.0.0.1:18238/web/login until 2026-10-10 12:15; community :18237; matrix 0 failed |
+| 5 | `20_6` | 3 | `Fx.8` **green** | on `20_final` `2c50405aecc`; changelog TM 0 gaps; cumulative 0 failed; reviews :18238 / :18237 until 2026-10-10 12:15 |
 | 6 | `20_9` | 5 | `Gx.9` **green** | B1; http://localhost:18204; LangChange; `request.env.website`; typo 19/19 |
 | 7 | `20_10` | 4 | `Gx.9` **green** | B1; http://localhost:18205; `list.set`; `view_task_card`; `cr` not `rc` |
 | 8 | `20_4` | 4 | `Gx.9` **green** | B1; http://localhost:18206; merged `18ee0d5a1d0`; OWL leftovers; Extra Security hints; role avatars |
