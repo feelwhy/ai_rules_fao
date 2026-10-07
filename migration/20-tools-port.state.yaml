@@ -487,7 +487,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: 235a4f52d3729299270a423d8d5ab806dab35d8c, created: true, pushed: true, last_pushed: 235a4f52d3729299270a423d8d5ab806dab35d8c}  # 2026-10-07: 20_9 Fx.1; unrelated dirty files left unstaged
+  20_port: {git_sha: 87a42cccc04, created: true, pushed: true, last_pushed: 87a42cccc04}  # 2026-10-07: 20_9 QR JSON fix; unrelated dirty files left unstaged
   20_final: {git_sha: 2c50405aecc3659735c232c6eb267b58e4162872, created: true, pushed: true, last_pushed: 2c50405aecc3659735c232c6eb267b58e4162872}  # 2026-10-07: merged 20_6 68858f48be5 (stock codes)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -2947,7 +2947,7 @@ groups:
     fx2:
       stage_status: green
       at: 2026-10-07T15:39:00+01:00
-      tools_20_9: 02ff2eeaf15d34ea9edeb56222305776b490d47b
+      tools_20_9: 5e4cf6b7f66f3b052d79b2deeac3ee8e545a6554
       system_20_0: 4366beb
       enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
       layer2:
@@ -2978,7 +2978,7 @@ groups:
       overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_9.py
       build_runner: /home/feelwhy/env-sync/p6/fx2_20_9_build.sh
       logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_9_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_9_e_install.log]
-      browser: "SMOKE_OK 10/10 on the enterprise review database."
+      browser: "SMOKE_OK 10/10 on the enterprise review database. Homepage QR widget crashed JSON on PNG bytes; action_find_surl now returns to_base64() (20_9 5e4cf6b7f66, 20_port 87a42cccc04). Both reviews restarted."
       review:
         db: fx8_20_9
         url: http://127.0.0.1:18239/web/login
