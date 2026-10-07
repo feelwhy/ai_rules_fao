@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T16:17:00+01:00
-updated_by: agent/px9-20_suite
+updated_at: 2026-10-07T18:58:00+01:00
+updated_by: agent/px1-20_6
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -2445,7 +2445,7 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: Fx.8
+    stage: Px.1
     stage_status: green
     known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
     enterprise_required: false
@@ -2786,6 +2786,21 @@ groups:
       logs: [/home/feelwhy/env-sync/p6/logs/fx8_20_6_c.log, /home/feelwhy/env-sync/p6/logs/fx8_20_6_e.log]
       runner: /home/feelwhy/env-sync/p6/fx8_20_6_cumulative.sh
       cleanup: "throwaway databases dropped"
+    px1:
+      stage_status: green
+      at: 2026-10-07T18:58:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      page_copy: >
+        Summary, perfect-for, short summary and features match the published
+        19.0 pages. The changelog is the version-20 line alone.
+      screenshot_qa: >
+        25 pictures, all with files and 1130 wide, no empty icons. No videos.
+        Drafts stay hidden, force_no_git true. History counts 13, 4 and 4.
+      origin_note: >
+        Origin write_date moved after Fx.6. English summary, perfect-for and
+        features still match the drafts. Exact versions are still 1.1.9, 1.0.4
+        and 1.0.5.
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
