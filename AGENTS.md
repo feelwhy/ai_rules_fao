@@ -1785,6 +1785,24 @@ the same lines in the TM file, every shipped language filled, and `check_release
 0 gaps. A line added after `Fx.6` is written to the live release and the TM file in the same
 turn. Incident 2026-09-30: 20_2 and 20_c drafted 11 of 13 releases with filler lines; ten shrank to the flag line.
 
+**`Fx.6` also rewrites the copied page wherever behavior changed.** The draft starts as a copy of
+the 19.0 page, so every sentence describing changed behavior is wrong on it until edited. For each
+substantial change in the release, search the draft for every place that describes the old
+behavior and rewrite it in English. Check the summary, `perfect_for`, the keyword tail, each
+feature `subheader` and `body`, and each screenshot `name` and `alt_name`. Unchanged sentences stay
+exactly as copied, so their translations still apply. A changelog line with the page still
+describing 19.0 is not a green `Fx.6`. Record every edited record and field in the ledger. A shot
+whose frame no longer matches the new behavior goes on the screenshot work list. Incident
+2026-10-07, 20_suite: the release said "Cc uses Odoo's own field", while the features still sold
+"Add CC and BCC in the full composer".
+
+**Every English text changed in `Fx.6` is translated, never left on the 19.0 wording.** A copied
+record keeps its 19.0 translations, so an edited English sentence shows the old meaning in every
+other language. `Fx.7` puts each changed source into the 20.0 TM file with all shipped languages
+filled. `Px.7` applies those translations to every active language on faotools.com, not only
+`ru_RU`. The gate is that no active language still shows a 19.0 sentence on a field whose English
+changed.
+
 **`Fx.1` is not green, and no `Fx` review URL is handed, without the `Gx.7` browser
 first-click on the 20.0 image.** Tests, `-i`/`-u`, shell loader counts and a login probe
 never construct an OWL component; on 20_2 all of them were green while every form view
@@ -1818,13 +1836,13 @@ resuming session must be able to map `Px.6` to concrete actions without reading 
 
 | Stage | Gate |
 |---|---|
-| `Px.1` publication readiness | re-read the live draft; reconcile it row by row against the `Fx.6` / `Fx.7` intent; screenshot QA passes |
+| `Px.1` publication readiness | re-read the live draft; reconcile it row by row against the `Fx.6` / `Fx.7` intent, including the page copy that describes changed behavior; screenshot QA passes |
 | `Px.2` code publication | merge the group to the published branch, push, verify the remote tree and module list, freeze the group branch |
 | `Px.3` release publication | publish the migration release (`state=3_published`) on the draft **while it is still hidden**, run `action_get_commits`, link only the relevant commits, no Quick GitHub Update |
 | `Px.4` description publication | `action_apply_prepublishment` on the standalone draft — it promotes that record in place and **that write is what makes the page public**; verify no current-serie record changed. Leave `force_no_git` **False**. Do not set it back on |
 | `Px.5` full GitHub update | the **full** update, server-side inside Odoo (`odoo shell` on the container or the UI button), never through MCP, never the quick variant. Before the button: `force_no_git` is False and `github_to_update` is True on every record in the group |
 | `Px.6` GitHub output gate | fast-forward the local published branch, inspect the generated manifest / `index.html` / images commit, run the packaging and static checks |
-| `Px.7` live translations | TM-first apply of description, `pics` and `releases` payloads through the loader; prove `ru_RU` ≠ `en_US` per page, caption and release, and that the HTML is closed |
+| `Px.7` live translations | TM-first apply of description, features, `pics` and `releases` payloads through the loader, for **every active language** on faotools.com. Every field whose English changed in `Fx.6` must carry the new translation in each language; none may still show the copied 19.0 wording. Prove `ru_RU` ≠ `en_US` per page, caption and release, and that the HTML is closed |
 | `Px.8` master sync | merge the published branch into `_final`, run the candidate full matrix, and stop; promote / redeploy master only on the next confirmation, then verify containers and public demo URLs |
 | `Px.9` handoff | hand over the faotools.com page links and the exact store-ready branch and version; the owner performs the Odoo store publication |
 

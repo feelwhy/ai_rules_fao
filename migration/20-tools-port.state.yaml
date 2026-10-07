@@ -3776,6 +3776,40 @@ groups:
         during the copy on email_suite_accounting, odoo_email_from, and
         odoo_email_from_accounting. The other six origins kept 2026-10-07 09:14:07.
       preview: "https://faotools.com/apppublish//20.0/1295/"
+      copy_rewrite:
+        at: 2026-10-07T11:10:00+01:00
+        why: >
+          The first pass only added the Cc changelog line. The pages still sold the
+          19.0 suite CC field ("Add CC and BCC in the full composer", "Turn CC/BCC
+          off"). Owner: the description must reflect the new Cc logic.
+        english_edited:
+          email_suite_1295:
+            - "summary, perfect_for, summary_key_words (+ Hide Cc)"
+            - "feature 4310 (intro cards): body"
+            - "feature 4311 Compose like a real email client: subheader, body"
+            - "feature 4312 Message actions and email metadata: body"
+            - "feature 4319 Messaging Suite administration: body"
+            - "pic 11055 composer_cc_bcc.png: name, alt_name"
+            - "pic 11058 email_suite_optional_features.png: alt_name"
+            - "pic 11060 message_extra_details.png: alt_name"
+          email_suite_accounting_1296:
+            - "summary, summary_key_words (+ Invoice Hide Cc)"
+            - "feature 4321 (intro cards): body"
+            - "feature 4322 Invoice Send and Print with Messaging Suite: body"
+            - "pic 11065 invoice_email_suite.png: alt_name"
+        meaning: >
+          Cc is Odoo's own field in the chatter, the full composer and the invoice
+          Send wizard (own row, filled from the invoice template, kept apart from To).
+          The suite adds BCC. Hide Cc removes Odoo's Cc everywhere. Extra details keep
+          From, Reply-To, Cc and BCC of sent mail.
+        translations_pending: >
+          Only en_US was written. The other languages still hold the copied 19.0
+          wording on every field above. Fx.7 adds those sources with all shipped
+          languages to email_suite_20.0.yaml and email_suite_accounting_20.0.yaml;
+          Px.7 applies them to every active language on faotools.com.
+        shots_to_recheck: [composer_cc_bcc.png, email_suite_optional_features.png, message_extra_details.png, invoice_email_suite.png]
+        other_seven: "No CC wording on their pages. Unchanged."
+        origin_text_unchanged: "1155 and 1164 summaries still read the 19.0 text; only write_date moved."
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
