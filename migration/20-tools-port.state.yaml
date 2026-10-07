@@ -1936,7 +1936,7 @@ groups:
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
-    stage: Fx.8
+    stage: Px.1
     stage_status: green
     known_breaks: [x2many_commands, ir_attachment_datas, get_param, useState, owl_xpath]
     enterprise_required: true
@@ -2325,6 +2325,21 @@ groups:
       logs: [/home/feelwhy/env-sync/p6/logs/fx8_final5_c.log, /home/feelwhy/env-sync/p6/logs/fx8_final5_e.log]
       runner: /home/feelwhy/env-sync/p6/fx8_20_5_cumulative.sh
       cleanup: "temporary worktree tools-20_final removed; throwaway databases dropped"
+    px1:
+      stage_status: green
+      at: 2026-10-07T10:35:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      kpi_line_restored: >
+        Live release 1162 had lost the second public line (last write 2026-10-03
+        13:07 UTC, no record of why). Owner chose to restore it: "A KPI formula
+        that refers to itself is rejected instead of crashing the calculation."
+        Live text now equals the TM source. The fix is 20.0-only (kpi_item seen
+        guard; 19.0 loops on a cycle that does not pass through the saved KPI).
+      screenshot_qa: >
+        50 pictures, all 1130 wide with files, no transparent bottom strip,
+        captions match the images (KPI seq 12/13 file names are swapped, images
+        match the captions, same as 19.0). No videos. Drafts stay hidden.
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
