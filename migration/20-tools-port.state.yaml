@@ -420,6 +420,16 @@ phases:
       not_done_yet:
         - "browser first-click on the master templates (each 20_final group passed its own Fx.2 smoke)"
         - "make_enterprise role id 12 still unverified"
+        - "serving image env-demo-20:1 is still tools 8a9ee216. The 15 modules added for 20_7/20_suite/20_6 are in the live extra-addons volume only. Do not project_apply that image tag: --renew-anon-volumes would drop them while the databases still have them installed. The next image must be built from current tools 20_final."
+      "35i_20_final_modules":
+        status: done
+        at: 2026-10-07T14:17:00+01:00
+        community: {id: 188, fqdn: odooallapps20.odootools.com, modules: 188, enterprise_modules: 0}
+        enterprise: {id: 189, fqdn: odooallapps20e.odootools.com, modules: 265, edition: enterprise, task: 4409}
+        installed: "email_suite, email_suite_accounting, internal_thread, internal_thread_accounting, mail_manual_routing, message_citing, message_edit, odoo_email_from, odoo_email_from_accounting, itlibertas_timesheet, odoo_menu_management, product_stock_balance, stock_limitation, product_dynamic_code. Enterprise rebuild also installed itlibertas_timesheet_gantt (cloud_base_documents and joint_calendar_gantt were already there)."
+        demo: "both editions: warehouses 5, product code positions 5, rules 7, email drafts 4. Enterprise clone: timetable timesheets 14, attendances 62."
+        refreshers: "stock, email suite, product dynamic codes, and timesheets/menu ran. product dynamic codes is now also on the weekly amend (system 20.0 4366beb)."
+        setup_note: "action_setup_demo_template committed the loaders, then died in _apply_odootools_demo_po_translations (values is a str). Demo rows were already committed. Not re-run."
     "36_candidate_gate":
       status: rebuilding
       at: 2026-10-06T12:07:00+01:00

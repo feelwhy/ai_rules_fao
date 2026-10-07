@@ -236,6 +236,18 @@ the module's `static/description/`. That is the shot list. Do not capture in thi
 `crm`, `stock`, `purchase`, `project`, `account`, `hr` and `contacts` shows a thinner
 demo than the template the customer will get, and it cannot be handed over.
 
+**`Fx.8` assumes the Demo 20 templates already carry every module now on `20_final`.**
+The cumulative install proves the code. It does not replace the template. In the same
+chunk, install any of the group's modules that the community template does not yet
+have (community addons path, `--with-demo`), then run `action_setup_demo_template`
+so the family's loaders and refreshers stamp topical demo. Every refresher the family
+owns is called from `action_amend_demo_data`, not only from the one-shot loader.
+Then recreate the enterprise template from that community database the same way as
+the first Demo 20 pair: clone, `make_enterprise` for 20.0, swap the enterprise
+pointer. Both editions must show the family's demo counts. A community template
+that is missing the group, or an enterprise template that was not rebuilt from it,
+is not a green `Fx.8`.
+
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
 
