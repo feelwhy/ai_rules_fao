@@ -173,7 +173,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 3 | `20_14` | 9 | `Gx.9` **green** | merged to `20_port` `2be60303496` |
 | 4 | `20_5` | 4 | `Gx.9` **green** | B1; http://localhost:18202; access-or + access-grant |
 | 5 | `20_6` | 3 | `Fx.8` **green** | on `20_final` `2c50405aecc`; changelog TM 0 gaps; cumulative 0 failed; reviews :18238 / :18237 until 2026-10-10 12:15 |
-| 6 | `20_9` | 5 | `Fx.1` **green** | on `20_port` `235a4f52d37`; checker 0; 0 failed of 26; smoke 10/10 |
+| 6 | `20_9` | 5 | `Fx.2` **green** | http://127.0.0.1:18240/web/login until 2026-10-10 15:37; community :18239; smoke 10/10 |
 | 7 | `20_10` | 4 | `Gx.9` **green** | B1; http://localhost:18205; `list.set`; `view_task_card`; `cr` not `rc` |
 | 8 | `20_4` | 4 | `Gx.9` **green** | B1; http://localhost:18206; merged `18ee0d5a1d0`; OWL leftovers; Extra Security hints; role avatars |
 | 9 | `20_12` | 3 | `Gx.9` **green** | B1 `b12_190810`; http://127.0.0.1:18207; merged `1cb1794876c`; child chips + small tooltip close |

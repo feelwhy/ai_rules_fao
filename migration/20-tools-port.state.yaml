@@ -478,7 +478,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_9 Fx.2"
+    next: "20_9 Fx.3"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -2790,7 +2790,7 @@ groups:
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
               odoo_typo_reporter]
-    stage: Fx.1
+    stage: Fx.2
     stage_status: green
     known_breaks: [website_root_interaction, ir_attachment_datas, request_website,
                    website_default_website]
@@ -2944,6 +2944,52 @@ groups:
       smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_9.py
       smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_9_smoke.log
       temporary_db_removed: true
+    fx2:
+      stage_status: green
+      at: 2026-10-07T15:39:00+01:00
+      tools_20_9: 02ff2eeaf15d34ea9edeb56222305776b490d47b
+      system_20_0: 4366beb
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      layer2:
+        loader: "_load_demo_duplicates twice"
+        idempotent: true
+        counts:
+          partners: 2
+          leads: 2
+          short_urls: 3
+          chairs: 1
+          typo_reports: 3
+          url_translations: 0
+          partner_duplicates: uninstalled
+          demo_user: true
+        note: >
+          Both editions. Contacts Duplicates stays uninstalled. URL
+          transliterations stay empty because the review is en_US only.
+          Baseline apps are installed. admin, demo and portal stay on en_US.
+      languages: "en_US only; admin, demo and portal on en_US"
+      screenshots: migration/screenshots/20_9.md
+      shot_rows: 40
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_9-crm_duplicates-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_9-partner_duplicates-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_9-website_url_translations-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_9-short_urls-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_9-odoo_typo_reporter-screenshots.pdf
+      overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_9.py
+      build_runner: /home/feelwhy/env-sync/p6/fx2_20_9_build.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_9_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_9_e_install.log]
+      browser: "SMOKE_OK 10/10 on the enterprise review database."
+      review:
+        db: fx8_20_9
+        url: http://127.0.0.1:18239/web/login
+        keep_until: 2026-10-10T15:37:00+01:00
+        compose: faotools_env/local/run/fx8_20_9/compose.yml
+      review_enterprise:
+        db: fx8_20_9e
+        url: http://127.0.0.1:18240/web/login
+        keep_until: 2026-10-10T15:37:00+01:00
+        compose: faotools_env/local/run/fx8_20_9e/compose.yml
+        purpose: "store screenshots for this serie are taken on enterprise"
   "20_10":
     order: 7
     modules: [task_checklist, crm_checklist, sale_order_checklist, purchase_order_checklist]
