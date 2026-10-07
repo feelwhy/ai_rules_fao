@@ -468,7 +468,7 @@ phases:
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
     fx2: green     # 2026-09-29, both layers; work list migration/screenshots/20_2.md
     review_gate: "browser first-click on the 20.0 image before any Fx review URL (incident fx_review_owl_construction_20_2)"
-    next: "20_6 Fx.3"
+    next: "20_6 Fx.4"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -477,7 +477,7 @@ phases:
 aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
-  20_port: {git_sha: bc0c290bb619ab00e21b0fc9e9cb5b18eed048c9, created: true, pushed: true, last_pushed: bc0c290bb619ab00e21b0fc9e9cb5b18eed048c9}  # 2026-10-07: 20_6 Fx.1; unrelated dirty files left unstaged
+  20_port: {git_sha: c6b16a40cd09866ab2e0063b670bf0bc03960319, created: true, pushed: true, last_pushed: c6b16a40cd09866ab2e0063b670bf0bc03960319}  # 2026-10-07: 20_6 Fx.3 translations; unrelated dirty files left unstaged
   20_final: {git_sha: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9, created: true, pushed: true, last_pushed: c75e0a7695e58ee7cfaf17ee6f5e126db4626ba9}  # 2026-10-07: merged 20_suite b51e852fefb (messaging suite)
   "20.0": {git_sha: 5e18ceb4d9d3a9a5afcb80cbdc707e3643e12f8e, created: true, pushed: true}  # 2026-10-06: nine [#auto] 20_14 store commits
   system_20_0: {git_sha: 218e7d3e0c288aa63309a2569d73e8870507119e, created: true, pushed: true}  # 2026-10-03: KPI demo tags Sales/Project/Team/Person translated
@@ -2435,7 +2435,7 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: Fx.2
+    stage: Fx.3
     stage_status: green
     known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
     enterprise_required: false
@@ -2642,6 +2642,33 @@ groups:
         keep_until: 2026-10-10T12:15:00+01:00
         compose: faotools_env/local/run/fx8_20_6e/compose.yml
         purpose: "store screenshots for this serie are taken on enterprise"
+    fx3:
+      stage_status: green
+      at: 2026-10-07T13:25:00+01:00
+      tools_20_6: 68858f48be5210d894f26e465abb83e05f261d38
+      merge_to_20_port: c6b16a40cd09866ab2e0063b670bf0bc03960319
+      method: >
+        odoo i18n export from fx8_20_6e for the three modules, compared with
+        the shipped pots. Unchanged msgid kept its msgstr. Dropped the plural
+        Inventory Locations; the model name is now Inventory Location, taken
+        from the Odoo 20 stock catalog. Picking Type, Quant, Stock Move,
+        Transfer and Product Moves come from that catalog too. Where core has
+        no other word, the English term stays. Quants stays: the word is still
+        in the source. App names, the first summary sentence and the feature
+        lines are translated in the 33 base languages; de_CH, es_419, es_CL,
+        fr_BE, fr_CA, fr_CH, nl_BE and pt_BR take those. Summary keyword tails
+        stay English. en_GB stays English. Every entry's comment starts with
+        "module: <name>".
+      empty_msgstr: 0
+      app_names: "Stocks by Locations, Stocks Access Rules, Product Dynamic Codes. Russian: Запасы по местам хранения, Правила доступа к запасам, Динамические коды товаров. German: Bestände nach Lagerorten, Zugriffsregeln für Bestände, Dynamische Produktcodes."
+      left_english: "en_GB stays English. Quant and Transfer stay English where the Odoo 20 catalog has no other word."
+      loaded_on:
+        - {db: fx8_20_6, url: "http://127.0.0.1:18237/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Запасы по местам хранения"}
+        - {db: fx8_20_6e, url: "http://127.0.0.1:18238/web/login", active_langs: 43, gaps: 0, proof: "ru: Правила доступа к запасам; de: Dynamische Produktcodes"}
+      users_left_on: en_US
+      runner: /home/feelwhy/env-sync/p6/fx3_20_6/apply_fx3.py
+      load_runner: /home/feelwhy/env-sync/p6/fx3_20_6/load_fx3.py
+      logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_6_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_6_e.log]
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
