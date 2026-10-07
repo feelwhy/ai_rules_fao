@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T15:54:00+01:00
-updated_by: agent/px4-20_suite
+updated_at: 2026-10-07T16:17:00+01:00
+updated_by: agent/px9-20_suite
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -3874,8 +3874,8 @@ groups:
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
               internal_thread_accounting, odoo_email_from, email_suite_accounting,
               odoo_email_from_accounting]
-    stage: Px.4
-    stage_status: green
+    stage: Px.9
+    stage_status: handed
     known_breaks: [_extras_to_store, _get_store_message_update_extra_fields, _init_store_data,
                    mail_fields_import, chatter_import, x2many_commands, store_add_signature,
                    store_get_result, message_model_edit_signature, recipients_input,
@@ -4439,6 +4439,58 @@ groups:
         Standalone apply cleared prepublish, not_supported and force_no_git.
         The stable pages now show version 20. Child counts and the 19.0 pages
         are unchanged. GitHub update was not run.
+    px5:
+      stage_status: green
+      at: 2026-10-07T16:10:00+01:00
+      by: owner
+      check: "github_to_update false and force_no_git false on all nine; store commits on tools 20.0 ending eb0e7f56212"
+    px6:
+      stage_status: green
+      at: 2026-10-07T16:12:00+01:00
+      tools_20_0: eb0e7f56212d5157bf1aefafe2d4872468f059a1
+      check: >
+        Fast-forwarded the 20.0 worktree from 75dfead. The nine suite modules
+        changed only in manifests, index.html, and description images.
+        Versions and prices match the live pages (25 / 38 / 16 / 80 / 34 / 0 /
+        34 / 0 / 0). index.html is ASCII with no empty icon tags. The same
+        range also updates store index.html for other already published groups.
+    px7:
+      stage_status: green
+      at: 2026-10-07T16:14:00+01:00
+      apply: "support.translations._apply_description on faotools.com for the nine 20.0 files"
+      pages: >
+        258 URLs (6 apps x 43) show a translated 20.0 changelog, no empty icons,
+        and the 19.0 history. en_GB keeps the English sentence. Email From,
+        Email From: Invoices, and Messaging Suite: Invoices have fewer than
+        five published releases, so the public page omits the changelog tab.
+        Their release records are translated: ru, de, and fr do not contain
+        the English flag or the Cc sentence. Changed picture titles differ
+        from English in Russian.
+    px8:
+      stage_status: green
+      at: 2026-10-07T16:16:00+01:00
+      merged: dc17d391d8467f39acf0f7736f4babefb6de2ef8
+      pushed: origin/20_final
+      module_diff_20_final_vs_20_0: "empty for the nine folders"
+      candidate: >
+        Demo 20 candidate env-demo-20:2 is green and was not promoted.
+        Serving image stays env-demo-20:1. This merge only updates store
+        files; the suite code was already on 20_final. No new candidate was built.
+    px9:
+      stage_status: handed
+      at: 2026-10-07T16:17:00+01:00
+      store_branch: tools 20.0
+      store_sha: eb0e7f56212d5157bf1aefafe2d4872468f059a1
+      pages:
+        - https://faotools.com/apps/odoo-message-note-editing
+        - https://faotools.com/apps/odoo-lost-messages-routing
+        - https://faotools.com/apps/odoo-message-citing
+        - https://faotools.com/apps/odoo-messaging-suite
+        - https://faotools.com/apps/odoo-private-thread
+        - https://faotools.com/apps/odoo-private-thread-invoices
+        - https://faotools.com/apps/odoo-email-from
+        - https://faotools.com/apps/odoo-messaging-suite-invoices
+        - https://faotools.com/apps/odoo-email-from-accounting
     note: >
       19.0 defects 9/10 committed on shared tools as 5931ff03a19
       (parallel release chat). tests-prep excluded. support TM is
