@@ -1936,7 +1936,7 @@ groups:
   "20_5":
     order: 4
     modules: [joint_calendar, total_notify, joint_calendar_gantt, kpi_scorecard]
-    stage: Px.1
+    stage: Px.2
     stage_status: green
     known_breaks: [x2many_commands, ir_attachment_datas, get_param, useState, owl_xpath]
     enterprise_required: true
@@ -2340,6 +2340,17 @@ groups:
         50 pictures, all 1130 wide with files, no transparent bottom strip,
         captions match the images (KPI seq 12/13 file names are swapped, images
         match the captions, same as 19.0). No videos. Drafts stay hidden.
+    px2:
+      stage_status: green
+      at: 2026-10-07T10:45:00+01:00
+      published_branch: tools 20.0
+      sha: 0d7c5e14860f4aa0fe3e4dc83f37fda2706a7307
+      merge: "20_5 224dd34acc8 into 20.0 d47293d43d5 (worktree fast-forwarded from 5e18ceb4d9d first; those commits are store index.html only)"
+      pushed: origin/20.0
+      modules: [joint_calendar, joint_calendar_gantt, kpi_scorecard, total_notify]
+      versions: [20.0.1.2.10, 20.0.1.0.4, 20.0.1.1.12, 20.0.1.3.10]
+      folder_parity: "the four folders equal tools-20_5"
+      frozen_group_branch: "20_5 stays at 224dd34acc8; later fixes start on 20.0"
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
