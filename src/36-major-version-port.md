@@ -246,17 +246,22 @@ the module's `static/description/`. That is the shot list. Do not capture in thi
 `crm`, `stock`, `purchase`, `project`, `account`, `hr` and `contacts` shows a thinner
 demo than the template the customer will get, and it cannot be handed over.
 
-**`Fx.8` assumes the Demo 20 templates already carry every module now on `20_final`.**
-The cumulative install proves the code. It does not replace the template. In the same
-chunk, install any of the group's modules that the community template does not yet
-have (community addons path, `--with-demo`), then run `action_setup_demo_template`
-so the family's loaders and refreshers stamp topical demo. Every refresher the family
-owns is called from `action_amend_demo_data`, not only from the one-shot loader.
-Then recreate the enterprise template from that community database the same way as
-the first Demo 20 pair: clone, `make_enterprise` for 20.0, swap the enterprise
-pointer. Both editions must show the family's demo counts. A community template
-that is missing the group, or an enterprise template that was not rebuilt from it,
-is not a green `Fx.8`.
+**`Fx.8` is the live Demo 20 templates, not a local install.** Push `20_final`
+first. Demo 20 builds from that branch. A local cumulative database does not close
+this stage, and a green local test is not a reason to skip the template.
+
+Rebuild the Demo 20 project image from the pushed `20_final`, apply it, then install
+every module of this group that the community template (`odooallapps20.odootools.com`)
+does not yet have. Use `--with-demo`. Then run `action_setup_demo_template` so the
+family's loaders and refreshers stamp topical demo. Every refresher the family owns
+is called from `action_amend_demo_data`, not only from the one-shot loader. Then
+recreate the enterprise template from that community database the same way as the
+first Demo 20 pair: clone, `make_enterprise` for 20.0, swap the enterprise pointer.
+
+`Fx.8` is green only when both live templates show the family's demo counts. A
+community template that is missing the group, or an enterprise template that was
+not rebuilt from it, is not done. Modules the demo program keeps uninstalled
+(`partner_duplicates`) stay uninstalled after setup; the others must be installed.
 
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.

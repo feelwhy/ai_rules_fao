@@ -12,8 +12,8 @@
 
 schema_version: 1
 program: tools-19-to-20
-updated_at: 2026-10-07T19:56:00+01:00
-updated_by: agent/px3-20_6
+updated_at: 2026-10-08T16:16:00+01:00
+updated_by: agent/fx4-20_10
 
 # ---------------------------------------------------------------- pins
 # saas-19.x branches are INDEPENDENT FORKS of the 19.0 release cut, not a chain.
@@ -484,7 +484,7 @@ phases:
       origin/20.0 (rule 22 F15, rule 36). Swept 2026-10-07 on all 21 tools 20 branches:
       284 links in 212 files, one commit per branch, pushed. Runner
       ~/env-sync/p6/retarget_store_links_20.py (not source).
-    next: "20_9 Fx.3"
+    next: "20_9 Fx.8 green"
   "9_publish_loops": {status: pending}
   "10_cutover": {status: pending}
 
@@ -2451,8 +2451,8 @@ groups:
   "20_6":
     order: 5
     modules: [product_stock_balance, stock_limitation, product_dynamic_code]
-    stage: Px.3
-    stage_status: green
+    stage: Px.9
+    stage_status: handed
     known_breaks: [product_variant_easy_edit_view, ir_attachment_datas, useState]
     enterprise_required: false
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_6
@@ -2830,14 +2830,76 @@ groups:
         - {id: 1193, tech: product_dynamic_code, commits: 6, url: "https://faotools.com/web#id=1193&model=module.release&view_type=form"}
       note: >
         Published while the three drafts stayed hidden. Linked the five 20_6
-        commits and the 20.0 link-fix commit 51e8ab78c55 (live_test_url). Scaffold
+        commits and the 20.0 link-fix commit 51e8ab78c55 (live_test_url).         Scaffold
         971c21a and older 19.0 history were left unlinked. GitHub update was not run.
+    px4:
+      stage_status: green
+      at: 2026-10-08T12:50:00+01:00
+      applied_in_place: [1297, 1298, 1299]
+      force_no_git: false
+      github_to_update: true
+      children_unchanged: true
+      origins_unchanged: [1078, 1079, 1080]
+      origin_write_dates:
+        - {id: 1078, write_date: "2026-10-08 12:29:03.052012"}
+        - {id: 1079, write_date: "2026-10-08 12:29:03.052012"}
+        - {id: 1080, write_date: "2026-10-08 12:29:03.052012"}
+      pages:
+        - https://faotools.com/apps/odoo-stocks-by-locations
+        - https://faotools.com/apps/odoo-stocks-access-rules
+        - https://faotools.com/apps/odoo-product-dynamic-codes
+      note: >
+        Standalone apply cleared prepublish, not_supported and force_no_git.
+        Child counts stayed 5/8, 3/10 and 3/7. The stable pages show the
+        version-20 line. The 19.0 pages still render on their versioned URLs
+        without that line, and their write dates did not move. The apply left
+        github_to_update off because the store HTML was already rendered on the
+        hidden draft; it is set true afterwards. GitHub update was not run.
+    px5:
+      stage_status: green
+      at: 2026-10-08T13:00:00+01:00
+      by: owner
+      check: "github_to_update false and force_no_git false on all three; three [#auto] commits on tools 20.0 ending 7be60266db7"
+    px6:
+      stage_status: green
+      at: 2026-10-08T13:01:00+01:00
+      tools_20_0: 7be60266db7
+      commits: 3
+      check: >
+        Fast-forwarded the 20.0 worktree from 316d1dc73da. Six files, only
+        index.html and app_icon_7.png for the three modules. Manifests were
+        already 20.0.1.1.9, 20.0.1.0.4 and 20.0.1.0.5, price 38 each.
+        index.html is ASCII with no empty icon tags.
+    px7:
+      stage_status: green
+      at: 2026-10-08T13:04:00+01:00
+      apply: "pages already carried the TM flag sentence; no second loader write"
+      pages: "126 URLs (3 apps x 42), 0 English changelog sentences left, 0 empty icons. en_GB keeps the English sentence. Russian caption of the stocks hierarchy shot is present; the English caption is not."
+    px8:
+      stage_status: green
+      at: 2026-10-08T13:03:00+01:00
+      merged: 950f53cff43
+      pushed: origin/20_final
+      module_diff_20_final_vs_20_0: "empty for the three folders"
+      candidate: >
+        No new Demo 20 candidate. The merge only adds store index.html and
+        app icons; the module code was already on 20_final. Serving image
+        stays the promoted green env-demo-20:4.
+    px9:
+      stage_status: handed
+      at: 2026-10-08T13:05:00+01:00
+      store_branch: tools 20.0
+      store_sha: 7be60266db7
+      pages:
+        - https://faotools.com/apps/odoo-stocks-by-locations
+        - https://faotools.com/apps/odoo-stocks-access-rules
+        - https://faotools.com/apps/odoo-product-dynamic-codes
   "20_9":
     order: 6
     modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls,
               odoo_typo_reporter]
-    stage: Fx.2
-    stage_status: green
+    stage: Px.9
+    stage_status: handed
     known_breaks: [website_root_interaction, ir_attachment_datas, request_website,
                    website_default_website]
     enterprise_required: false
@@ -3036,11 +3098,250 @@ groups:
         keep_until: 2026-10-10T15:37:00+01:00
         compose: faotools_env/local/run/fx8_20_9e/compose.yml
         purpose: "store screenshots for this serie are taken on enterprise"
+    fx4:
+      stage_status: green
+      at: 2026-10-07T19:16:00+01:00
+      image: faotools/env-demo-20:20.0
+      tools_20_9: 60f99850041daade38ef1cbb76c7c1982ae3a4e1
+      runner: /home/feelwhy/env-sync/p6/fx4_20_9_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_9_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_9_e.log]
+      matrix_dbs_dropped: true
+      community: >
+        Each of the five modules, own closure: --without-demo=True -i, --with-demo -i,
+        then -u. Then the five together --with-demo --test-enable. 0 failed, 0 error(s)
+        of 29 tests. MATRIX_OK.
+      enterprise: >
+        The same install and update legs plus the group test, with the enterprise
+        addons path mounted. 0 failed, 0 error(s) of 29 tests. MATRIX_OK.
+      log_gate: >
+        No ERROR or CRITICAL line. CAPTCHA WARNINGs are the typo reporter tests
+        provoking a failed token.
+    fx3:
+      stage_status: green
+      at: 2026-10-07T18:42:00+01:00
+      tools_20_9: 60f99850041daade38ef1cbb76c7c1982ae3a4e1
+      i18n: "215 po/pot files updated on the worktree and not committed"
+      method: >
+        odoo i18n export from the review databases, compared with the shipped
+        pots. Unchanged msgid kept its msgstr. App names, the first summary
+        sentence and the feature lines are translated in the shipped languages.
+        Country variants take the root language. en_GB stays English. Core
+        labels come from the Odoo 20 catalog.
+      empty_msgstr: 0
+      app_names_left_english: 0
+      loaded_on:
+        - {db: fx8_20_9, url: "http://127.0.0.1:18239/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Поиск дублей CRM в реальном времени", skipped_uninstalled: [partner_duplicates]}
+        - {db: fx8_20_9e, url: "http://127.0.0.1:18240/web/login", active_langs: 43, gaps: 0, proof: "ru: Сокращатель URL сайта; de: Website-URL-Kürzer", skipped_uninstalled: [crm_duplicates, partner_duplicates]}
+      users_left_on: en_US
+      runner: /home/feelwhy/env-sync/p6/fx3_20_9/apply_fx3.py
+      load_runner: /home/feelwhy/env-sync/p6/fx3_20_9/load_fx3.py
+      logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_9_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_9_e.log]
+    fx6:
+      stage_status: green
+      at: 2026-10-07T18:57:00+01:00
+      note: "Owner said do Fx.6 while the Fx.4 matrix was still running."
+      tools_20_9: 60f99850041daade38ef1cbb76c7c1982ae3a4e1
+      method: >
+        Standalone copy of each published 19.0 description. version 20.0, prepublish true,
+        force_no_git true, not_supported false, no pre_publish_origin_id, documentation_url
+        cleared, website_published left at the copy default (true). video_ids empty.
+        short_summary unchanged. Releases were not copied; each draft has one new
+        migration release. Not published. The versioned /apps/20.0 URL renders, the
+        same way the 20_6 drafts do. Listings still skip prepublish records.
+      drafts:
+        - {tech_name: crm_duplicates, origin: 1068, draft: 1300, exact_version: 1.0.4, release: 1196}
+        - {tech_name: partner_duplicates, origin: 1070, draft: 1301, exact_version: 1.0.5, release: 1197}
+        - {tech_name: website_url_translations, origin: 1066, draft: 1302, exact_version: 1.0.6, release: 1198}
+        - {tech_name: short_urls, origin: 1067, draft: 1303, exact_version: 1.0.14, release: 1199}
+        - {tech_name: odoo_typo_reporter, origin: 1099, draft: 1304, exact_version: 1.0.3, release: 1200}
+      releases: >
+        migration true, state 0_work, not published, release_date 2026-10-07.
+        Public text is the flag line alone on all five. Icon, OWL, and snippet
+        port fixes stay internal notes. URL Transliterations keeps 1.0.6 because
+        the live 19.0 page is already 1.0.6; that hreflang fix is in the 20_9 code.
+      pics: {crm_duplicates: 10, partner_duplicates: 7, website_url_translations: 4, short_urls: 11, odoo_typo_reporter: 8}
+      features: {crm_duplicates: 3, partner_duplicates: 3, website_url_translations: 2, short_urls: 4, odoo_typo_reporter: 2}
+      public_20_0: 0
+      origin_write_dates_unchanged: true
+      origin_write_dates:
+        - {id: 1068, write_date: "2026-10-07 16:05:38.347950"}
+        - {id: 1070, write_date: "2026-10-07 16:05:40.150948"}
+        - {id: 1066, write_date: "2026-10-07 16:01:13.868646"}
+        - {id: 1067, write_date: "2026-10-07 16:05:36.568993"}
+        - {id: 1099, write_date: "2026-10-07 17:30:54.418480"}
+    fx7:
+      stage_status: green
+      at: 2026-10-07T19:12:00+01:00
+      support: 6f857eef
+      branch: support@19.0
+      pushed: false
+      method: >
+        Each 20.0 website TM file gained the 19.0 changelog rows plus the
+        unpublished 20.0 migration row. That row is the flag line alone, in all
+        42 shipped languages, copied from the stock_limitation 20.0 TM. en_GB
+        is the English sentence. de_CH has no eszett. The live drafts stay
+        English; apply is Px.7. ai_mcp_server_19.0.yaml and devops/resize_screenshots.py
+        were left unstaged.
+      check_release_tm: "0 gaps across 147 files"
+      rows:
+        crm_duplicates: 1.0.4
+        partner_duplicates: 1.0.5
+        website_url_translations: 1.0.6
+        short_urls: 1.0.14
+        odoo_typo_reporter: 1.0.3
+      files:
+        - support_translations/tm/website/crm_duplicates_20.0.yaml
+        - support_translations/tm/website/partner_duplicates_20.0.yaml
+        - support_translations/tm/website/website_url_translations_20.0.yaml
+        - support_translations/tm/website/short_urls_20.0.yaml
+        - support_translations/tm/website/odoo_typo_reporter_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-07T19:53:00+01:00
+      tools_20_9: 4c6b621e3b9
+      tools_20_final: d0b3528fae9e4739a564ce7be2359ea9fe8b1780
+      tools_20_port: f7fa8d83439
+      pushed: "origin/20_final d0b3528fae9"
+      module_diff_20_final_vs_20_9: empty
+      tasks: {build_image: 4416, project_apply: 4417, install: 4418, enterprise_rebuild: 4419}
+      cumulative: "0 failed of 341 tests community, 350 enterprise. The one ERROR line is the deliberate complementary_contact_data Russian-read crash. Throwaway databases dropped."
+      community: >
+        odooallapps20.odootools.com. crm_duplicates, website_url_translations,
+        short_urls, odoo_typo_reporter installed. partner_duplicates uninstalled
+        by the demo loader, as on 19.0. short urls 3, typo reports 3, url
+        translations 4.
+      enterprise: >
+        Rebuilt from that community database (task 4419). Same module states
+        and the same three counts.
+      setup_note: >
+        action_setup_demo_template died in _demo_activate_shipped_langs
+        (str has no get). The group demo was stamped with _load_demo_duplicates.
+    px1:
+      stage_status: green
+      at: 2026-10-08T13:15:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      page_copy: >
+        Summary, perfect-for, short summary and every feature name, subheader
+        and body match the published 19.0 pages. The changelog is the version-20
+        line alone. URL Transliterations stays at 1.0.6. Its documentation URL
+        and video were not copied.
+      screenshot_qa: >
+        40 pictures, every one has a file. Counts 10, 7, 4, 11 and 8. No videos.
+        Drafts stay hidden, force_no_git true, not_supported false, no origin.
+        Releases 1196-1200 are still In Work.
+      origin_note: >
+        Origin write dates moved after Fx.6 (now 2026-10-08 12:29:03). English
+        summary, perfect-for, short summary and features still match the drafts.
+    px2:
+      stage_status: green
+      at: 2026-10-08T13:16:00+01:00
+      published_branch: tools 20.0
+      sha: ab441af6e5c43b21a692ec245a5e6c6dffcde478
+      merge: "20_9 4d17f64226e into 20.0 7be60266db7"
+      pushed: origin/20.0
+      modules: [crm_duplicates, partner_duplicates, website_url_translations, short_urls, odoo_typo_reporter]
+      versions: [20.0.1.0.4, 20.0.1.0.5, 20.0.1.0.5, 20.0.1.0.14, 20.0.1.0.3]
+      folder_parity: "the five folders equal tools-20_9"
+      frozen_group_branch: "20_9 stays at 4d17f64226e; later fixes start on 20.0"
+      note: >
+        The live URL Transliterations page is already exact_version 1.0.6.
+        The manifest on this branch is still 20.0.1.0.5; the GitHub update
+        rewrites that from the description.
+    px3:
+      stage_status: green
+      at: 2026-10-08T13:19:00+01:00
+      drafts_still_hidden: true
+      force_no_git: true
+      github_update: not_run
+      releases:
+        - {id: 1196, name: 20.0.1.0.4, commits: 6, url: "https://faotools.com/web#id=1196&model=module.release&view_type=form"}
+        - {id: 1197, name: 20.0.1.0.5, commits: 6, url: "https://faotools.com/web#id=1197&model=module.release&view_type=form"}
+        - {id: 1198, name: 20.0.1.0.6, commits: 8, url: "https://faotools.com/web#id=1198&model=module.release&view_type=form"}
+        - {id: 1199, name: 20.0.1.0.14, commits: 9, url: "https://faotools.com/web#id=1199&model=module.release&view_type=form"}
+        - {id: 1200, name: 20.0.1.0.3, commits: 7, url: "https://faotools.com/web#id=1200&model=module.release&view_type=form"}
+      note: >
+        Published while the five drafts stayed hidden. Linked the group commits
+        that touch each app, including the 20.0 link-fix 706ca83ed9e. Scaffold
+        971c21a and the older catalogue commits were left unlinked. GitHub
+        update was not run.
+    px4:
+      stage_status: green
+      at: 2026-10-08T14:26:00+01:00
+      applied: [1300, 1301, 1302, 1303, 1304]
+      prepublish: false
+      force_no_git: false
+      github_to_update: true
+      child_counts: {crm_duplicates: "3/10", partner_duplicates: "3/7",
+                     website_url_translations: "2/4", short_urls: "4/11",
+                     odoo_typo_reporter: "2/8"}
+      origins_unchanged: "1068, 1070, 1066, 1067, 1099 write_date still 2026-10-08 12:29:03.052012"
+      pages:
+        - https://faotools.com/apps/odoo-crm-duplicates-real-time-search
+        - https://faotools.com/apps/odoo-contacts-duplicates-real-time-search
+        - https://faotools.com/apps/odoo-url-transliterations-for-website-pages
+        - https://faotools.com/apps/odoo-website-url-shortener
+        - https://faotools.com/apps/odoo-website-typo-and-error-reporter
+      note: >
+        Each apply promoted the same record. The public pages show the
+        version-20 line. The five 19.0 pages do not. GitHub update was not run.
+    px5:
+      stage_status: green
+      at: 2026-10-08T14:35:00+01:00
+      by: owner
+      check: >
+        github_to_update false and force_no_git false on 1300-1304.
+        last_github_update 13:32-13:35. Seven [#auto] commits on tools 20.0
+        ending 9ae298bfe9e. One of them (36757674aea) has no files.
+        7f78ce70bcd is the messaging suite store refresh, not this group.
+    px6:
+      stage_status: green
+      at: 2026-10-08T14:40:00+01:00
+      tools_20_0: 9ae298bfe9e
+      commits: 7
+      check: >
+        Fast-forwarded the 20.0 worktree from ab441af6e5c. The five apps
+        changed only index.html and description images, plus the URL
+        Transliterations manifest 20.0.1.0.5 to 20.0.1.0.6. Versions
+        20.0.1.0.4, 20.0.1.0.5, 20.0.1.0.6, 20.0.1.0.14, 20.0.1.0.3.
+        Prices 44, 38, 38, 88, 98. index.html is ASCII, live_test_url is
+        20.0, and no icon tag is empty. The same fast-forward also brought
+        email_suite store files and manifest 20.0.1.0.9.
+    px7:
+      stage_status: green
+      at: 2026-10-08T14:41:00+01:00
+      apply: "the flag sentence was already on the pages; no second loader write"
+      pages: >
+        210 URLs (5 apps x 42). The 20.0 heading block has the translated
+        flag sentence, a spaced flag icon, and no English sentence except
+        en_GB. Russian CRM caption "Odoo: мягкие и жёсткие критерии поиска
+        дублей" differs from the English caption.
+    px8:
+      stage_status: green
+      at: 2026-10-08T14:42:00+01:00
+      merged: 87aefe79fd8
+      pushed: origin/20_final
+      module_diff_20_final_vs_20_0: "empty for the five folders and email_suite"
+      candidate: >
+        No new Demo 20 candidate. The merge only adds store index.html,
+        images, and two manifest version lines. Serving image stays the
+        promoted env-demo-20:4.
+    px9:
+      stage_status: handed
+      at: 2026-10-08T14:43:00+01:00
+      store_branch: tools 20.0
+      store_sha: 9ae298bfe9e
+      pages:
+        - https://faotools.com/apps/odoo-crm-duplicates-real-time-search
+        - https://faotools.com/apps/odoo-contacts-duplicates-real-time-search
+        - https://faotools.com/apps/odoo-url-transliterations-for-website-pages
+        - https://faotools.com/apps/odoo-website-url-shortener
+        - https://faotools.com/apps/odoo-website-typo-and-error-reporter
   "20_10":
     order: 7
     modules: [task_checklist, crm_checklist, sale_order_checklist, purchase_order_checklist]
-    stage: Gx.9
-    stage_status: green
+    stage: Px.9
+    stage_status: handed
     known_breaks: [useState, static_list_replaceWith, project_view_task_kanban_card_id]
     enterprise_required: false
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_10
@@ -3141,6 +3442,294 @@ groups:
       reviews:
         bugbot: "no bugs"
         security: "no medium+; ir.access preserves 19.0 ops; restriction AND; cr not rc"
+    fx1:
+      stage_status: green
+      at: 2026-10-08T10:55:00+01:00
+      tools_20_10: 32445773f5edc5a6a59ed319f21e22f83bdc4845
+      merge_to_20_port: 0e510f4293bf41179f71affb9b639c607688d4eb
+      merge_note: >
+        Clean ort merge. diff of the four module folders against 20_10 is empty.
+        The unrelated dirty files on tools-20_port (password_manager.js,
+        project_project.xml) were left unstaged. Not pushed.
+      checker: >
+        17 findings vs origin/20.0 on the first run (8 owl-static-props,
+        4 js-symbol record.data.id, 4 fa-icon, 1 view-xmlid). After the port: 0.
+      versions: "re-prefixed 20.0.1.2.9, 20.0.1.2.9, 20.0.1.0.4, 20.0.1.0.5. Tails unchanged."
+      ports:
+        - "Font Awesome check-square-o / square-o -> Material check_box / square"
+        - "static props -> props = useProps"
+        - "record.resId; empty many2one guarded before .id"
+        - "sale team form inherits sales_team.crm_team_view_form"
+      tests: >
+        faotools/env-demo-20:20.0, community only (no enterprise lane).
+        Fresh install with demo and the group's test tags, then -u.
+        0 failed, 0 error(s) of 51 tests. No ERROR or CRITICAL line.
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_10_c.log]
+      browser: >
+        Community temporary DB fx1_20_10s. Headless Chromium: SMOKE_OK 4 pages,
+        zero error dialogs, zero console errors. Task, lead, quotation, and
+        purchase order, each opened on the Checklist tab of a record that
+        already has points. The database was dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_10.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_10_smoke.log
+      temporary_db_removed: true
+    fx2:
+      stage_status: green
+      at: 2026-10-08T11:05:00+01:00
+      tools_20_10: 32445773f5edc5a6a59ed319f21e22f83bdc4845
+      system_20_0: 9282a78
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      layer2:
+        loader: "_load_demo_checklists twice"
+        idempotent: true
+        counts:
+          check_list: 6
+          crm_check_list: 8
+          order_check_item: 7
+          purchase_check_item: 6
+          check_company_list: 1
+          demo_user: true
+        note: >
+          Both editions. Same counts as Gx.5. Baseline apps are installed.
+          admin, demo and portal stay on en_US.
+      languages: "en_US only; admin, demo and portal on en_US"
+      shot_rows: 30
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_10-task_checklist-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_10-crm_checklist-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_10-sale_order_checklist-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_10-purchase_order_checklist-screenshots.pdf
+      overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_10.py
+      build_runner: /home/feelwhy/env-sync/p6/fx2_20_10_build.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_10_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_10_e_install.log]
+      review:
+        db: fx8_20_10
+        url: http://127.0.0.1:18241/web/login
+        keep_until: 2026-10-11T11:04:00+01:00
+        compose: faotools_env/local/run/fx8_20_10/compose.yml
+      review_enterprise:
+        db: fx8_20_10e
+        url: http://127.0.0.1:18242/web/login
+        keep_until: 2026-10-11T11:04:00+01:00
+        compose: faotools_env/local/run/fx8_20_10e/compose.yml
+        purpose: "store screenshots for this serie are taken on enterprise"
+    fx3:
+      stage_status: green
+      at: 2026-10-08T12:40:00+01:00
+      tools_20_10: 32445773f5edc5a6a59ed319f21e22f83bdc4845
+      i18n: "172 po/pot files updated on the worktree and not committed. The checklist prop-type fix is uncommitted in the same tree."
+      method: >
+        odoo i18n export from the enterprise review. Unchanged msgid kept its
+        msgstr. New terms are the app name, the summary, the short feature
+        list, and the privilege placeholder No. App names and the first
+        summary sentence are translated. The keyword tail stays English.
+        Country files copy the root language. en_GB stays English. No comes
+        from the Odoo 20 base catalog. Feature headers reuse the low_sales_report
+        description header.
+      empty_msgstr: 0
+      app_names_left_english: 0
+      loaded_on:
+        - {db: fx8_20_10, url: "http://127.0.0.1:18241/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Чек-лист задач и процесс согласования"}
+        - {db: fx8_20_10e, url: "http://127.0.0.1:18242/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Чек-лист задач и процесс согласования; de: Aufgaben-Checkliste und Genehmigungsprozess"}
+      users_left_on: en_US
+      runner: /home/feelwhy/env-sync/p6/fx3_20_10/apply_fx3.py
+      load_runner: /home/feelwhy/env-sync/p6/fx3_20_10/load_fx3.py
+      logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_10_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_10_e.log]
+    fx4:
+      stage_status: green
+      at: 2026-10-08T13:00:00+01:00
+      image: faotools/env-demo-20:20.0
+      tools_20_10: 32445773f5edc5a6a59ed319f21e22f83bdc4845
+      worktree_note: "i18n and the checklist prop-type fix are uncommitted on tools-20_10; the matrix ran that tree."
+      runner: /home/feelwhy/env-sync/p6/fx4_20_10_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_10_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_10_e.log]
+      matrix_dbs_dropped: true
+      community: >
+        Each of the four modules, own closure: --without-demo=True -i, --with-demo -i,
+        then -u. Then the four together --with-demo --test-enable. 0 failed, 0 error(s)
+        of 51 tests. MATRIX_OK.
+      enterprise: >
+        The same install and update legs plus the group test, with the enterprise
+        addons path mounted. 0 failed, 0 error(s) of 51 tests. MATRIX_OK.
+      log_gate: "No ERROR or CRITICAL line."
+    fx6:
+      stage_status: green
+      at: 2026-10-08T13:05:00+01:00
+      method: >
+        action_prepare_major_draft(dry_run=false) on the published 19.0
+        descriptions. Standalone copy, version 20.0, prepublish true,
+        force_no_git true, not_supported false, no pre_publish_origin_id,
+        documentation_url empty, video_ids empty. short_summary copied
+        unchanged. One migration release, state 0_work, flag line only.
+        Not published.
+      drafts:
+        - {tech_name: task_checklist, origin: 1083, draft: 1305, exact_version: 1.2.9, release: 1202}
+        - {tech_name: crm_checklist, origin: 1082, draft: 1306, exact_version: 1.2.9, release: 1203}
+        - {tech_name: sale_order_checklist, origin: 1084, draft: 1307, exact_version: 1.0.4, release: 1204}
+        - {tech_name: purchase_order_checklist, origin: 1081, draft: 1308, exact_version: 1.0.5, release: 1205}
+      origin_write_dates_unchanged: true
+      urls:
+        - https://faotools.com/web#id=1202&model=module.release&view_type=form
+        - https://faotools.com/web#id=1203&model=module.release&view_type=form
+        - https://faotools.com/web#id=1204&model=module.release&view_type=form
+        - https://faotools.com/web#id=1205&model=module.release&view_type=form
+    fx7:
+      stage_status: green
+      at: 2026-10-08T13:06:00+01:00
+      support: 49c066cc4ec
+      branch: support@19.0
+      pushed: false
+      check_release_tm: "0 gaps across 151 files"
+      method: >
+        Each 20.0 website TM file gained the 19.0 changelog rows plus the
+        unpublished 20.0 migration row. That row is the flag line alone, in
+        all 42 shipped languages, copied from the short_urls 20.0 TM. en_GB
+        is the English sentence. de_CH has no eszett. The live drafts stay
+        English; apply is Px.7. Foreign support files were left unstaged.
+      rows:
+        task_checklist: 1.2.9
+        crm_checklist: 1.2.9
+        sale_order_checklist: 1.0.4
+        purchase_order_checklist: 1.0.5
+      files:
+        - support_translations/tm/website/task_checklist_20.0.yaml
+        - support_translations/tm/website/crm_checklist_20.0.yaml
+        - support_translations/tm/website/sale_order_checklist_20.0.yaml
+        - support_translations/tm/website/purchase_order_checklist_20.0.yaml
+    fx8:
+      stage_status: green
+      at: 2026-10-08T13:46:00+01:00
+      tools_20_10: 907e3d3c4d0
+      tools_20_final: 3080ff5f4431893ac20b746ada32557404a53771
+      pushed: "origin/20_final 3080ff5f443"
+      module_diff_20_final_vs_20_10: empty
+      image_rev: 3080ff5f4431893ac20b746ada32557404a53771
+      tasks: {build_image: 4489, project_apply: 4491, install: 4492, enterprise_rebuild: 4498}
+      community: >
+        odooallapps20.odootools.com login 200. The four checklist modules
+        installed. partner_duplicates left uninstalled. Counts after
+        _load_demo_checklists: check_list 6, crm_check_list 8,
+        order_check_item 7, purchase_check_item 6, check_company_list 1.
+      enterprise: >
+        Rebuilt from that community database (task 4498). Same module states
+        and the same five counts. https://odooallapps20e.odootools.com/web/login
+        200.
+      note: >
+        20_port was not updated. That worktree has foreign edits in
+        odoo_password_manager and project_custom_fields. support TM commit
+        49c066cc is local only.
+    px1:
+      stage_status: green
+      at: 2026-10-08T14:45:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      page_copy: >
+        Summary, perfect-for, short summary, and every feature name, subheader
+        and body match the published 19.0 pages. The changelog is the version-20
+        line alone. Screenshot titles and alts match too, 9, 9, 6 and 6, every
+        one with a file. No videos and no documentation URL.
+      releases_state: "1202-1205 are still In Work, migration true, flag line only"
+      hidden: >
+        Drafts 1305-1308 stay prepublish, force_no_git true, not_supported false,
+        no origin. The public pages do not show the version-20 line. The versioned
+        task page renders 20.0.1.2.9.
+      origin_note: >
+        Origin write dates are 2026-10-08 12:29:03. English summary, perfect-for,
+        short summary, features and screenshot titles still match the drafts.
+    px2:
+      stage_status: green
+      at: 2026-10-08T14:46:00+01:00
+      published_branch: tools 20.0
+      sha: e744984f063239255fbc652f7998f0dd16e4ff1c
+      merge: "20_10 907e3d3c4d0 into 20.0 7b0c0f24bcc"
+      pushed: origin/20.0
+      modules: [task_checklist, crm_checklist, sale_order_checklist, purchase_order_checklist]
+      versions: [20.0.1.2.9, 20.0.1.2.9, 20.0.1.0.4, 20.0.1.0.5]
+      folder_parity: "the four folders equal tools-20_10"
+      frozen_group_branch: "20_10 pushed and stays at 907e3d3c4d0; later fixes start on 20.0"
+    px3:
+      stage_status: green
+      at: 2026-10-08T14:47:00+01:00
+      drafts_still_hidden: true
+      force_no_git: true
+      github_update: not_run
+      releases:
+        - {id: 1202, name: 20.0.1.2.9, commits: 6, url: "https://faotools.com/web#id=1202&model=module.release&view_type=form"}
+        - {id: 1203, name: 20.0.1.2.9, commits: 6, url: "https://faotools.com/web#id=1203&model=module.release&view_type=form"}
+        - {id: 1204, name: 20.0.1.0.4, commits: 6, url: "https://faotools.com/web#id=1204&model=module.release&view_type=form"}
+        - {id: 1205, name: 20.0.1.0.5, commits: 6, url: "https://faotools.com/web#id=1205&model=module.release&view_type=form"}
+      note: >
+        Published while the four drafts stayed hidden. Each release links the
+        seed, the saas port, the tests, the Odoo 20 port, the 20.0 link-fix
+        a3d78436661, and the checklist translation commit 907e3d3c4d0. Scaffold
+        971c21a, the older catalogue commits, and the 19 demo merges were left
+        unlinked. GitHub update was not run.
+    px4:
+      stage_status: green
+      at: 2026-10-08T15:45:00+01:00
+      applied: [1305, 1306, 1307, 1308]
+      prepublish: false
+      force_no_git: false
+      github_to_update: true
+      child_counts: {task_checklist: "4/9", crm_checklist: "4/9",
+                     sale_order_checklist: "3/6", purchase_order_checklist: "3/6"}
+      origins_unchanged: "1083, 1082, 1084, 1081 write_date still 2026-10-08 12:29:03.052012"
+      pages:
+        - https://faotools.com/apps/odoo-task-check-list-and-approval-process
+        - https://faotools.com/apps/odoo-crm-check-list-and-approval-process
+        - https://faotools.com/apps/odoo-sale-order-approval-check-lists
+        - https://faotools.com/apps/odoo-purchase-order-approval-check-lists
+      note: >
+        Each apply promoted the same record. The public pages show the
+        version-20 line. The four 19.0 pages do not. GitHub update was not run.
+    px5:
+      stage_status: green
+      at: 2026-10-08T15:55:00+01:00
+      by: owner
+      check: >
+        github_to_update false and force_no_git false on 1305-1308.
+        last_github_update 14:54-14:55. Four [#auto] commits for this group
+        on tools 20.0 ending 5c55dad038d.
+    px6:
+      stage_status: green
+      at: 2026-10-08T16:05:00+01:00
+      tools_20_0: 5c55dad038d
+      commits: 4
+      check: >
+        Fast-forwarded the 20.0 worktree from e744984f063. The four apps
+        changed only index.html and description images. Manifests stayed
+        20.0.1.2.9, 20.0.1.2.9, 20.0.1.0.4 and 20.0.1.0.5, price 38 each,
+        live_test_url 20.0. index.html is ASCII with no empty icon tags.
+        The same fast-forward also brought index.html refreshes for
+        custom_fields, smart_warnings and sticky_notes.
+    px7:
+      stage_status: green
+      at: 2026-10-08T16:05:00+01:00
+      apply: "the flag sentence was already on the pages; no second loader write"
+      pages: >
+        168 URLs (4 apps x 42). The 20.0 heading block has the translated
+        flag sentence, a spaced flag icon, and no English sentence except
+        en_GB. Russian task caption "Ошибка проверки: чек-лист проекта не
+        утверждён" differs from the English caption.
+    px8:
+      stage_status: green
+      at: 2026-10-08T16:06:00+01:00
+      merged: 7dce4b9a436
+      pushed: origin/20_final
+      module_diff_20_final_vs_20_0: "empty for the four folders"
+      candidate: >
+        No new Demo 20 candidate. The merge only adds store index.html and
+        images. Serving image stays the promoted env-demo-20:4.
+    px9:
+      stage_status: handed
+      at: 2026-10-08T16:06:00+01:00
+      store_branch: tools 20.0
+      store_sha: 5c55dad038d
+      pages:
+        - https://faotools.com/apps/odoo-task-check-list-and-approval-process
+        - https://faotools.com/apps/odoo-crm-check-list-and-approval-process
+        - https://faotools.com/apps/odoo-sale-order-approval-check-lists
+        - https://faotools.com/apps/odoo-purchase-order-approval-check-lists
   "20_4":
     order: 8
     modules: [odoo_password_manager, security_user_roles, task_numbers,
@@ -3794,8 +4383,8 @@ groups:
   "20_12":
     order: 9
     modules: [partner_color_codes, activities_todo, recurrent_activities]
-    stage: Gx.9
-    stage_status: green
+    stage: Px.9
+    stage_status: handed
     known_breaks: [self_readable_fields, self_writeable_fields, useState]
     enterprise_required: false
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_12
@@ -3915,6 +4504,301 @@ groups:
           no medium+ on the walk diff. Recurrent write stays on product
           groups (group_recurrent_only_own / erp_manager / group_recurrent_admin),
           not base.group_user. To-Do prefs user_writeable=True.
+    fx1:
+      stage_status: green
+      at: 2026-10-08T14:15:00+01:00
+      tools_20_12: 43d318df655a9085059e252075e884b605b0492a
+      merge_to_20_port: b5c14fbe8a815e66d2798db872ef01276b345a25
+      merge_note: >
+        Clean ort merge. The three module folders match 20_12.
+        The unrelated dirty files on tools-20_port (password_manager.js,
+        project_project.xml) were left unstaged. Not pushed.
+      checker: >
+        First run vs origin/20.0: 7 findings (3 owl-static-props, 1 js-symbol
+        record.data.id, 3 fa-icon). After the port: 0.
+      versions: "re-prefixed 20.0.1.0.10, 20.0.1.0.4, 20.0.1.0.7. Tails unchanged."
+      ports:
+        - "static props -> props = useProps; partner id is record.resId"
+        - "Font Awesome buttons and the tooltip close/circle -> Material close, circle, check, forum, schedule, chevron_left, chevron_right, arrow_forward"
+      tests: >
+        faotools/env-demo-20:20.0, community only (no enterprise lane).
+        Fresh install with demo and the group's test tags, then -u.
+        0 failed, 0 error(s) of 2 tests. No ERROR or CRITICAL line.
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_12_c.log]
+      browser: >
+        Community temporary DB fx1_20_12s. Headless Chromium: SMOKE_OK 5 pages,
+        zero error dialogs, zero console errors. Color codes list, a partner
+        form, recurring activities, Settings Color Codes, and Activities To-Do.
+        The database was dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_12.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_12_smoke.log
+      temporary_db_removed: true
+    fx2:
+      stage_status: green
+      at: 2026-10-08T14:30:00+01:00
+      tools_20_12: 43d318df655a9085059e252075e884b605b0492a
+      system_20_0: 7086d88
+      enterprise_20_0: 9e5c3e9044fd5ea4296bb8ca79aaf0a804004e13
+      layer2:
+        loader: "_demo_upsert_user(Anita) then _load_demo_contacts_activities twice"
+        idempotent: true
+        counts:
+          color_code: 5
+          color_code_rule: 4
+          color_code_partner: 4
+          recurrent_activity_template: 2
+          authored_activities: 5
+          mail_activity: 58
+          demo_user: true
+        note: >
+          Both editions. Colors, rules and the two recurring templates match
+          Gx.5. Partner notes are 4 because hr is installed (Gx.5 had 2
+          without hr). The five authored activities exist after Anita's user
+          is created. Total mail.activity is 58 because Odoo 20 demo already
+          has activities. admin, demo and portal stay on en_US.
+      languages: "en_US only; admin, demo and portal on en_US"
+      shot_rows: 29
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_12-partner_color_codes-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_12-activities_todo-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_12-recurrent_activities-screenshots.pdf
+      overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_12.py
+      build_runner: /home/feelwhy/env-sync/p6/fx2_20_12_build.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_12_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_12_e_install.log]
+      review:
+        db: fx8_20_12
+        url: http://127.0.0.1:18243/web/login
+        keep_until: 2026-10-11T14:27:00+01:00
+        compose: faotools_env/local/run/fx8_20_12/compose.yml
+      review_enterprise:
+        db: fx8_20_12e
+        url: http://127.0.0.1:18244/web/login
+        keep_until: 2026-10-11T14:27:00+01:00
+        compose: faotools_env/local/run/fx8_20_12e/compose.yml
+        purpose: "store screenshots for this serie are taken on enterprise"
+    fx3:
+      stage_status: green
+      at: 2026-10-08T15:55:00+01:00
+      tools_20_12: 43d318df655a9085059e252075e884b605b0492a
+      i18n: "129 po/pot files updated on the worktree and not committed"
+      method: >
+        odoo i18n export from fx8_20_12e, compared with the shipped pots.
+        Unchanged msgid kept its msgstr. A whitespace msgstr stayed.
+        Demo template rows were left out. App names, the first summary
+        sentence and the feature lines are translated in the 33 base
+        languages; de_CH, es_419, es_CL, fr_BE, fr_CA, fr_CH, nl_BE and
+        pt_BR take those. Summary keyword tails stay English. Close and
+        No come from the Odoo 20 catalog. en_GB stays English.
+      empty_msgstr: 0
+      app_names: "Contacts Color Coding, Activities To-Do Interface, Recurring Activities. Russian: Цветовая маркировка контактов, Интерфейс дел, Повторяющиеся активности."
+      loaded_on:
+        - {db: fx8_20_12, url: "http://127.0.0.1:18243/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Цветовая маркировка контактов"}
+        - {db: fx8_20_12e, url: "http://127.0.0.1:18244/web/login", active_langs: 43, gaps: 0, proof: "ru: Повторяющиеся активности; de: Wiederkehrende Aktivitäten"}
+      users_left_on: en_US
+      runner: /home/feelwhy/env-sync/p6/fx3_20_12/apply_fx3.py
+      load_runner: /home/feelwhy/env-sync/p6/fx3_20_12/load_fx3.py
+      logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_12_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_12_e.log]
+    fx4:
+      stage_status: green
+      at: 2026-10-08T16:05:00+01:00
+      image: faotools/env-demo-20:20.0
+      tools_20_12: 43d318df655a9085059e252075e884b605b0492a
+      worktree_note: "i18n and the color-mark layout edits are uncommitted on tools-20_12; the matrix ran that tree."
+      runner: /home/feelwhy/env-sync/p6/fx4_20_12_matrix.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_12_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_12_e.log]
+      matrix_dbs_dropped: true
+      community: >
+        Each of the three modules, own closure: --without-demo=True -i, --with-demo -i,
+        then -u. Then the three together --with-demo --test-enable. 0 failed, 0 error(s)
+        of 2 tests. MATRIX_OK.
+      enterprise: >
+        The same install and update legs plus the group test, with the enterprise
+        addons path mounted. 0 failed, 0 error(s) of 2 tests. MATRIX_OK.
+      log_gate: "No ERROR or CRITICAL line. WARNING is only missing markdown2 in mail and ai."
+    fx5:
+      stage_status: skipped
+      at: 2026-10-08
+      reason: "Owner said move on to Fx.6. The Fx.2 review databases were already the walk."
+    fx6:
+      stage_status: green
+      at: 2026-10-08T16:16:00+01:00
+      method: >
+        action_prepare_major_draft on the published 19.0 descriptions.
+        Standalone copy, version 20.0, prepublish true, force_no_git true,
+        not_supported false, no pre_publish_origin_id, documentation_url empty,
+        video_ids empty. short_summary copied unchanged. One migration release,
+        state 0_work. Not published. Recurring Activities and Activities To-Do
+        ship the flag line alone. Contacts Color Coding adds one line: color
+        marks are shown under the partner field. That draft's sales feature
+        and the sales-order screenshot alt now say under the customer.
+      drafts:
+        - {tech_name: recurrent_activities, origin: 1075, draft: 1309, exact_version: 1.0.7, release: 1206}
+        - {tech_name: activities_todo, origin: 1076, draft: 1310, exact_version: 1.0.4, release: 1207}
+        - {tech_name: partner_color_codes, origin: 1074, draft: 1311, exact_version: 1.0.10, release: 1208}
+      pics: {recurrent_activities: 7, activities_todo: 6, partner_color_codes: 16}
+      origin_write_dates_unchanged: true
+      origin_write_dates:
+        - {id: 1074, write_date: "2026-10-08 12:29:03.052012"}
+        - {id: 1075, write_date: "2026-10-08 12:29:03.052012"}
+        - {id: 1076, write_date: "2026-10-08 12:29:03.052012"}
+      urls:
+        - https://faotools.com/web#id=1206&model=module.release&view_type=form
+        - https://faotools.com/web#id=1207&model=module.release&view_type=form
+        - https://faotools.com/web#id=1208&model=module.release&view_type=form
+    fx7:
+      stage_status: green
+      at: 2026-10-08T16:21:00+01:00
+      support_commit: cd3e73bb538d9602827bc6770207790965b63878
+      files:
+        - support_translations/tm/website/recurrent_activities_20.0.yaml
+        - support_translations/tm/website/activities_todo_20.0.yaml
+        - support_translations/tm/website/partner_color_codes_20.0.yaml
+      check: "0 release TM gaps across 154 files"
+      flag_fingerprint: 55113fec11741b8a
+      rows:
+        - {tech_name: recurrent_activities, module_version: "20.0", exact_version: 1.0.7, lines: flag}
+        - {tech_name: activities_todo, module_version: "20.0", exact_version: 1.0.4, lines: flag}
+        - {tech_name: partner_color_codes, module_version: "20.0", exact_version: 1.0.10, lines: "flag plus color marks under the partner field"}
+      applied_live: false
+      note: "TM only. The hidden drafts stay English until Px.7."
+    fx8:
+      stage_status: green
+      at: 2026-10-08T16:55:00+01:00
+      tools_20_12: b7e14b81c972e083e4f1fef1fe2a55cb07c24862
+      tools_20_final: 352fb293baf69165857521a0adaf22f2c48d50ea
+      tools_20_port: 73cdcbab2c08b62a2d1b69b0cab44b921a1cd9b8
+      pushed: origin/20_final
+      not_pushed: "20_port is ahead 5; the two foreign dirty files were left unstaged"
+      image: "127.0.0.1:5000/env-demo-20:5"
+      tasks: {build_image: 4499, project_apply: 4500, install: 4501, stamp: 4502, enterprise_refresh: 4504}
+      community:
+        db: odooallapps20.odootools.com
+        url: https://odooallapps20.odootools.com/web/login
+        http: 200
+        installed: [partner_color_codes, activities_todo, recurrent_activities]
+        partner_duplicates: uninstalled
+        counts: {color_code: 5, color_code_rule: 4, color_code_partner: 4, recurrent_activity_template: 2, authored_activities: 5}
+      enterprise:
+        db: odooallapps20e.odootools.com
+        url: https://odooallapps20e.odootools.com/web/login
+        http: 200
+        web_enterprise: installed
+        installed: [partner_color_codes, activities_todo, recurrent_activities]
+        partner_duplicates: uninstalled
+        counts: {color_code: 5, color_code_rule: 4, color_code_partner: 4, recurrent_activity_template: 2}
+        xmlids: [demo_ca_act_azure_call, demo_ca_act_anita_gemini, demo_tmpl_azure_weekly, demo_tmpl_gemini_yearly, demo_ca_color_black_list]
+    px1:
+      stage_status: green
+      at: 2026-10-08T17:05:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      page_copy: >
+        Summary, perfect-for and short summary match the 19.0 pages. The sales
+        feature and the sales-order caption say under the customer. The TM
+        source for those two sentences was still the old next-to wording;
+        support 0069d788 updates it in all 42 languages. Screenshot counts are
+        7, 6 and 16, every one with a file.
+      releases_state: >
+        1206 and 1207 are In Work with the flag line alone. 1208 is In Work
+        with the flag line plus "Color marks are shown under the partner field."
+      hidden: >
+        Drafts 1309-1311 stay prepublish, force_no_git true, not_supported false,
+        no origin. The public pages do not show the version-20 line.
+    px2:
+      stage_status: green
+      at: 2026-10-08T17:06:00+01:00
+      published_branch: tools 20.0
+      sha: 8eb4a08fb38
+      merge: "20_12 b7e14b81c97 into 20.0 5c55dad038d"
+      pushed: origin/20.0
+      modules: [partner_color_codes, activities_todo, recurrent_activities]
+      versions: [20.0.1.0.10, 20.0.1.0.4, 20.0.1.0.7]
+      folder_parity: "the three folders equal tools-20_12"
+      frozen_group_branch: "20_12 pushed and stays at b7e14b81c97; later fixes start on 20.0"
+      translations: "support 0069d788 pushed on origin/19.0"
+    px3:
+      stage_status: green
+      at: 2026-10-08T17:05:00+01:00
+      drafts_still_hidden: true
+      force_no_git: true
+      github_update: not_run
+      releases:
+        - {id: 1206, name: 20.0.1.0.7, commits: 4, url: "https://faotools.com/web#id=1206&model=module.release&view_type=form"}
+        - {id: 1207, name: 20.0.1.0.4, commits: 5, url: "https://faotools.com/web#id=1207&model=module.release&view_type=form"}
+        - {id: 1208, name: 20.0.1.0.10, commits: 5, url: "https://faotools.com/web#id=1208&model=module.release&view_type=form"}
+      note: >
+        Published while the three drafts stayed hidden. Linked the seed, the
+        Odoo 20 port, the translation commit b7e14b81c97, and the 20.0 link-fix
+        9690599fd6a. Activities To-Do also has the empty-queue fix ca5f4584636.
+        Contacts Color Coding also has the child-chip fix 266d1969ceb. Scaffold
+        971c21a and the older catalogue commits were left unlinked. GitHub
+        update was not run.
+    px4:
+      stage_status: green
+      at: 2026-10-09T10:56:00+01:00
+      applied: [1309, 1310, 1311]
+      prepublish: false
+      force_no_git: false
+      github_to_update: true
+      child_counts: {recurrent_activities: "2/7", activities_todo: "2/6",
+                     partner_color_codes: "4/16"}
+      origins_unchanged: "1075, 1076, 1074 write_date still 2026-10-09 09:43"
+      pages:
+        - https://faotools.com/apps/odoo-recurring-activities
+        - https://faotools.com/apps/odoo-activities-to-do-interface
+        - https://faotools.com/apps/odoo-contacts-color-coding
+      note: >
+        Each apply promoted the same record. The apply left github_to_update
+        off; it is set true afterwards. Recurring and Color Coding show the
+        version-20 line. Activities To-Do is the 20.0 page but the changelog
+        block stays hidden: the site only prints it when there are at least
+        five published releases, and this app has four. The 19.0 pages do not
+        show the version-20 line. GitHub update was not run.
+    px5:
+      stage_status: green
+      at: 2026-10-09T11:06:00+01:00
+      by: owner
+      store_commits: [5d19baeeab6, 4088b0fdf75, 18046817dfb]
+      note: "Owner ran the full GitHub update. Three [#auto] commits, store files only."
+    px6:
+      stage_status: green
+      at: 2026-10-09T11:20:00+01:00
+      store_sha: 18046817dfbb5dfd61846e9d872c15aa1958a541
+      files: "35 files, index.html and description images only. No manifest version change."
+      versions: [20.0.1.0.7, 20.0.1.0.4, 20.0.1.0.10]
+      prices: [38, 98, 98]
+      live_test: "20.0"
+      index_html: "ASCII, no empty or self-closing icons"
+      local_20_0: "left at f70fd807077 (Alex Filippov, not on origin). Not reset, not pushed."
+    px7:
+      stage_status: green
+      at: 2026-10-09T11:20:00+01:00
+      method: "module.release / module.feature / module.pic update_field_translations"
+      releases: [1206, 1207, 1208]
+      feature: 4369
+      pic: 11189
+      scan: "84/84 visible changelog blocks (recurring + color, 42 languages). en_GB flag stays English; color marks say Colour."
+      ru_proof: "Приложение опубликовано для версии 20. Цветовые метки показаны под полем партнёра. Цветные рамки под клиентом."
+      todo_changelog: "Translations are on release 1207. The public page still hides the block: four published releases, site minimum five."
+    px8:
+      stage_status: green
+      at: 2026-10-09T11:21:00+01:00
+      merged: a96c4b66df9a87ef5ae223871af1496060d0040c
+      pushed: origin/20_final
+      from: b271cee498a
+      store_parent: 18046817dfb
+      candidate: "No new Demo 20 candidate. Store html and images only. Serving image stays env-demo-20:5."
+    px9:
+      stage_status: handed
+      at: 2026-10-09T11:21:00+01:00
+      store_branch: tools 20.0
+      store_sha: 18046817dfbb5dfd61846e9d872c15aa1958a541
+      final_sha: a96c4b66df9a87ef5ae223871af1496060d0040c
+      pages:
+        - https://faotools.com/apps/odoo-recurring-activities
+        - https://faotools.com/apps/odoo-activities-to-do-interface
+        - https://faotools.com/apps/odoo-contacts-color-coding
+      note: "Owner publishes on the Odoo store."
   "20_suite":
     order: 10
     modules: [message_edit, mail_manual_routing, message_citing, email_suite, internal_thread,
@@ -4544,7 +5428,7 @@ groups:
   "20_11":
     order: 11
     modules: [low_sales_report, sales_forecast_by_periods, stock_qty_forecast]
-    stage: Fx.8
+    stage: Px.1
     stage_status: green
     known_breaks: [stock_move_product_uom, ir_attachment_datas, useState, chartjs_v4,
                    form_controller_props]
@@ -4889,6 +5773,23 @@ groups:
     note: >
       tests-prep already on origin/19.0 (5931ff03a19). Shared tools
       left on 19.0, not pulled. support TM is foreign — not committed.
+    px1:
+      stage_status: green
+      at: 2026-10-09T11:50:00+01:00
+      drafts_match_fx6: true
+      releases_match_fx7: true
+      hidden: >
+        Drafts 1280-1282 stay prepublish, force_no_git true, not_supported false,
+        no origin, website_published false. Releases 1169-1171 stay In Work.
+      page_copy: >
+        Summary, perfect-for, feature titles and the checked feature bodies match
+        the published 19.0 pages. The flag line is the only new public sentence.
+        Icon and side-panel notes stay internal.
+      releases_state: >
+        1169, 1170 and 1171 are In Work, migration, flag line only, spaced icon.
+        Versions 20.0.1.0.5, 20.0.1.0.10, 20.0.1.0.10.
+      pics: "4 + 9 + 9, each with a file, name and alt"
+      tm: "three 20.0 flag rows, 42 languages, 0 empty. History counts 6, 8 and 9."
   "20_7":
     order: 12
     modules: [itlibertas_timesheet, itlibertas_timesheet_gantt, odoo_menu_management]
@@ -5778,11 +6679,11 @@ groups:
   "20_17":
     order: 18
     modules: [customer_scoring, vendor_scoring, header_clock, res_partner_completeness]
-    stage: Gx.9
+    stage: Fx.6
     stage_status: green
+    blocked_by: []
     known_breaks: [self_readable_fields, self_writeable_fields]
     enterprise_required: false
-    blocked_by: []
     worktree: /home/feelwhy/Odoo/_worktrees/tools-20_17
     shared_tools_left_on: "18.0"
     contract: migration/contracts/20_17.md
@@ -5851,6 +6752,141 @@ groups:
         B1 0 failed / 15 on clone test_b1_20817 (shared with 20_8).
         checker findings 0. Bugbot no findings. Module trees identical
         on 20_17 and 20_port. Shared tools checkout left on 18.0.
+    fx1:
+      stage_status: green
+      at: 2026-10-08T17:16:00+01:00
+      tools_20_17: 2e64eb87f8d73e8c1491494768d693c5a15283e2
+      merge_to_20_port: 168d6131160ad80291a5e17c8e8e9c84de320a8f
+      merge_note: >
+        Not pushed. 20_port stays ahead of origin. The unrelated dirty
+        files (password_manager.js, project_project.xml) were left unstaged.
+        Module folders match 20_17.
+      versions: "20.0.1.0.3, 20.0.1.0.3, 20.0.1.0.2, 20.0.1.0.4. Tails unchanged."
+      checker: "0 findings against origin/20.0"
+      ports:
+        - "settings icon fa-arrow-right -> arrow_forward"
+        - "scoring stars fa-star / fa-star-o -> oi data-icon=star with oi-filled"
+        - "refresh icon -> data-icon=refresh"
+        - "HeaderClock and ScoringForm static props -> useProps"
+      tests: >
+        faotools/env-demo-20:20.0, community. Fresh install with demo and the
+        four test tags, then -u. 0 failed, 0 error(s) of 7 tests. No ERROR
+        or CRITICAL. Database fx1_20_17c dropped.
+      logs: [/home/feelwhy/env-sync/p6/logs/fx1_20_17_c.log]
+      browser: >
+        Temporary community DB fx1_20_17s. Headless Chromium: SMOKE_OK on
+        header clocks, customer and vendor scoring lists and forms, a partner
+        Customer Scoring tab, and Settings Scoring (arrow_forward). The
+        database and containers were dropped. No review URL.
+      smoke_runner: /home/feelwhy/env-sync/p6/selenium/smoke_20_17.py
+      smoke_log: /home/feelwhy/env-sync/p6/logs/fx1_20_17_smoke_setup.log
+    fx2:
+      stage_status: green
+      at: 2026-10-08T17:27:00+01:00
+      tools_20_17: 2e64eb87f8d73e8c1491494768d693c5a15283e2
+      system_20_0: 7086d88
+      enterprise_20_0: 9e5c3e9044f
+      layer2:
+        loader: "_demo_upsert_user(Anita) then _load_demo_scoring twice"
+        idempotent: true
+        counts:
+          customer_on: 3
+          vendor_on: 3
+          clocks: 6
+          points: 20
+          customer_high: "75"
+          demo_user: true
+      languages: "en_US only; admin, demo and portal on en_US"
+      logins: {admin: admin, demo: demo}
+      baseline: [sale_management, website_sale, crm, stock, purchase, project, account, hr, contacts]
+      shot_rows: 47
+      overview_pdfs:
+        - /mnt/c/Users/feel1/Downloads/20_17-customer_scoring-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_17-header_clock-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_17-res_partner_completeness-screenshots.pdf
+        - /mnt/c/Users/feel1/Downloads/20_17-vendor_scoring-screenshots.pdf
+      overview_runner: /home/feelwhy/env-sync/p6/selenium/shot_overview_20_17.py
+      build_runner: /home/feelwhy/env-sync/p6/fx2_20_17_build.sh
+      logs: [/home/feelwhy/env-sync/p6/logs/fx2_20_17_c_install.log, /home/feelwhy/env-sync/p6/logs/fx2_20_17_e_install.log]
+      review:
+        db: fx8_20_17
+        url: http://127.0.0.1:18245/web/login
+        keep_until: 2026-10-11T17:27:00+01:00
+        compose: faotools_env/local/run/fx8_20_17/compose.yml
+      review_enterprise:
+        db: fx8_20_17e
+        url: http://127.0.0.1:18246/web/login
+        keep_until: 2026-10-11T17:27:00+01:00
+        compose: faotools_env/local/run/fx8_20_17e/compose.yml
+        web_enterprise: installed
+        purpose: "store screenshots for this serie are taken on enterprise"
+    fx3:
+      stage_status: green
+      at: 2026-10-09T11:29:00+01:00
+      tools_20_17: 2e64eb87f8d73e8c1491494768d693c5a15283e2
+      i18n: "172 po/pot files updated on the worktree and not committed"
+      method: >
+        odoo i18n export from fx8_20_17e. Unchanged msgid kept its msgstr.
+        New terms are the app name, the first summary sentence, the
+        description feature line, and the scoring-level message. The
+        feature line comes from the customer scoring translation memory.
+        Kanban stays Kanban. Timezone codes stay English. en_GB stays
+        English. Country files copy the root language.
+      empty_msgstr: 0
+      app_names: "Customer Scoring and Evaluation, Vendor Scoring and Evaluation, Partner Scoring and Evaluation, Header Clocks. Russian: Оценка и анализ клиентов, Оценка и анализ поставщиков, Оценка и анализ партнёров, Часы в заголовке."
+      loaded_on:
+        - {db: fx8_20_17, url: "http://127.0.0.1:18245/web/login", active_langs: 43, gaps: 0, proof: "ru shortdesc: Оценка и анализ клиентов"}
+        - {db: fx8_20_17e, url: "http://127.0.0.1:18246/web/login", active_langs: 43, gaps: 0, proof: "de: Kopfzeilenuhren"}
+      users_left_on: en_US
+      runner: /home/feelwhy/env-sync/p6/fx3_20_17/apply_fx3.py
+      load_runner: /home/feelwhy/env-sync/p6/fx3_20_17/load_fx3.py
+      logs: [/home/feelwhy/env-sync/p6/logs/fx3_20_17_c.log, /home/feelwhy/env-sync/p6/logs/fx3_20_17_e.log]
+    fx4:
+      stage_status: green
+      at: 2026-10-09T12:37:00+01:00
+      tools_20_17: 5359839454fd056da170682471c88dbf36a191f8
+      unblocked_by: "defect 12 fixed: vendor_scoring rows on purchase.group_purchase_manager"
+      passed:
+        - all four modules, community and enterprise, each its own install without demo, with demo, then -u
+        - group tests 0 failed of 7, both editions
+      warnings_ours: 0
+      dbs_dropped: true
+      logs: [/home/feelwhy/env-sync/p6/logs/b1_20_17_c_1223.log, /home/feelwhy/env-sync/p6/logs/b1_20_17_e_1223.log]
+      blocked_run_logs: [/home/feelwhy/env-sync/p6/logs/fx4_20_17_c.log, /home/feelwhy/env-sync/p6/logs/fx4_20_17_e.log]
+      runner: /home/feelwhy/env-sync/p6/fx4_20_17_matrix.sh
+      debug_mode_fix: >
+        3244595f4da: scoring_form partnerId used t.or(t.number(), t.boolean()). OWL 3
+        union iterates one list (owl.js:1310), so with props validation on (odoo.debug or
+        test mode, web/static/src/env.js:105) both scoring tabs died with
+        "types22 is not iterable". Now t.or([t.number(), t.boolean()]). Reproduced and
+        fixed on fx8_20_17 /odoo/contacts/16?debug=assets.
+    fx6:
+      stage_status: green
+      at: 2026-10-09T12:21:00+01:00
+      method: >
+        Owner said move on to Fx.6 while Fx.4 is still blocked.
+        Standalone copy of each published 19.0 description. version 20.0,
+        prepublish true, force_no_git true, not_supported false, no
+        pre_publish_origin_id, documentation_url cleared. Videos were not
+        copied. Releases were not copied; each draft has one new migration
+        release. Tails kept: 1.0.3, 1.0.2, 1.0.4, 1.0.4.
+      drafts:
+        - {tech_name: customer_scoring, origin: 1072, draft: 1312, exact_version: 1.0.3, release: 1212}
+        - {tech_name: header_clock, origin: 1085, draft: 1313, exact_version: 1.0.2, release: 1213}
+        - {tech_name: res_partner_completeness, origin: 1071, draft: 1314, exact_version: 1.0.4, release: 1214}
+        - {tech_name: vendor_scoring, origin: 1073, draft: 1315, exact_version: 1.0.4, release: 1215}
+      releases: >
+        migration true, state 0_work, not published. Public text is the flag
+        line alone on all four. The Purchase Administrator access change is
+        already the published 19.0.1.0.4 row (1210), which vendor history
+        includes, so it is not repeated as a 20-only line. Icon changes stay
+        out. Page copy was not rewritten: no sentence describes the old Sales
+        Manager access. 19.0 records were not written.
+      pics: {customer_scoring: 14, header_clock: 3, res_partner_completeness: 16, vendor_scoring: 14}
+      features: {customer_scoring: 2, header_clock: 1, res_partner_completeness: 2, vendor_scoring: 2}
+      public_20_0: 0
+      origin_unchanged: true
+      preview: https://faotools.com/apppublish/20.0/1315/
 
 # ---------------------------------------------------------------- live records
 # One entry per module once phase 8 starts. Never reuse a stale id after a failed apply.
@@ -6087,6 +7123,19 @@ source_serie_defects:
            was half-repaired; this closes the other half on the port branch.",
      owner_action: "Needs the same one-line fix on the current serie (agents do not write it).
                     Until then 19.0 keeps sending nothing to fr/es readers of a revised article."}
+  - {id: 12, module: vendor_scoring, group: 20_17, status: fixed_by_owner,
+     issue: "vendor_scoring/security/ir.model.access.csv grants scoring.point and
+             scoring.selection.value to sales_team.group_sale_manager, while depends
+             is only res_partner_completeness and purchase. A database without Sales
+             cannot install Vendor Scoring.",
+     evidence: "origin/19.0 vendor_scoring security CSV and manifest. Fx.4 2026-10-09
+                both editions: No matching record found for external id
+                sales_team.group_sale_manager while loading ir.access.csv.
+                customer_scoring passed because it depends on sale_management.
+                purchase on 20.0 depends on account only.",
+     owner_action: "Fix on 19.0 first. Recommended: point the two rows at
+                    purchase.group_purchase_manager. Alternative: add sales_team to
+                    depends and keep the Sales Manager grant."}
 
 # Port work (not 19.0 defects): these work today and break only on the target serie. Recorded
 # here because neither was in the ledger, the tracker, or rule 22 - and neither is reachable by

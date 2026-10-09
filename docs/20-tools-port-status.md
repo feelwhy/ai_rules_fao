@@ -185,7 +185,7 @@ plus the delta analysis — the work each group already owes before anyone edits
 | 15 | `20_3` | 5 | `Gx.9` **green** | owner walk demo20e; B1 0/4; mappingproxy mass action; jstree off-proxy; RFQ `uom_id` |
 | 16 | `20_13` | 4 | `Gx.9` **green** | B1 `b29ef140fd9` / merge `1d07d34fbb0`; composer FORBIDDEN; Mailpit; :18214 |
 | 17 | `20_8` | 4 | `Gx.9` **green** | B1 `e7289b3349b` / merge `7c0e7ddacc8`; 0/15 on `test_b1_20817`; demo20e :18201 |
-| 18 | `20_17` | 4 | `Gx.9` **green** | B1 `9c00c09f9da` / merge `0ae9943cfe4`; same walk and test log |
+| 18 | `20_17` | 4 | `Fx.6` **green** (Fx.4 green after the vendor_scoring access fix) | hidden 20.0 drafts 1312–1315, flag line only |
 
 All 18 groups carry confirmed work. The 2026-09-12 “pilot and `20_c` have none” claim was
 the `@odoo/owl` skip. `ir.access` already hits 86 of 93 modules; OWL 3 `useState` hits 25
