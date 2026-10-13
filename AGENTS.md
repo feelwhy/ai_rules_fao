@@ -65,6 +65,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Demo data for public apps: XML in the `tools` module, Python generators and script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) in `system/odootools_demo` — `34-demo-data`. KnowSystem articles additionally follow their `editor_type` contract — `35-knowsystem-demo`.
 - Porting the `tools` apps to a new **major** Odoo serie: `36-major-version-port` (branch topology, per-group gates, durable ledger, publish loop). The serie-pair **transforms** live in `ai_rules` (`20-migrate-v17-to-v18`, `21-migrate-v18-to-v19`, `22-migrate-v19-to-v20`) with the mechanical checker at `ai_rules/tools/check_migrate_v20.py`. Program state: `migration/20-tools-port.state.yaml` (authoritative) plus `docs/20-tools-port-status.md`. The program is **not** done when the last module group is green: Docker image (`env-serie-image.sh` / `env-demo-20`), `env-demo-reload.sh` / `env-demo-build.sh`, `odootools_demo` loaders for the touched modules (same path as 19.0, improved on the port), `faotools_after_init` / after_clone / post-install, and later master infra stay in scope (`36` non-negotiables 8–11). JS and XML are `Gx.3`, not a walk leftover. Owner-asked fixes are replayed on every newer `Gx.3`.
 - App store releases (`module.release` on faotools.com): `33-faotools-release` is **always-on** (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Filling the app `.po` does not count. Do not leave `/ru/` English unless the user explicitly skips translations.
+- LinkedIn company-page posts (one app feature per post, chosen by the owner): `37-linkedin-publications`. Text, visual, and one live short URL per app are prepared together; files live in `support/docs/linkedin/`. The owner publishes.
 
 ## 01-hub-serie
 
@@ -2234,3 +2235,232 @@ the source of truth. Pause only when:
 A process correction updates this rule and the tracker before the affected stage is marked done.
 Every rule-22 entry carries its evidence and tested SHA; an entry without evidence does not
 belong there.
+
+## 37-linkedin-publications
+
+_LinkedIn company-page posts that draw attention to one faOtools app feature_
+
+# LinkedIn company-page publications
+
+Company page: `https://www.linkedin.com/company/42422225` (the URL stored on
+the faotools.com website record).
+
+The goal is attention to one app feature. One post, one feature. A post is
+done when the owner has the text, the visual, the live short URL, and the first
+comment. The agent drafts and prepares. The owner publishes.
+
+## Post types
+
+| Type | Content | Visual | Short URL |
+|---|---|---|---|
+| First post | One opening paragraph about the series, then the first feature | PDF of that feature | That app's token |
+| Feature | One feature of one app | PDF of that feature | That app's token |
+| Update | One release of one app | PDF or one image | That app's token |
+
+The series has no separate intro post. The first post opens with one short
+paragraph (what we publish), then goes straight to its feature. Later posts are
+the feature only.
+
+- **The feature is always the owner's choice.** Do not pick the subject, rank
+  apps, or add a second feature. Suggest topics only when the owner asks.
+- **One post is one feature.** Never two features or two apps in one post.
+
+Cadence: at least every two weeks, same weekday, morning CET.
+
+## Text: strict
+
+Short sentences. Plain words. Every sentence says a fact the reader can check
+on the screen. Nothing else.
+
+- **Feature or update post: 2–3 short paragraphs.** First paragraph: the
+  problem, in one or two sentences. Second: what the feature does, as actions
+  (click, open, drag, download). Optional third: one fact that widens it
+  (connected clouds, portal). No more.
+- **First post:** add one opening paragraph before that, three sentences at
+  most: features go unnoticed, we show one per post, this is the first.
+- **Never mention Odoo versions** in the text or on any slide. The app page
+  shows them.
+- **First line under ~120 characters**, so it ends before "see more".
+- **Sentences under ~15 words.** One idea each.
+- **Last line, always the same, before the tags:**
+  `Free demo on request. Link in the first comment.`
+- **Hashtags: 3–5**, on their own last lines. Always `#Odoo`.
+
+Cut on sight:
+
+- warm-up and framing ("we are excited", "in today's world", "did you know",
+  "we are starting", "here is why")
+- adjectives that prove nothing ("powerful", "seamless", "best",
+  "significantly", "easy", "game changer")
+- rhetorical questions, emoji, exclamation marks
+- Odoo version numbers
+- a sentence that repeats the one before it
+- anything about a second feature or another app
+
+Truth bar:
+
+- Product names as published ("Cloud Storage Solutions", "faOtools").
+- Every sentence is on the current app page, or visible in the screenshot.
+  Check each one before handing the draft over. When a capability needs a
+  separate app (a cloud connector), say so in the same sentence.
+- A list of integrations, clients, or formats is complete: every item the app
+  page names (its short summary first). Never a hand-picked subset.
+- Partner status only in the words of the faotools.com homepage. Never
+  "official Odoo" or "by Odoo".
+- The Buy button on the app page goes to the Odoo Apps Store. Never promise a
+  checkout on faotools.com.
+
+## Visual
+
+### PDF (feature and update posts)
+
+LinkedIn limits (Help a523054, Documents API): PDF/PPT/PPTX/DOC/DOCX,
+100 MB, 300 pages, a title, one document per post, every page the same size,
+flattened. It cannot be edited after posting.
+
+- Every page **1080 × 1350 px**, 4 to 7 pages. 60 px clear on every edge.
+- Page 1: the problem in a few words, the app name, the logo. Nothing about
+  the series, numbering, or our process: slides are for the reader's problem.
+- **Middle pages: one step of this feature each, with its screenshot.** Short
+  headline, the crop, at most one line under it. Every screenshot shows this
+  feature. A shot of another feature is not allowed, however good it is.
+- **Middle pages follow the feature's steps.** A neighbouring screen is allowed
+  only as its own step and named as such ("Open the same folders in the full
+  File Manager"), never as a stand-in for a missing shot.
+- Last page: the feature overview (the steps as a short checklist), "Free demo
+  on request", and the readable short URL (`faotools.com/s/<token>`). It is
+  not clickable in a PDF.
+- Light page, headings in brand teal `#017e84`.
+- Built with Pillow from a script in `support/docs/linkedin/build/`, one
+  flattened PDF, plus the page PNGs for review.
+- **Copy every built PDF to the owner's Downloads** (`/mnt/c/Users/feel1/Downloads`,
+  Windows "Загрузки"). The build script does it, so a rebuild never leaves a
+  stale copy there.
+- A caption or overview line names only what the screenshot shows. If the
+  owner's shot has a different menu than the store shot, the text follows the
+  owner's shot.
+
+### Shot list (in every draft)
+
+A table: page, what the shot must show, source.
+
+| Source | Meaning |
+|---|---|
+| `static` | A file from `tools/<module>/static/description/` on the newest published serie, read with `git show origin/<serie>:<path>` (never check out another branch, `01-hub-serie`). |
+| `TO-DO` | Missing, weak, or not exactly this step. Say what to capture: app, record, state, what is visible, the crop. The owner captures it. |
+| `owner` | A shot the owner sent. Saved under `support/docs/linkedin/assets/owner/` so a rebuild keeps it. |
+
+- Look at every candidate before listing it. Reject old styling, empty data, or
+  a shot that shows something else.
+- Crop to the step. Never enlarge a crop more than 1.5×; a smaller original is
+  a `TO-DO` for a sharper capture.
+- Never a generated UI picture.
+- **Missing shots are asked for before the PDF is built.** Put the `TO-DO`
+  list in the reply first. If the owner wants the draft anyway, the page gets a
+  clear "Screenshot needed" placeholder with what it must show. Never fill the
+  gap with a shot of another screen.
+
+### Video
+
+Native upload, 1080p, captions burned in, 60–120 s, one feature. The owner
+records it. The agent writes the script and on-screen lines to the same text
+rules.
+
+## Every reply with a draft: the full final result
+
+After any correction, the reply always contains the complete current version,
+never only the changed part:
+
+- the full post text, hashtags, and first comment, ready to paste;
+- **every** page of the PDF as an image, in order;
+- the Downloads path of the PDF;
+- what is still missing (a `TO-DO` shot), if anything.
+
+## Short URL: one per app
+
+Each app has **one** `short.url.redirect` on faotools.com, used in every post
+about that app. The homepage has one more (`odoo-apps`), for a post that is not
+about one app.
+
+- Create it in the job that drafts the **first** post about that app. Later
+  posts reuse it. Search by `url_token` first.
+- **Token: the app, readable.** `faotools.com/s/cloud-storage`, not
+  `/s/x7k2p9`. Lowercase words with `-`.
+- **Target: the app page**, as a **path** (the module prefixes `/` to anything
+  else): `/apps/<slug>?utm_source=linkedin&utm_medium=social&utm_campaign=li_<tech_name>`.
+  Homepage token: `odoo-apps` → `/?utm_source=linkedin&utm_medium=social&utm_campaign=li_odoo-apps`.
+- No expiry. `notes` = `LinkedIn: <app name>`.
+- Create with MCP `odoo_records_create`, confirm, then prove it:
+  `curl -sI https://faotools.com/s/<token>` gives `301` to the target, and the
+  target gives `200`.
+- SEO: the route answers `301` with `X-Robots-Tag: noindex, nofollow`, the app
+  page canonical has no `utm`, LinkedIn links are nofollow. No ranking passes,
+  no second indexable URL.
+- What it measures: clicks on posts about this app (`redirect_num`, `utm` in
+  Analytics). Demo requests, `app.template.store.click`, and `app.template.sale`
+  per app per day are a correlation, not proof that a post sold.
+
+## First comment
+
+One line: what the link opens, plus the short URL.
+`Cloud Storage Solutions, with a free demo on request: https://faotools.com/s/cloud-storage`
+
+## Reach
+
+- The owner reposts from their own profile the same day, with one sentence of
+  their own, and answers comments in the first hour.
+- About every fourth post, a LinkedIn Article gathers the recent features of
+  one app into a how-to. It links to the app page and claims nothing more.
+
+## Link preview
+
+The first-comment preview needs an absolute https `og:image` and an `og:url`
+equal to the https canonical. `modules_website` `get_website_meta` emits a
+relative `/web/image/<id>` today, which LinkedIn cannot show. Fix that override,
+not each post. After a tag change, the owner runs the URL through LinkedIn Post
+Inspector.
+
+## Administration: one record per post
+
+Descriptor → **Posts** (`linkedin.post`) on the support database is the only
+list of posts. Do not keep a second log.
+
+| Field | Content |
+|---|---|
+| `name` | What the post is about. This is the search name. |
+| `template_id` | The `app.template`. Empty only when the post is not about one app. Search and group by it. |
+| `state` | `draft` or `published`. |
+| `publish_date` | Filled with today when the state becomes Published and the date is empty. Editable. |
+| `presentation` | The PDF or the video (`attachment=True`). |
+| `description` | The post text, hashtags included. Plain text. |
+| `first_comment` | The first comment, short URL included. |
+
+Preparing a new post creates the record. Adapting a post writes the same
+record. Match an existing one by `name` and `template_id` before creating
+another.
+
+Write it on the **local** support database (`env-shell.sh support`). The live
+faotools.com record is written only when the owner confirms the master update.
+Never create it through the live MCP while the post is still a draft.
+
+Build files stay in `support/docs/linkedin/` (the PDF script, crops, owner
+shots, the claim check). They are the workshop. The record is the post.
+
+## Per post
+
+1. The owner names the app and the feature.
+2. Read that feature on the app page.
+3. Draft the text to the strict rules. Check every sentence.
+4. Shot list: `static` shots looked at and cropped, `TO-DO` shots described.
+   Ask for the `TO-DO` shots now.
+5. Build the PDF (placeholders only where the owner chose to go without the
+   shot). Copy it to Downloads.
+6. Reuse or create the app's short URL, and prove the redirect.
+7. Create or update the `linkedin.post` on the local support database: name,
+   template, description, first comment, and the PDF on `presentation`. Leave
+   `state` as draft until the owner has published it on LinkedIn.
+8. The owner posts, adds the first comment, reposts, and answers comments.
+   Then set the record to Published (the date fills itself).
+
+The agent never logs into LinkedIn, never schedules, and never comments as the
+page.
