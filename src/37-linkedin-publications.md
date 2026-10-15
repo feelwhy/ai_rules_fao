@@ -18,12 +18,12 @@ comment. The agent drafts and prepares. The owner publishes.
 | Type | Content | Visual | Short URL |
 |---|---|---|---|
 | First post | One opening paragraph about the series, then the first feature | PDF of that feature | That app's token |
-| Feature | One feature of one app | PDF of that feature | That app's token |
-| Update | One release of one app | PDF or one image | That app's token |
+| Feature | One opening line, then one feature of one app | PDF of that feature | That app's token |
+| Update | One opening line, then one release of one app | PDF or one image | That app's token |
 
 The series has no separate intro post. The first post opens with one short
-paragraph (what we publish), then goes straight to its feature. Later posts are
-the feature only.
+paragraph (what we publish), then goes straight to its feature. Every later
+post opens with one short line that continues the series, then the feature.
 
 - **The feature is always the owner's choice.** Do not pick the subject, rank
   apps, or add a second feature. Suggest topics only when the owner asks.
@@ -42,6 +42,13 @@ on the screen. Nothing else.
   (connected clouds, portal). No more.
 - **First post:** add one opening paragraph before that, three sentences at
   most: features go unnoticed, we show one per post, this is the first.
+- **Every later post: one opening line before that**, under ~12 words, that
+  ties the post to the series. Examples: "Continuing our series of features
+  you may have missed.", "Did you know KnowSystem can answer shop questions?",
+  "One more hidden feature, this time for online shops." Word it differently
+  from every earlier post: read the `description` of the existing
+  `linkedin.post` records first, and never reuse an opening. This line is the
+  only place for a question.
 - **Never mention Odoo versions** in the text or on any slide. The app page
   shows them.
 - **First line under ~120 characters**, so it ends before "see more".
@@ -49,14 +56,28 @@ on the screen. Nothing else.
 - **Last line, always the same, before the tags:**
   `Free demo on request. Link in the first comment.`
 - **Hashtags: 3–5**, on their own last lines. Always `#Odoo`.
+  When the app is a LinkedIn product, also add its product hashtag, written
+  exactly as below. It counts as one of the 3–5. Other apps have no product
+  hashtag; do not invent one.
+
+  | App | Product hashtag |
+  |---|---|
+  | KnowSystem | `#odooknowsystemknowledgebasesystem` |
+  | Cloud Storage Solutions | `#odoocloudstoragesolutions` |
+  | Universal Appointments | `#odoouniversalappointments` |
+  | Password Manager | `#odoopasswordmanager` |
+  | KPI Balanced Scorecard | `#odookpibalancedscorecard` |
+  | MCP Server | `#odoomcpserveraichatsandllmintegration` |
+  | Messaging Suite | `#odoomessagingsuite` |
+  | Periodic Reporting and Reminders | `#odooperiodicreportingandreminders` |
 
 Cut on sight:
 
-- warm-up and framing ("we are excited", "in today's world", "did you know",
-  "we are starting", "here is why")
+- warm-up and framing ("we are excited", "in today's world",
+  "we are starting", "here is why"), except the one opening line above
 - adjectives that prove nothing ("powerful", "seamless", "best",
   "significantly", "easy", "game changer")
-- rhetorical questions, emoji, exclamation marks
+- rhetorical questions outside the opening line, emoji, exclamation marks
 - Odoo version numbers
 - a sentence that repeats the one before it
 - anything about a second feature or another app
@@ -97,9 +118,6 @@ flattened. It cannot be edited after posting.
 - Light page, headings in brand teal `#017e84`.
 - Built with Pillow from a script in `support/docs/linkedin/build/`, one
   flattened PDF, plus the page PNGs for review.
-- **Copy every built PDF to the owner's Downloads** (`/mnt/c/Users/feel1/Downloads`,
-  Windows "Загрузки"). The build script does it, so a rebuild never leaves a
-  stale copy there.
 - A caption or overview line names only what the screenshot shows. If the
   owner's shot has a different menu than the store shot, the text follows the
   owner's shot.
@@ -137,7 +155,6 @@ never only the changed part:
 
 - the full post text, hashtags, and first comment, ready to paste;
 - **every** page of the PDF as an image, in order;
-- the Downloads path of the PDF;
 - what is still missing (a `TO-DO` shot), if anything.
 
 ## Short URL: one per app
@@ -145,6 +162,11 @@ never only the changed part:
 Each app has **one** `short.url.redirect` on faotools.com, used in every post
 about that app. The homepage has one more (`odoo-apps`), for a post that is not
 about one app.
+
+**The link always targets the core app**, even when the post shows one of its
+extensions: a KnowSystem: eCommerce post links to KnowSystem, a Google Drive
+connector post links to Cloud Storage Solutions. One token per core app. The
+only exception is Documentation Builder, which gets its own token and page.
 
 - Create it in the job that drafts the **first** post about that app. Later
   posts reuse it. Search by `url_token` first.
@@ -218,7 +240,7 @@ shots, the claim check). They are the workshop. The record is the post.
 4. Shot list: `static` shots looked at and cropped, `TO-DO` shots described.
    Ask for the `TO-DO` shots now.
 5. Build the PDF (placeholders only where the owner chose to go without the
-   shot). Copy it to Downloads.
+   shot).
 6. Reuse or create the app's short URL, and prove the redirect.
 7. Create or update the `linkedin.post` on the local support database: name,
    template, description, first comment, and the PDF on `presentation`. Leave
