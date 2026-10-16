@@ -420,7 +420,7 @@ phases:
       not_done_yet:
         - "browser first-click on the master templates (each 20_final group passed its own Fx.2 smoke)"
         - "make_enterprise role id 12 still unverified"
-        - "serving image env-demo-20:1 is still tools 8a9ee216. The 15 modules added for 20_7/20_suite/20_6 are in the live extra-addons volume only. Do not project_apply that image tag: --renew-anon-volumes would drop them while the databases still have them installed. The next image must be built from current tools 20_final."
+        - "(closed 2026-10-16) serving image is env-demo-20:14, built from tools 20.0 b109be09015 with every installed module baked in."
       "35i_20_final_modules":
         status: done
         at: 2026-10-07T14:17:00+01:00
@@ -431,8 +431,21 @@ phases:
         refreshers: "stock, email suite, product dynamic codes, and timesheets/menu ran. product dynamic codes is now also on the weekly amend (system 20.0 4366beb)."
         setup_note: "action_setup_demo_template committed the loaders, then died in _apply_odootools_demo_po_translations (values is a str). Demo rows were already committed. Not re-run."
     "36_candidate_gate":
-      status: rebuilding
+      status: done
       at: 2026-10-06T12:07:00+01:00
+      promoted:
+        at: 2026-10-16T12:20:00+01:00
+        image: 127.0.0.1:5000/env-demo-20:14   # serving image was :13
+        commits: {tools: b109be09015, system: 9143c62, odoo-apps-addons: 97f7200, odoo: 1740e969d23, enterprise: 72493ce4bbb}
+        gate: "community 0 failed of 888, enterprise 0 failed of 897; log gate 0/0 on both; browser OK"
+        apply: "project_apply 4954 done; odoo-demo-20 healthy on :14; both template /web/login 200; 0 ERROR/CRITICAL in the serving log"
+        flag: "needs_project_image was left True by the gated build path; cleared after promote"
+        fixed_on_the_way: >
+          Chrome + websocket-client in the Demo 20 image (browser tests used to skip),
+          MCP tests mute their expected failure logs, typo reporter Hoot tests on 20.0,
+          KnowSystem tooltip test waits for the bound anchor, appointment demo books
+          only free same-company customers, backups no longer blocked by a pending
+          image build or skipped by cron drift.
       code: "faotools_env 77d2747 (env_master 19.0.1.0.228 live, agent refreshed); system 60491b9; tools 337dbab4e23"
       how: >
         env.project.image_gate. Gated projects never auto-apply: the weekly pipeline,
@@ -472,7 +485,7 @@ phases:
       tests: "module_descriptor 0 failed, 0 errors of 6 (includes the item 37 selection tests)"
       not_run_live: "no 20.0 description was created on faotools.com"
   "8_final_group_loops":
-    status: in_progress
+    status: done
     pilot: "20_2"
     active_group: ""
     fx1: green     # tools 20_2 20326816aca (after two review fixes), merged 20_port 299187e254a; system 4fef9e5
@@ -484,7 +497,11 @@ phases:
       origin/20.0 (rule 22 F15, rule 36). Swept 2026-10-07 on all 21 tools 20 branches:
       284 links in 212 files, one commit per branch, pushed. Runner
       ~/env-sync/p6/retarget_store_links_20.py (not source).
-    next: "Demo 20 candidate from tools 20.0 bd3cb6c9848. Do not promote until it is green."
+    next: ""
+    closed_2026_10_16: >
+      Demo 20 candidate :14 (tools 20.0 b109be09015) green on both templates and
+      promoted. origin/20_final f3fb5fc9f67 merges origin/20.0 3e11b376b26; the two
+      trees are equal (git diff --exit-code empty).
     closed_2026_10_15: >
       Every group's code and store pages are on origin/20.0 (bd3cb6c9848) and
       origin/20_final (d28c4500165); the two trees match. Appointments translates
@@ -493,12 +510,12 @@ phases:
       a Demo 20 candidate built from this SHA is green. Do not merge 20_port
       (d6685c7ed5e, static props) onto 20.0.
   "9_publish_loops":
-    status: in_progress
+    status: done
     note: >
       Publish loops through Px.9 are handed for the groups that reached the store.
       Px.5 for 20_2, 20_c, 20_16, 20_3 and 20_8 was the owner's GitHub update;
       the [#auto] commits are on origin/20.0 and were not re-run on 2026-10-15.
-      Open gate is the same Demo 20 candidate, not another release.
+      The Demo 20 candidate gate closed 2026-10-16 (image :14 promoted by the owner's command).
   "10_cutover": {status: pending}
 
 # ---------------------------------------------------------------- aggregates
