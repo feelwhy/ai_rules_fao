@@ -214,11 +214,12 @@ phases:
       H2: "closed. The candidate runs -u all before the tests. Both editions finished with 0 failed, so no leftover field rename broke the registry."
       H7: "closed. gate_warnings 0 on both editions. No deprecation warning was attributed to a tested module."
     "4.6_ci_on_20_branches":
-      status: open
+      status: dropped
+      dropped_at: 2026-10-16
+      dropped_by: "owner command: drop CI on the 20 branches. Local Docker and the Demo 20 candidate gate stay the test path."
       note: >
         .gitlab-ci.yml came over on the scaffold with VERSION "11.0", stale exactly as on 19.0.
-        The tracker called this "phase 4 work if we want CI on these branches" and it was never
-        decided. Not a blocker for the pilot; local Docker is the test path (rule 36 Gx.7).
+        Not rewritten.
   "5_pre_release_group_loops":
     status: done
     active_group: ""
@@ -237,11 +238,10 @@ phases:
         - /home/feelwhy/env-sync/b1_20817/assert_acc20e_after.log
     open_items:
       - >
-        env-test / env-demo-build clone names are not session-unique
-        (test_db_name() = "test_<target>", env-demo-build = one BUILD_DB). Two chats testing
-        the same target destroy each other's run: clone_test_db terminates connections to
-        that name and drops it. Cost us two failed Gx.2 attempts and disrupted the parallel
-        chat's knowsystem run on 2026-09-12. Fix is a per-session suffix; NOT done.
+        Test database names now include the shell pid (faotools_env 295fffa).
+        Two parallel demo18 runs used test_demo18_33998 and test_demo18_34067 and each
+        dropped only its own database. Both Odoo processes then reported 0 tests: the
+        demo18 dump failed while loading (missing website_id). That is not a green suite.
   "5b_port_numeric_parity":
     status: green
     note: >
@@ -521,20 +521,19 @@ phases:
     status: in_progress
     at: 2026-10-16T12:40:00+01:00
     not_done:
-      - "Live crawl covered 6 paths per language (home, /apps, two app pages, two ticket forms). The other app pages and their release blocks were not crawled."
-      - "Static translation checks were not run against tools 20.0 (the run used the shared 18.0 checkout)."
-      - "Step 5: 4.6 CI, the phase-5 test-DB name clash and defect 11 still need doing, or the owner's explicit OK to drop."
-    pages_checked: "2026-10-16: all 94 published 20.0 app pages answer with a v.20 title"
-    trees: "origin/20.0 3e11b376b26 == origin/20_final f3fb5fc9f67 (git diff --exit-code empty, re-checked 2026-10-16)"
+      - "One English sentence is still on the Russian (and every other language checked) pages of Cloud Storage and OneDrive: 'If Microsoft shows an account already signed in...'. The term is in cloud_base_20.0.yaml and onedrive_20.0.yaml. MCP cannot read support.translations, so _apply_description was not run and the live pages are unchanged."
+      - "check_mt_quality.py on tools 20.0 is still red: 31 po_mixed and 2 po_title_salad. They are English keyword tails inside translated summaries (Shared vaults, Custom email from). Product-name translations were put back to English (tools 162b4ac0960). check_dnt_editions and check_view_term_restyle are green."
+    pages_checked: "2026-10-16: all 94 published 20.0 app pages answer with a v.20 title. Full-page crawl of those URLs finds the one Microsoft sentence above, on cloud storage and onedrive, in every language reached."
+    trees: "origin/20.0 162b4ac0960 and origin/20_final 735ca5eb9a8 have an empty tree diff (2026-10-16)"
     image: 127.0.0.1:5000/env-demo-20:14
     commits: {tools: b109be090150f6bef8f9dae515048e5b1c0c4351, system: 9143c62d9f84cf3a553650bc2af73400c0a62ef7, odoo-apps-addons: 97f7200112495a12ccb1a8f63b6d15e6c8e35a7c, odoo: 1740e969d23e6e3e299e5f367a1b0fcc6d2170fe, enterprise: 72493ce4bbb261c179ee14f238afb3b09050d480}
     project_repo: "env.project.repo id 44 branch 20.0"
     apply: "project_apply 4954 done; both template /web/login 200"
     pages: "all 93 group modules have a 20.0 module.description with prepublish false; 0 unpublished module.release rows"
     left_open:
-      - "4.6 CI on the 20 branches: owner decision, not done"
-      - "phase 5 open item: test DB names are not session-unique"
-      - "defect 11: Spanish and French knowsystem .po on origin/19.0 still translate write_revision_uid inside the mail body. 20.0 is clean. Agents do not write 19.0."
+      - "4.6 dropped by the owner 2026-10-16"
+      - "test DB names are per-run in faotools_env 295fffa; the demo18 proof loaded 0 tests"
+      - "defect 11 is on origin/19.0 b4498e1b375"
 
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
@@ -8933,7 +8932,7 @@ source_serie_defects:
                 Other edit tests that use _update_message passed (18 tests, this one error).",
      fix: "On 19.0: message.with_user(self.user_own).sudo().with_context(message_edit_history_registered=True).",
      status_note: "on origin/19.0 as 1c41d1343d2"}
-  - {id: 11, module: knowsystem, group: 20_15, status: fixed_on_port_branch_only,
+  - {id: 11, module: knowsystem, group: 20_15, status: fixed_and_committed, fixed_in: b4498e1b375,
      issue: "The revision-notification mail body is a QWeb expression, and seven shipped
              .po files translated the FIELD PATH inside it: fr/fr_BE/fr_CA/fr_CH say
              object.write_révision_uid.name and es/es_419/es_CL say
@@ -8946,7 +8945,7 @@ source_serie_defects:
      fix: "On 20_15 only: restore write_revision_uid in all seven msgstr. The Gx.3 port had
            fixed the four French files and left the three Spanish ones, so the same defect
            was half-repaired; this closes the other half on the port branch.",
-     still_open_on_19: "2026-10-16 re-check: origin/19.0 es.po, es_419.po, es_CL.po still have write_revisión_uid and fr.po still has write_révision_uid in the msgstr. origin/20.0 has neither. Agents do not write 19.0."}
+     status_note: "fixed on origin/19.0 as b4498e1b375. The seven es/fr msgstr values keep write_revision_uid. A Docker install of that worktree did not load the addon (the image volume hid the mount), so the module tests did not run."}
   - {id: 12, module: vendor_scoring, group: 20_17, status: fixed_by_owner,
      issue: "vendor_scoring/security/ir.model.access.csv grants scoring.point and
              scoring.selection.value to sales_team.group_sale_manager, while depends
