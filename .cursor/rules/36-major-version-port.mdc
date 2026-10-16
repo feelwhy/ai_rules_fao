@@ -638,3 +638,27 @@ the source of truth. Pause only when:
 A process correction updates this rule and the tracker before the affected stage is marked done.
 Every rule-22 entry carries its evidence and tested SHA; an entry without evidence does not
 belong there.
+
+## Cutover lessons (2026-10-16)
+
+- **Candidate, then promote.** `action_build_candidate` refuses to start when
+  `candidate_state` is `building` or `testing`. Green means `state==done`,
+  `tests_ok`, `tests_total>0`, `gate_errors==0`, `gate_warnings==0`, and
+  `browser_ok is True`. `action_promote_candidate` copies
+  `candidate_image_tag` onto `image_tag`, sets `candidate_state` back to
+  `none`, and queues the stack apply. It does **not** clear
+  `needs_project_image`. A gated build leaves that flag True; after promote,
+  clear it (`_clear_pending_action("needs_project_image")`) or the next weekly
+  backup enqueue dies in `_assert_no_pending_apply`.
+- **The Demo 20 image carries a browser.** `WebSuite` skips when Chrome or
+  `websocket-client` is missing, and the log gate counts that skip as a
+  warning. The project Dockerfile installs both only when the slug is
+  `demo-20`. A local one-off uses the Chrome overlay and `--shm-size=1g`.
+- **Expected ERROR lines are silenced in the test.** The log gate counts
+  WARNING/ERROR/CRITICAL whose logger starts with `odoo.addons.<tested
+  module>`. It does not skip an ERROR a passing test writes on purpose.
+  Put `@mute_logger` on that test. Do not weaken the gate.
+- **Demo bookings stay inside one company.** Appointment loaders pick a
+  customer whose company is empty or equal to the resource's company, and a
+  resource that is free for that slot. A customer of another company makes
+  `_create_reservation` log the overlap warning.

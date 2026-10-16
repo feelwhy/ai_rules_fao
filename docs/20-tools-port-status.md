@@ -9,23 +9,23 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-10-16 (Demo 20 candidate :14 green and promoted; tools 20.0 and 20_final trees equal)
+**Last updated:** 2026-10-16 (cutover recorded; phases 4, 6, 7 and 10 closed; 4.6 CI still an owner decision)
 
 ## Where we are
 
 | Phase | State |
 |---|---|
-| 1 — saas-19.4 delta analysis | **amended** — 34 source-confirmed breaks, 5 open hypotheses, 3 runtime-reproduced (`ir.access`, `set_param`, `useState`) |
+| 1 — saas-19.4 delta analysis | **done** — 34 source-confirmed breaks, hypotheses H1–H7 closed on candidate :14, 3 runtime-reproduced (`ir.access`, `set_param`, `useState`) |
 | 2 — living rules + checker + ledger | **amended** — checker kinds include `access-or` and `access-grant` (grouped `ir.rule` on Internal User is not an ACL grant) |
 | 3 — branches | **done** — scaffold `971c21a311e`, 21 `tools` branches + `system@20.0`, pushed |
-| 4 — infrastructure | 4.1–4.4 **done**; 4.5 runtime hypotheses **blocked** (no DB yet), 4.6 CI open |
+| 4 — infrastructure | **done.** 4.5 closed on candidate :14. 4.6 CI on the 20 branches stays an owner decision and is not done. |
 | 5 — per-group loops on saas-19.4 | **Done.** Gx.9 green for all 18 groups. Fresh templates `odooallapps20build` / `odooallapps20ebuild` and accumulated `odooallapps20.odootools.com` / `odooallapps20e.odootools.com` are **ASSERT_OK** (2026-09-28, after deleting the four xmlid-less review rows). Shared `tools` stays `18.0`. |
 | 5b — `_port` ↔ numeric module parity | **green** at `20_port` `60d47c3cb79`. Feature-test and lockstep commits re-merged. `diff -rq` of every numeric module folder was empty. |
-| 6 — 20.0 upstream release re-analysis | **item 31 done** (2026-09-28): `odoo@20.0` `c6306830bae`, `enterprise@20.0` `366ecb35b94` pinned; [20-final-delta.md](20-final-delta.md) — **10 source-confirmed breaks**, two program-wide (Font Awesome → Material Symbols in 53 modules; OWL ref compat and `t-custom-ref` dropped). Item 31b **done** (`ai_rules` `9db1a3e`): rule 22 section "20.0 final delta" F1–F10 with the icon rename table; checker kinds `fa-icon`, `owl-ref`, `ctrl-hook`, `py-import` (quiet on the saas pin, 255 findings on `20_port` vs 20.0). Item 32 **done** (2026-09-29): image `faotools/env-demo-20:20.0` (core `853a1f86126b`, re-pinned from the tip), matrix **red on all four legs** — fresh dies at import (`PREFETCH_MAX`, F5), cumulative dies in core (`ir_model_fields.index` boolean → Selection, **F11**: a saas-19.4 DB has no upgrade path to 20.0). Item 33 **blocked** until Fx.1. F11 **decided** 2026-09-29: the saas DBs are evidence only; the 20.0 cumulative base is the first green 20.0 fresh build. |
-| 7 — master infrastructure + faotools.com enablement | **in progress.** Gate changed by the owner 2026-10-05 (cumulative `20_final` green; item 33 superseded). Item 34 **done** (`system@20.0` `4fe9c18`). Item 35 **done except local sync**: env_master 19.0.1.0.224 live with serie 20.0; project "Demo 20" (id 10) on the worker with `tools@20_final`, `system@20.0`, `enterprise@20.0`; templates https://odooallapps20.odootools.com (243 modules, 43 languages, 0 gaps) and https://odooallapps20e.odootools.com (267 modules, enterprise). Backup "06:30 Demo 20"; local `demo20` / `demo20e` sync from master (saas evidence DBs kept as `*_saas194`). Demo 20 has the same "Heavy demos" resources as Demo 19. Fixed live: 20.0 filestore dirs are 0751 (root tar helper for dumps), community installs no longer pull enterprise (template rebuilt clean). Item 36 is **not closed**: candidate `env-demo-20:2` was red (joint calendar, password vault, and HTML-instead-of-PDF warnings). The fixes are pushed (`faotools_env` `77d2747`, `system` `60491b9`, `tools` `337dbab`). Candidate :3 is building (task 4274); the serving image is still :1. The gate now also opens Contacts in Chromium. Item 37 **done**: live `ticketing.support_topical_odoo_version` is already 20 (id 74, not rewritten); `support_max_demo_version` stays 16. Code fallbacks now default to 20 (`support` `40bc11e1`). Item 38 **done in code**: `action_prepare_major_draft` copies a published 19.0 description into a hidden standalone 20.0 draft. Nothing was created on faotools.com. Phase 7 stays open until candidate :3 is green and promoted. |
+| 6 — 20.0 upstream release re-analysis | **done.** Items 31 and 32 done. Item 33 superseded by the owner on 2026-10-05 (20_final grows one group at a time). |
+| 7 — master infrastructure + faotools.com enablement | **done.** Serving image `env-demo-20:14` (promoted 2026-10-16). `make_enterprise_20` checked on the live enterprise template: edition enterprise, admin (user 2) and `odootools_demo.demo_role_full_admin` hold Documents and Sign. Browser first-click dropped by the owner the same day. |
 | 8 — per-group loops on 20.0 | **done.** Demo 20 candidate `env-demo-20:14` (tools 20.0 `b109be09015`) green on both templates (888 / 897 tests, log gate clean, browser OK) and promoted 2026-10-16. `origin/20_final` `f3fb5fc9f67` has the same tree as `origin/20.0` `3e11b376b26`. Do not merge `20_port` `d6685c7ed5e` (static props). |
 | 9 — publish loops | **done.** Store pages are public. Px.5 was the owner's GitHub update. No new release rows. The candidate gate closed with the promote of `:14`. |
-| 10 — cutover | pending |
+| 10 — cutover | **done.** Tools repo on master is `20.0`. Image `:14` serves both templates. Cutover SHAs: tools `b109be09015`, system `9143c62`, odoo-apps-addons `97f7200`, odoo `1740e969d23`, enterprise `72493ce4bbb`. `origin/20.0` `3e11b376b26` equals `origin/20_final` `f3fb5fc9f67`. All 93 modules have a public 20.0 page and no unpublished release. Still open, and not marked done: 4.6 CI, the phase-5 test-database name clash, and defect 11 on 19.0 (Spanish/French `write_revision_uid` inside the KnowSystem mail body). |
 
 **First runtime evidence, 2026-09-12.** The pilot's `Gx.6` produced the program's first observed
 failures on a saas-19.4 instance, and the two most expensive ones were not in this rule's list:
@@ -202,18 +202,13 @@ Must not be written into a port as fact.
 
 | # | Hypothesis | Check | Phase |
 |---|---|---|---|
-| H1 | asset bundles unchanged | runtime asset gate | 4 — **blocked** |
-| H2 | no further field renames in surviving models | registry read after fresh install | 4 — **blocked** |
-| H5 | optional product on `sale.order.line` affects our line creation | runtime | `Gx.6` |
-| H6 | attendance ACL + geolocation affect kiosk code | install + browser smoke | `Gx.6` |
-| H7 | which deprecation warnings our code triggers | test-window log | 4 — **blocked** |
+| H1 | asset bundles unchanged | **closed, refuted.** Font Awesome is gone. Candidate :14 loaded the 20.0 bundles (`browser_ok`, WebSuite 0 failed). |
+| H2 | no further field renames in surviving models | **closed.** Candidate `-u all` then 0 failed of 888 and 897. |
+| H5 | optional product on `sale.order.line` affects our line creation | **closed.** The wizard writes `product.template.optional_product_ids`. It does not create sale lines. |
+| H6 | attendance ACL + geolocation affect kiosk code | **closed.** `scan_barcode` takes latitude, longitude and the check-in image. Enterprise candidate 0 failed of 897. |
+| H7 | which deprecation warnings our code triggers | **closed.** `gate_warnings` 0 on both editions of `:14`. |
 
 H3 (portal hook signatures) and H4 (JS patch targets) are closed — see the delta doc.
-
-H1, H2 and H7 were scheduled in phase 4, but all three need a running 20 instance and there
-is no demo20 database until a tools group is ported. Phase 4 stays open on them (ledger
-`4.5_runtime_hypotheses`). Proposal, owner to confirm: H1 + H2 at the pilot's `Gx.6`, H7 at
-`Gx.7`.
 
 ## 19.0 defects found by analysis
 

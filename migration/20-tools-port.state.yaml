@@ -53,7 +53,7 @@ phases:
       - docs/20-saas-19.4-delta.md
     result:
       source_confirmed_breaks: 34    # 25 + OWL 3 / same-path JS / ICP (2026-09-14)
-      open_hypotheses: 5          # H1, H2, H5, H6, H7 (H3 and H4 closed; H4 binding ≠ OWL-clean)
+      open_hypotheses: 0          # H1 H2 H5 H6 H7 closed 2026-10-16 on candidate :14
       runtime_reproduced: 3       # ir.access KeyError; set_param AttributeError; useState TypeError
   "2_living_rules":
     status: done
@@ -81,9 +81,8 @@ phases:
       assignment_check: pass      # 93 addons, each in exactly one group
       pushed: true                # origin, 2026-09-12; 21 tools refs + system 20.0
   "4_infrastructure":
-    # NOT done: 4.5 below. The tooling (4.1-4.4) is in, but three hypotheses were
-    # scheduled here and cannot run yet - do not close the phase on the tooling alone.
-    status: in_progress
+    # 4.5 closed 2026-10-16 on candidate :14. 4.6 (CI) stays an owner decision and is not done.
+    status: done
     "4.1_image":
       status: done
       artifacts:
@@ -208,11 +207,12 @@ phases:
     # ported. Phase 4 therefore cannot deliver them. Left OPEN rather than marked done or
     # quietly reassigned; the owner decides whether they move to the pilot's Gx.6 / Gx.7.
     "4.5_runtime_hypotheses":
-      status: blocked
-      blocked_on: "no demo20 database until one tools group is ported (4.2 open item)"
-      items: [H1, H2, H7]
-      proposed: "run H1 + H2 at pilot Gx.6 (fresh install matrix), H7 at pilot Gx.7 (test window)"
-      owner_decision_required: true
+      status: done
+      at: 2026-10-16T12:30:00+01:00
+      evidence: "candidate env-demo-20:14, community 0 failed of 888, enterprise 0 failed of 897, gate 0/0, browser_ok"
+      H1: "refuted. Font Awesome left the asset bundles (rule 22 F1). The same candidate loaded the 20.0 bundles: browser_ok and WebSuite 0 failed."
+      H2: "closed. The candidate runs -u all before the tests. Both editions finished with 0 failed, so no leftover field rename broke the registry."
+      H7: "closed. gate_warnings 0 on both editions. No deprecation warning was attributed to a tested module."
     "4.6_ci_on_20_branches":
       status: open
       note: >
@@ -255,7 +255,8 @@ phases:
       20_2 Fx.1 merged as bed6a9a1cde (only that group's modules); complementary_contact_data
       diff against 20_port was empty. The other 17 groups were not re-diffed.
   "6_final_serie_release":
-    status: in_progress
+    status: done
+    closed_2026_10_16: "31 done, 32 done, 33 superseded by the owner on 2026-10-05. Nothing else was open."
     "31_pin_and_compare":
       status: done
       at: 2026-09-28T13:05:00+01:00
@@ -325,7 +326,8 @@ phases:
         from 20_port, and the phase-8 Fx.5 review DBs accumulate from that base.
       decided_at: 2026-09-29T12:26:00+01:00
   "7_master_infrastructure":
-    status: in_progress
+    status: done
+    closed_2026_10_16: "Candidate :14 promoted. make_enterprise checked on the live enterprise template. Browser first-click dropped by the owner."
     gate: "20_final cumulative green (owner 2026-10-05, replaces item 33)"
     "34_system_and_lifecycle":
       status: done
@@ -418,8 +420,8 @@ phases:
         - "community installs with enterprise on the project addons path auto-installed 69 enterprise modules into odooallapps20: env_master 19.0.1.0.226 (2fdcc0b) passes --addons-path without enterprise for -i on non-enterprise DBs. Template 188 dropped and rebuilt clean: 174 modules, 0 enterprise, setup True / 0 gaps / 43 languages, same demo counts; admin password + mail re-applied; 189 re-derived (250 modules, edition enterprise); polluted backup 172 deleted"
         - "local post-neutralize set_param -> set_str fallback (783c8bb); before it admin/admin was not set on local 20 targets"
       not_done_yet:
-        - "browser first-click on the master templates (each 20_final group passed its own Fx.2 smoke)"
-        - "make_enterprise role id 12 still unverified"
+        - "(dropped 2026-10-16, owner command) browser first-click and console check are not part of finishing the program."
+        - "(closed 2026-10-16) make_enterprise_20 resolves odootools_demo.demo_role_full_admin (live id 5, not the 19.0 id 12). User 2 is admin and holds documents.group_documents_system and sign.group_sign_manager. The role's group_ids include both. faotools.env.edition=enterprise, expiration 2026-11-14."
         - "(closed 2026-10-16) serving image is env-demo-20:14, built from tools 20.0 b109be09015 with every installed module baked in."
       "35i_20_final_modules":
         status: done
@@ -506,8 +508,7 @@ phases:
       Every group's code and store pages are on origin/20.0 (bd3cb6c9848) and
       origin/20_final (d28c4500165); the two trees match. Appointments translates
       each /appointments menu on its own (two menus, SYNC_OK). joint_calendar
-      res_model_domain is on 20.0 only. 20_2 Px.8 and 20_c Px.8 stay open until
-      a Demo 20 candidate built from this SHA is green. Do not merge 20_port
+      res_model_domain is on 20.0 only. 20_2 and 20_c moved to Px.9 on 2026-10-16 after candidate :14 went green. Do not merge 20_port
       (d6685c7ed5e, static props) onto 20.0.
   "9_publish_loops":
     status: done
@@ -516,7 +517,19 @@ phases:
       Px.5 for 20_2, 20_c, 20_16, 20_3 and 20_8 was the owner's GitHub update;
       the [#auto] commits are on origin/20.0 and were not re-run on 2026-10-15.
       The Demo 20 candidate gate closed 2026-10-16 (image :14 promoted by the owner's command).
-  "10_cutover": {status: pending}
+  "10_cutover":
+    status: done
+    at: 2026-10-16T12:40:00+01:00
+    trees: "origin/20.0 3e11b376b26 == origin/20_final f3fb5fc9f67 (git diff --exit-code empty, re-checked 2026-10-16)"
+    image: 127.0.0.1:5000/env-demo-20:14
+    commits: {tools: b109be090150f6bef8f9dae515048e5b1c0c4351, system: 9143c62d9f84cf3a553650bc2af73400c0a62ef7, odoo-apps-addons: 97f7200112495a12ccb1a8f63b6d15e6c8e35a7c, odoo: 1740e969d23e6e3e299e5f367a1b0fcc6d2170fe, enterprise: 72493ce4bbb261c179ee14f238afb3b09050d480}
+    project_repo: "env.project.repo id 44 branch 20.0"
+    apply: "project_apply 4954 done; both template /web/login 200"
+    pages: "all 93 group modules have a 20.0 module.description with prepublish false; 0 unpublished module.release rows"
+    left_open:
+      - "4.6 CI on the 20 branches: owner decision, not done"
+      - "phase 5 open item: test DB names are not session-unique"
+      - "defect 11: Spanish and French knowsystem .po on origin/19.0 still translate write_revision_uid inside the mail body. 20.0 is clean. Agents do not write 19.0."
 
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
@@ -524,8 +537,8 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: d6685c7ed5e, created: true, pushed: true, last_pushed: d6685c7ed5e}  # 2026-10-15: static props + project type xpath. Do not merge onto 20.0.
-  20_final: {git_sha: d28c4500165, created: true, pushed: true, last_pushed: d28c4500165}  # 2026-10-15: tree matches origin/20.0 bd3cb6c9848
-  "20.0": {git_sha: bd3cb6c9848, created: true, pushed: true}  # 2026-10-15: appointments menu loop + joint_calendar res_model_domain
+  20_final: {git_sha: f3fb5fc9f67, created: true, pushed: true, last_pushed: f3fb5fc9f67}  # 2026-10-16: tree equals origin/20.0 3e11b376b26
+  "20.0": {git_sha: 3e11b376b26, created: true, pushed: true}  # 2026-10-16 cutover SHA
   system_20_0: {git_sha: fd6d69f, created: true, pushed: true}  # 2026-10-15: cite header + KPI help on
 
 # ---------------------------------------------------------------- groups
@@ -538,8 +551,9 @@ groups:
     pilot: true
     modules: [smart_warnings, complementary_contact_data, sticky_notes,
               complementary_employee_data, complementary_lead_data]
-    stage: Px.8
-    stage_status: blocked
+    stage: Px.9
+    stage_status: green
+    px9_note: "2026-10-16 candidate :14 green. The Px.8 wait for that candidate is closed."
     frozen: true
     # Work happens in a side worktree by owner decision (2026-09-12): branch 20_2 holds
     # only scaffold tech files, so checking it out in the shared tree would strip every
@@ -982,8 +996,9 @@ groups:
     modules: [opportunity_custom_fields, opportunity_custom_fields_website, partner_custom_fields,
               project_custom_fields, task_custom_fields, product_custom_fields,
               product_custom_fields_website_sale, custom_fields]
-    stage: Px.8
-    stage_status: in_progress
+    stage: Px.9
+    stage_status: green
+    px9_note: "2026-10-16 candidate :14 green. The Px.8 wait for that candidate is closed."
     blocked_by: []
     # Gx.9 accepted with defect 6 open; 19.0 then committed a9154df3008;
     # ported onto 20_c as 47d58c3ad8a and rematched 20_port.
@@ -8708,11 +8723,11 @@ locks:
 # ---------------------------------------------------------------- open items
 # Hypotheses may NOT be written into a port as fact (see rule 22).
 hypotheses:
-  H1: {claim: "asset bundles unchanged", check: "runtime asset gate on pinned image", phase: 4}
-  H2: {claim: "remaining fields in surviving models not renamed", check: "registry read after fresh install", phase: 4}
-  H5: {claim: "optional product on sale.order.line affects our line creation", check: "runtime", phase: "Gx.6"}
-  H6: {claim: "attendance ACL + geolocation changes affect kiosk code", check: "install + browser smoke", phase: "Gx.6"}
-  H7: {claim: "which deprecation warnings our code triggers", check: "test-window log on pinned image", phase: 4}
+  H1: {status: closed, outcome: refuted, at: 2026-10-16, claim: "asset bundles unchanged", evidence: "Font Awesome bundle is gone (rule 22 F1). Candidate :14 browser_ok and WebSuite 0 failed, so the 20.0 bundles load."}
+  H2: {status: closed, outcome: clear, at: 2026-10-16, claim: "remaining fields in surviving models not renamed", evidence: "Candidate -u all then 0 failed of 888 and 897. No Invalid field in that gate."}
+  H5: {status: closed, outcome: clear, at: 2026-10-16, claim: "optional product on sale.order.line affects our line creation", evidence: "product_management writes product.template.optional_product_ids and does not create sale.order.line. Candidate tests 0 failed."}
+  H6: {status: closed, outcome: ported, at: 2026-10-16, claim: "attendance ACL + geolocation changes affect kiosk code", evidence: "itlibertas_timesheet scan_barcode accepts latitude, longitude, check_in_image and calls super (attendance.py). Enterprise candidate 0 failed of 897. Kiosk browser walk dropped by the owner 2026-10-16."}
+  H7: {status: closed, outcome: clear, at: 2026-10-16, claim: "which deprecation warnings our code triggers", evidence: "gate_warnings 0 on both editions of candidate :14."}
 
 incidents:
   - id: fx_review_owl_construction_20_2
@@ -8894,15 +8909,16 @@ source_serie_defects:
            clouds.log entry. Test asserts the flag both ways (fallback + happy path).",
      fixed_in: 57ca6ad2d412f8c49f4bb36e1eb61ffb57418620,
      ported_to: {20_14: 43082e6873b}}
-  - {id: 9, module: email_suite, group: 20_suite, status: fixed_on_working_tree,
+  - {id: 9, module: email_suite, group: 20_suite, status: fixed_and_committed, fixed_in: 5931ff03a19,
      issue: "Gx.2 TestEmailSuite.test_schedule_option_computes_future_datetime
              AssertionError: 7 != 9. _compute_scheduled_datetime returns naive UTC
              in the acting user's timezone; the test asserts scheduled.hour == 9
              with no tz pin. Demo admin Europe/Brussels (UTC+2) stores 09:30 as 07:30 UTC.",
      evidence: "g2s_201486 one-off 19.0 image, pin c06d762, email_suite/tests/test_email_suite.py:336.
                 Sibling test_schedule_option_respects_user_timezone (explicit tz context) passed.",
-     fix: "On 19.0: assert fields.Datetime.context_timestamp(...).hour/minute (copied onto 20_suite). Parallel chat commits shared tools."}
-  - {id: 10, module: message_edit, group: 20_suite, status: fixed_on_working_tree,
+     fix: "On 19.0: assert fields.Datetime.context_timestamp(...).hour/minute (copied onto 20_suite).",
+     status_note: "on origin/19.0 as 5931ff03a19"}
+  - {id: 10, module: message_edit, group: 20_suite, status: fixed_and_committed, fixed_in: 1c41d1343d2,
      issue: "Gx.2 TestMessageEdit.test_delete_message_keeps_removed_content_history
              UserError: Only the author and a user with 'Can edit and delete any messages'
              rights can edit this message. The test passes message.sudo() from the
@@ -8910,7 +8926,8 @@ source_serie_defects:
              _update_message already does message.with_user(user).sudo().",
      evidence: "g2s_201486, message_edit/tests/test_message_edit.py:255-258.
                 Other edit tests that use _update_message passed (18 tests, this one error).",
-     fix: "On 19.0: message.with_user(self.user_own).sudo().with_context(message_edit_history_registered=True). Parallel chat commits shared tools."}
+     fix: "On 19.0: message.with_user(self.user_own).sudo().with_context(message_edit_history_registered=True).",
+     status_note: "on origin/19.0 as 1c41d1343d2"}
   - {id: 11, module: knowsystem, group: 20_15, status: fixed_on_port_branch_only,
      issue: "The revision-notification mail body is a QWeb expression, and seven shipped
              .po files translated the FIELD PATH inside it: fr/fr_BE/fr_CA/fr_CH say
@@ -8924,8 +8941,7 @@ source_serie_defects:
      fix: "On 20_15 only: restore write_revision_uid in all seven msgstr. The Gx.3 port had
            fixed the four French files and left the three Spanish ones, so the same defect
            was half-repaired; this closes the other half on the port branch.",
-     owner_action: "Needs the same one-line fix on the current serie (agents do not write it).
-                    Until then 19.0 keeps sending nothing to fr/es readers of a revised article."}
+     still_open_on_19: "2026-10-16 re-check: origin/19.0 es.po, es_419.po, es_CL.po still have write_revisión_uid and fr.po still has write_révision_uid in the msgstr. origin/20.0 has neither. Agents do not write 19.0."}
   - {id: 12, module: vendor_scoring, group: 20_17, status: fixed_by_owner,
      issue: "vendor_scoring/security/ir.model.access.csv grants scoring.point and
              scoring.selection.value to sales_team.group_sale_manager, while depends
@@ -9085,7 +9101,9 @@ uncovered:
              "tests/test_mcp_models.py:709+"],
      evidence: "mail.message.tracking_value_ids and mail.tracking.value removed at saas-19.3;
                 these iterate msg.sudo().tracking_value_ids, so they raise on 20.0",
-     status: unscheduled}
+     status: fixed,
+     fixed_in: 97f7200112495a12ccb1a8f63b6d15e6c8e35a7c,
+     closed: "2026-10-16: no tracking_value_ids left in ai_mcp_server on 20.0. Chatter reads tracking_values off the message body. Candidate tests 0 failed."}
 
 # check_migrate_v20.py at the pins above, whole tools repo (93 modules).
 checker_baseline:
