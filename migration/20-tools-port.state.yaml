@@ -518,22 +518,23 @@ phases:
       the [#auto] commits are on origin/20.0 and were not re-run on 2026-10-15.
       The Demo 20 candidate gate closed 2026-10-16 (image :14 promoted by the owner's command).
   "10_cutover":
-    status: in_progress
-    at: 2026-10-16T12:40:00+01:00
-    not_done:
-      - "One English sentence is still on the Russian (and every other language checked) pages of Cloud Storage and OneDrive: 'If Microsoft shows an account already signed in...'. The term is in cloud_base_20.0.yaml and onedrive_20.0.yaml. MCP cannot read support.translations, so _apply_description was not run and the live pages are unchanged."
-      - "check_mt_quality.py on tools 20.0 is still red: 31 po_mixed and 2 po_title_salad. They are English keyword tails inside translated summaries (Shared vaults, Custom email from). Product-name translations were put back to English (tools 162b4ac0960). check_dnt_editions and check_view_term_restyle are green."
-    pages_checked: "2026-10-16: all 94 published 20.0 app pages answer with a v.20 title. Full-page crawl of those URLs finds the one Microsoft sentence above, on cloud storage and onedrive, in every language reached."
-    trees: "origin/20.0 162b4ac0960 and origin/20_final 735ca5eb9a8 have an empty tree diff (2026-10-16)"
+    status: done
+    at: 2026-10-16T18:30:00+01:00
+    not_done: []
+    pages_checked: "2026-10-16: Cloud Storage and OneDrive, every hreflang. The English warning stays on en_US and en_GB only. 0 findings on the other languages. The sentence was written on faotools.com by SQL on module.conf 794 and 807, not by MCP."
+    trees: "origin/20.0 2e75cb2d3eb and origin/20_final 9f9d92d13c9 have an empty tree diff (2026-10-16)"
+    quality: "check_mt_quality.py 0 issues with tools bound to the 20.0 worktree (2026-10-16)"
+    tests: "demo20 sticky_notes twice in parallel (test_demo20_a, test_demo20_b): 0 failed of 8 each, each database dropped. KnowSystem 19.0 mounted at /opt/extra: ordering tests ran, 0 failed of 21; 17 editor tests skipped because the image has no websocket-client. Database knowsystem_d11c dropped."
     image: 127.0.0.1:5000/env-demo-20:14
     commits: {tools: b109be090150f6bef8f9dae515048e5b1c0c4351, system: 9143c62d9f84cf3a553650bc2af73400c0a62ef7, odoo-apps-addons: 97f7200112495a12ccb1a8f63b6d15e6c8e35a7c, odoo: 1740e969d23e6e3e299e5f367a1b0fcc6d2170fe, enterprise: 72493ce4bbb261c179ee14f238afb3b09050d480}
     project_repo: "env.project.repo id 44 branch 20.0"
     apply: "project_apply 4954 done; both template /web/login 200"
     pages: "all 93 group modules have a 20.0 module.description with prepublish false; 0 unpublished module.release rows"
-    left_open:
-      - "4.6 dropped by the owner 2026-10-16"
-      - "test DB names are per-run in faotools_env 295fffa; the demo18 proof loaded 0 tests"
-      - "defect 11 is on origin/19.0 b4498e1b375"
+    left_open: []
+    closed:
+      - "4.6 CI dropped by the owner 2026-10-16"
+      - "test DB names are per-run in faotools_env 295fffa; proved on demo20 with two sticky_notes runs"
+      - "defect 11 is on origin/19.0 b4498e1b375; KnowSystem tests ran from that tree"
 
 # ---------------------------------------------------------------- aggregates
 # All tools branches sit on the scaffold commit until their first group merge.
@@ -541,8 +542,8 @@ aggregates:
   # 2026-09-29: 20_port 299187e254a (20_2 Material icons, then the two review fixes merged on
   # top of 743eccd9b7f); system 20.0 4fef9e5 (oi_whatsapp, ODS-900 on S00001). Both pushed.
   20_port: {git_sha: d6685c7ed5e, created: true, pushed: true, last_pushed: d6685c7ed5e}  # 2026-10-15: static props + project type xpath. Do not merge onto 20.0.
-  20_final: {git_sha: f3fb5fc9f67, created: true, pushed: true, last_pushed: f3fb5fc9f67}  # 2026-10-16: tree equals origin/20.0 3e11b376b26
-  "20.0": {git_sha: 3e11b376b26, created: true, pushed: true}  # 2026-10-16 cutover SHA
+  20_final: {git_sha: 9f9d92d13c9, created: true, pushed: true, last_pushed: 9f9d92d13c9}  # 2026-10-16: tree equals origin/20.0 2e75cb2d3eb
+  "20.0": {git_sha: 2e75cb2d3eb, created: true, pushed: true}  # 2026-10-16 keyword tails
   system_20_0: {git_sha: fd6d69f, created: true, pushed: true}  # 2026-10-15: cite header + KPI help on
 
 # ---------------------------------------------------------------- groups

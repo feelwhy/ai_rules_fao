@@ -9,7 +9,7 @@ Transforms: `ai_rules` `22-migrate-v19-to-v20`.
 Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 [20-tools-touchpoints.md](20-tools-touchpoints.md).
 
-**Last updated:** 2026-10-16 (cutover recorded; phases 4, 6, 7 and 10 closed; 4.6 CI still an owner decision)
+**Last updated:** 2026-10-16 (phase 10 closed)
 
 ## Where we are
 
@@ -25,7 +25,7 @@ Evidence: [20-saas-19.4-delta.md](20-saas-19.4-delta.md),
 | 7 — master infrastructure + faotools.com enablement | **done.** Serving image `env-demo-20:14` (promoted 2026-10-16). `make_enterprise_20` checked on the live enterprise template: edition enterprise, admin (user 2) and `odootools_demo.demo_role_full_admin` hold Documents and Sign. Browser first-click dropped by the owner the same day. |
 | 8 — per-group loops on 20.0 | **done.** Demo 20 candidate `env-demo-20:14` (tools 20.0 `b109be09015`) green on both templates (888 / 897 tests, log gate clean, browser OK) and promoted 2026-10-16. `origin/20_final` `f3fb5fc9f67` has the same tree as `origin/20.0` `3e11b376b26`. Do not merge `20_port` `d6685c7ed5e` (static props). |
 | 9 — publish loops | **done.** Store pages are public. Px.5 was the owner's GitHub update. No new release rows. The candidate gate closed with the promote of `:14`. |
-| 10 — cutover | **in progress.** Image `:14` is live and the 94 pages show v.20. `origin/20.0` `162b4ac0960` and `origin/20_final` `735ca5eb9a8` have the same tree. CI is dropped. Defect 11 is on 19.0 `b4498e1b375`. Test database names are per-run (`faotools_env` `295fffa`). Still open: the Microsoft tenant sentence on Cloud Storage and OneDrive (in the YAML, not applied: MCP cannot read `support.translations`), and 33 summary keyword-tail findings from `check_mt_quality.py`. |
+| 10 — cutover | **done.** Image `:14` is live. `origin/20.0` `2e75cb2d3eb` and `origin/20_final` `9f9d92d13c9` have the same tree. The Microsoft warning is translated on Cloud Storage and OneDrive in every language except en_US and en_GB. `check_mt_quality.py` reports 0. CI is dropped. |
 
 **First runtime evidence, 2026-09-12.** The pilot's `Gx.6` produced the program's first observed
 failures on a saas-19.4 instance, and the two most expensive ones were not in this rule's list:
