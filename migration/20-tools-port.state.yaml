@@ -518,8 +518,13 @@ phases:
       the [#auto] commits are on origin/20.0 and were not re-run on 2026-10-15.
       The Demo 20 candidate gate closed 2026-10-16 (image :14 promoted by the owner's command).
   "10_cutover":
-    status: done
+    status: in_progress
     at: 2026-10-16T12:40:00+01:00
+    not_done:
+      - "Live crawl covered 6 paths per language (home, /apps, two app pages, two ticket forms). The other app pages and their release blocks were not crawled."
+      - "Static translation checks were not run against tools 20.0 (the run used the shared 18.0 checkout)."
+      - "Step 5: 4.6 CI, the phase-5 test-DB name clash and defect 11 still need doing, or the owner's explicit OK to drop."
+    pages_checked: "2026-10-16: all 94 published 20.0 app pages answer with a v.20 title"
     trees: "origin/20.0 3e11b376b26 == origin/20_final f3fb5fc9f67 (git diff --exit-code empty, re-checked 2026-10-16)"
     image: 127.0.0.1:5000/env-demo-20:14
     commits: {tools: b109be090150f6bef8f9dae515048e5b1c0c4351, system: 9143c62d9f84cf3a553650bc2af73400c0a62ef7, odoo-apps-addons: 97f7200112495a12ccb1a8f63b6d15e6c8e35a7c, odoo: 1740e969d23e6e3e299e5f367a1b0fcc6d2170fe, enterprise: 72493ce4bbb261c179ee14f238afb3b09050d480}
