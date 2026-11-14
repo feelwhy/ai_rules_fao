@@ -14,7 +14,7 @@ Same as `ai_rules`:
 | `overrides/<id>.md` | Optional overrides |
 | `tools/sync_rules.py` | Generator (identical to `ai_rules`) |
 | `.cursor/rules/*.mdc` | **Generated** |
-| `AGENTS.md` | **Generated** |
+| `docs/rules.md` | **Generated**. Not named `AGENTS.md`, because Cursor injects every file with that name |
 
 ## Sync workflow
 
