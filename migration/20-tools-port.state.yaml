@@ -189,18 +189,10 @@ phases:
             names only a MODEL (odoo.fields "portal.password.key.name") cannot be
             attributed, so it records. Re-read those by hand when 20_4 runs.
       "4.4b_drift_timer":
-        status: done
-        artifacts:
-          - ../faotools_env/local/env-port-drift.sh
-          - ../faotools_env/local/install-port-drift.sh
-          - ../faotools_env/local/systemd/faotools-port-drift.timer
-          - ../faotools_env/local/systemd/faotools-port-drift.service
+        status: dropped
+        dropped_at: 2026-11-17
+        dropped_by: "owner command: delete env-port-drift.sh and its timer. Do not reinstall."
         result:
-          never_checkout: true
-          tests_when: "20_port has addons AND tools already on 20_port AND system on 20.0 AND both clean AND demo20 DB exists"
-          rebuild: "env-serie-image.sh when baked core ≠ remote tip; no --expect"
-          pin_drift: "exit 2; does not rewrite the ledger"
-          timer_installed: false   # ./local/install-port-drift.sh — weekly Mon 10:30, not run on install
           first_check: "2026-09-12: odoo tip = pin 3630379f6363; enterprise tip aedd5f5db507 ≠ pin 8d73a02a8ba9 (not re-pinned)"
     # Scheduling defect found 2026-09-12 while closing 4.4: H1, H2 and H7 carry `phase: 4`,
     # but all three are RUNTIME checks and there is no 20 database until a tools group is

@@ -151,15 +151,9 @@ fail the run. Core warnings are printed as `RECORD` fingerprints. Allowlist:
 
 ## Drift runner (4.4b)
 
-`./local/env-port-drift.sh` compares `saas-19.4` tips to the ledger pins and the
-baked `env-demo-20` image. It never checks out a hub repo. Tests run only when
-`20_port` already has addons, tools/system are already on the port branches and
-clean, and demo20 exists. Pin drift exits 2 and does not rewrite the ledger.
-
-`./local/install-port-drift.sh` enables a Monday 10:30 user timer — not run yet.
-
-First `--check` (2026-09-12): odoo tip still `3630379f6363`; **enterprise tip
-moved** to `aedd5f5db507` (pin is `8d73a02a8ba9`). Re-pin is a separate decision.
+Removed 2026-11-17. `env-port-drift.sh` and its Monday timer are deleted; do not
+reinstall them. The 2026-09-12 check found the enterprise tip had moved to
+`aedd5f5db507` (pin `8d73a02a8ba9`) and did not re-pin.
 
 ## Group board
 
