@@ -26,7 +26,7 @@ python3 tools/sync_rules.py --check
 
 ## Contents (high level)
 
-- Hub repo map + serie discipline (`env-serie.sh` / git branch)
+- Hub repo map; the serie skill `01-hub-serie` (`env-serie.sh` prints the worktrees, no checkout)
 - Repo boundaries, apps-store packaging, manifest version, boolean settings, search views
 - Local Docker (`faotools_env/local/`)
 - Live faOtools MCP

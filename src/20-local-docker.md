@@ -60,7 +60,7 @@ together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned
 
 ## Serie + bind mounts
 
-- `env-up` mounts the shared checkout when it is already on the serie branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch and names the repo and the branch.
+- `env-up` mounts the shared checkout when it is already on the serie branch, otherwise the worktree that has the branch checked out (usually `_worktrees/<repo>-<branch>`; a detached one does not count). It does not check out the hub. A missing required tree stops the launch, names the repo and the branch, and prints the `git worktree add` command (`01-hub-serie` rule 3).
 - `./local/env-serie.sh <serie>` prints those paths and moves nothing.
 - The official image declares `VOLUME /mnt/extra-addons`. A normal launch bind-mounts `faotools_env/addons/runtime` over that path, so Docker does not copy the baked addon tree. `env_dbfilter_header` comes from that directory. `--no-bind` still gets the copy.
 - Clean serie trees are fast-forwarded by nightly `env-git-daily` (05:00). Launch does not fetch. The launch log says whether each tree matches that last fetch.

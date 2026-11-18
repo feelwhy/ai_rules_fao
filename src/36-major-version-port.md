@@ -10,7 +10,7 @@ How a whole serie of faOtools apps moves to a new major Odoo version: branch top
 gates, durable state, and the publish loop. The **technical** transforms live in `ai_rules`
 `22-migrate-v19-to-v20` (one rule per serie pair). This rule is the process around them.
 
-Current program: 19.0 → 20.0 via `saas-19.4`. Evidence base:
+Current program: 19.0 → 20.0. `saas-19.4` stood in for 20.0 until its release (2026-09-28); core and enterprise are now on `20.0`. Evidence base:
 `docs/20-saas-19.4-delta.md`, surface inventory `docs/20-tools-touchpoints.md`,
 live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-port-status.md`.
 

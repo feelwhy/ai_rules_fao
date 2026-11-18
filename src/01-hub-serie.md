@@ -8,18 +8,20 @@ apply: agent
 
 The bans are always-on in `00-repo-map`. This skill is the command.
 
-Each serie has its own working tree. The shared checkout is used when it is already on that branch. Otherwise the tree is `/home/feelwhy/Odoo/_worktrees/<repo>-<serie>`. Launching Odoo mounts that tree and does **not** check out the shared hub.
+Each branch has its own working tree. The shared checkout is used when it is already on that branch. Otherwise it is the worktree that has the branch checked out, usually `/home/feelwhy/Odoo/_worktrees/<repo>-<branch>`. A detached worktree does not count. Launching Odoo mounts that tree and does **not** check out the shared hub.
 
 ## Rules
 
 1. Before a `git checkout` the user explicitly asked for: `git status -sb` on the affected repos; respect `ai_rules` never-discard-WIP. `env-up` and `env-serie.sh` do not check out anything.
 2. Do **not** assume the shared `tools` or `enterprise` checkout is on 19.0. Read the branch. The 19.0 tree may be a worktree.
-3. A required repo with no tree on the serie branch is an error. Name the repo and the branch and stop. Do not fall back to another serie, and do not mount the copy baked into the image.
+3. A required repo with no tree on the serie branch is an error. Name the repo and the branch and stop. Do not fall back to another serie, and do not mount the copy baked into the image. The error prints the command that adds the tree. Run it only with the user's OK:
+   `git -C /home/feelwhy/Odoo/<repo> worktree add /home/feelwhy/Odoo/_worktrees/<repo>-<branch> <branch>`
+   (undo: `git -C /home/feelwhy/Odoo/<repo> worktree remove /home/feelwhy/Odoo/_worktrees/<repo>-<branch>`).
 4. `life`, `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**. Do not put them on 17.0/18.0.
 5. Editing happens in the tree Docker will mount. A container that is already running keeps the code it started with until `env-up` recreates it.
-6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts. Do not add another worktree for a serie that already has one.
+6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts. Do not add another worktree for a branch that already has one.
 7. These absences are intentional: `odoo-apps-addons` has no `16.0` (demo16 and demo16e do not mount it); `others` has no `20.0` (demo20 and demo20e do not mount it).
-8. `19_demo` and `20_demo` are separate branches for demo capture. They need their own worktree. Demo scripts stop when that tree is missing. They do not check out the shared hub.
+8. `19_demo` and `20_demo` are separate branches for demo data. Their trees are `_worktrees/tools-<N>_demo` and `_worktrees/system-<N>_demo`. The `env-demo-*` scripts mount them, and read and write demo files there, never in the shared checkout. They re-render the target, so it serves the `_demo` code until the next `env-up`. A missing tree stops them (rule 3). They do not check out the shared hub.
 
 ## Command: “change version / switch branch to \<serie\>”
 

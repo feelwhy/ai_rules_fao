@@ -8,7 +8,7 @@ apply: always
 
 ## Hub root
 
-`/home/feelwhy/Odoo` — one shared checkout per repo, plus `_worktrees/<repo>-<serie>` for the other series. No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
+`/home/feelwhy/Odoo` — one shared checkout per repo, plus `_worktrees/<repo>-<branch>` for the other branches. No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
 
 ## Workspace folders (typical faotools.code-workspace)
 
@@ -26,7 +26,7 @@ apply: always
 
 ## Active Odoo serie
 
-Serie is the branch of the tree a target mounts, not the shared checkout. `env-up` mounts the shared checkout when it is already on that branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch. There is no fallback to another serie.
+Serie is the branch of the tree a target mounts, not the shared checkout. `env-up` mounts the shared checkout when it is already on that branch, otherwise the worktree that has the branch checked out (usually `_worktrees/<repo>-<branch>`; a detached one does not count). It does not check out the hub. A missing required tree stops the launch. There is no fallback to another serie.
 
 ```bash
 cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0

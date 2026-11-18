@@ -10,7 +10,7 @@ _Flat hub repo map, serie resolution, and who owns which rules_
 
 ## Hub root
 
-`/home/feelwhy/Odoo` — one shared checkout per repo, plus `_worktrees/<repo>-<serie>` for the other series. No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
+`/home/feelwhy/Odoo` — one shared checkout per repo, plus `_worktrees/<repo>-<branch>` for the other branches. No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
 
 ## Workspace folders (typical faotools.code-workspace)
 
@@ -28,7 +28,7 @@ _Flat hub repo map, serie resolution, and who owns which rules_
 
 ## Active Odoo serie
 
-Serie is the branch of the tree a target mounts, not the shared checkout. `env-up` mounts the shared checkout when it is already on that branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch. There is no fallback to another serie.
+Serie is the branch of the tree a target mounts, not the shared checkout. `env-up` mounts the shared checkout when it is already on that branch, otherwise the worktree that has the branch checked out (usually `_worktrees/<repo>-<branch>`; a detached one does not count). It does not check out the hub. A missing required tree stops the launch. There is no fallback to another serie.
 
 ```bash
 cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
@@ -66,18 +66,20 @@ _Change the Odoo serie or pull hub repos (change version, switch branch, pull ch
 
 The bans are always-on in `00-repo-map`. This skill is the command.
 
-Each serie has its own working tree. The shared checkout is used when it is already on that branch. Otherwise the tree is `/home/feelwhy/Odoo/_worktrees/<repo>-<serie>`. Launching Odoo mounts that tree and does **not** check out the shared hub.
+Each branch has its own working tree. The shared checkout is used when it is already on that branch. Otherwise it is the worktree that has the branch checked out, usually `/home/feelwhy/Odoo/_worktrees/<repo>-<branch>`. A detached worktree does not count. Launching Odoo mounts that tree and does **not** check out the shared hub.
 
 ## Rules
 
 1. Before a `git checkout` the user explicitly asked for: `git status -sb` on the affected repos; respect `ai_rules` never-discard-WIP. `env-up` and `env-serie.sh` do not check out anything.
 2. Do **not** assume the shared `tools` or `enterprise` checkout is on 19.0. Read the branch. The 19.0 tree may be a worktree.
-3. A required repo with no tree on the serie branch is an error. Name the repo and the branch and stop. Do not fall back to another serie, and do not mount the copy baked into the image.
+3. A required repo with no tree on the serie branch is an error. Name the repo and the branch and stop. Do not fall back to another serie, and do not mount the copy baked into the image. The error prints the command that adds the tree. Run it only with the user's OK:
+   `git -C /home/feelwhy/Odoo/<repo> worktree add /home/feelwhy/Odoo/_worktrees/<repo>-<branch> <branch>`
+   (undo: `git -C /home/feelwhy/Odoo/<repo> worktree remove /home/feelwhy/Odoo/_worktrees/<repo>-<branch>`).
 4. `life`, `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**. Do not put them on 17.0/18.0.
 5. Editing happens in the tree Docker will mount. A container that is already running keeps the code it started with until `env-up` recreates it.
-6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts. Do not add another worktree for a serie that already has one.
+6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts. Do not add another worktree for a branch that already has one.
 7. These absences are intentional: `odoo-apps-addons` has no `16.0` (demo16 and demo16e do not mount it); `others` has no `20.0` (demo20 and demo20e do not mount it).
-8. `19_demo` and `20_demo` are separate branches for demo capture. They need their own worktree. Demo scripts stop when that tree is missing. They do not check out the shared hub.
+8. `19_demo` and `20_demo` are separate branches for demo data. Their trees are `_worktrees/tools-<N>_demo` and `_worktrees/system-<N>_demo`. The `env-demo-*` scripts mount them, and read and write demo files there, never in the shared checkout. They re-render the target, so it serves the `_demo` code until the next `env-up`. A missing tree stops them (rule 3). They do not check out the shared hub.
 
 ## Command: “change version / switch branch to \<serie\>”
 
@@ -431,7 +433,7 @@ together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned
 
 ## Serie + bind mounts
 
-- `env-up` mounts the shared checkout when it is already on the serie branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch and names the repo and the branch.
+- `env-up` mounts the shared checkout when it is already on the serie branch, otherwise the worktree that has the branch checked out (usually `_worktrees/<repo>-<branch>`; a detached one does not count). It does not check out the hub. A missing required tree stops the launch, names the repo and the branch, and prints the `git worktree add` command (`01-hub-serie` rule 3).
 - `./local/env-serie.sh <serie>` prints those paths and moves nothing.
 - The official image declares `VOLUME /mnt/extra-addons`. A normal launch bind-mounts `faotools_env/addons/runtime` over that path, so Docker does not copy the baked addon tree. `env_dbfilter_header` comes from that directory. `--no-bind` still gets the copy.
 - Clean serie trees are fast-forwarded by nightly `env-git-daily` (05:00). Launch does not fetch. The launch log says whether each tree matches that last fetch.
@@ -1578,7 +1580,7 @@ How a whole serie of faOtools apps moves to a new major Odoo version: branch top
 gates, durable state, and the publish loop. The **technical** transforms live in `ai_rules`
 `22-migrate-v19-to-v20` (one rule per serie pair). This rule is the process around them.
 
-Current program: 19.0 → 20.0 via `saas-19.4`. Evidence base:
+Current program: 19.0 → 20.0. `saas-19.4` stood in for 20.0 until its release (2026-09-28); core and enterprise are now on `20.0`. Evidence base:
 `docs/20-saas-19.4-delta.md`, surface inventory `docs/20-tools-touchpoints.md`,
 live state `migration/20-tools-port.state.yaml`, human tracker `docs/20-tools-port-status.md`.
 
