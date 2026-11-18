@@ -8,7 +8,7 @@ apply: always
 
 ## Hub root
 
-`/home/feelwhy/Odoo` — one checkout per repo (flat). No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
+`/home/feelwhy/Odoo` — one shared checkout per repo, plus `_worktrees/<repo>-<serie>` for the other series. No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
 
 ## Workspace folders (typical faotools.code-workspace)
 
@@ -17,39 +17,30 @@ apply: always
 | `ai_rules` | Universal Cursor rules (generated) |
 | `ai_rules_fao` | faOtools-specific rules (this repo) |
 | `faotools_env` | Local Docker toolkit + master/worker deploy |
-| `tools` | Apps-store modules (editable); **git branch = serie** |
+| `tools` | Apps-store modules (editable). The serie is the branch of the tree you edit |
 | `support` | faotools.com / helpdesk DB custom addons |
-| `life` | life.odootools.com (not switched by `env-serie`) |
+| `life` | life.odootools.com (single version, not moved by `env-serie`) |
 | `system` | System modules |
 | `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
 | `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
 
 ## Active Odoo serie
 
-Serie is **not** in the path. It is the current git branch on bind-mounted repos:
+Serie is the branch of the tree a target mounts, not the shared checkout. `env-up` mounts the shared checkout when it is already on that branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch. There is no fallback to another serie.
 
 ```bash
-git -C /home/feelwhy/Odoo/tools rev-parse --abbrev-ref HEAD
-# or switch:
 cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 ```
 
-`env-serie.sh` / `env-up` switch tools, odoo, enterprise, support, others, system, odoo-apps-addons, OpenUpgrade, febado*, … — **skips** `life` and `faotools_env`. Missing branch → fallback `LATEST_SERIE` (19.0). **Never assume tools is 19.0.** For a “change version to \<serie\>” request use the explicit repo list in `01-hub-serie` (`env-serie.sh` moves `support` too and aborts on `febado`).
+That command prints each tree and moves nothing. **Never assume the shared `tools` checkout is 19.0.** “Change version” and “pull” are the skill `01-hub-serie`. Launch and test commands are `ai_rules` `30-command-vocabulary`.
 
-## Test / run (Docker only)
+Do not move single-version repos: `life`, `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
 
-| Intent | Command |
-|--------|---------|
-| community demo serie N | `faotools_env/local/env-up.sh demoN --test <module>` |
-| enterprise demo serie N | `… demoNe --test <module>` |
-| support / faotools.com | `… support` or `bash support/devops/run_tests.sh "<m>" 19 docker` |
-| life | `… life` |
-| shell / logs | `env-shell.sh <target>`; `docker compose -f local/run/<target>/compose.yml logs -f` |
-| switch hub serie | `faotools_env/local/env-serie.sh <serie>` |
+Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach the container. Pull is `--ff-only` on the tree already on that branch. Dirty or diverged: stop, do not stash.
 
 ## Manifest version policy (hub)
 
-- **tools**: never bump `__manifest__.py` `version` unless the user asks (see `11-manifest-version`).
+- **tools**: `11-manifest-version`.
 - **faotools_env** `env_master`: bump when shipping a live upgrade.
 - **febado**: follow febado in-repo rules (not this repo).
 - **odoo-apps-addons**: follow its in-repo rules.
@@ -59,8 +50,8 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`. New or replaced `module.pic` titles (`name` / `alt_name`) are TM + live loader in the **same** job as the shots; PNG files stay English.
-- Demo data for public apps: XML in the `tools` module, Python generators and script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) in `system/odootools_demo` — `34-demo-data`. KnowSystem articles additionally follow their `editor_type` contract — `35-knowsystem-demo`.
-- Porting the `tools` apps to a new **major** Odoo serie: `36-major-version-port` (branch topology, per-group gates, durable ledger, publish loop). The serie-pair **transforms** live in `ai_rules` (`20-migrate-v17-to-v18`, `21-migrate-v18-to-v19`, `22-migrate-v19-to-v20`) with the mechanical checker at `ai_rules/tools/check_migrate_v20.py`. Program state: `migration/20-tools-port.state.yaml` (authoritative) plus `docs/20-tools-port-status.md`. The program is **not** done when the last module group is green: Docker image (`env-serie-image.sh` / `env-demo-20`), `env-demo-reload.sh` / `env-demo-build.sh`, `odootools_demo` loaders for the touched modules (same path as 19.0, improved on the port), `faotools_after_init` / after_clone / post-install, and later master infra stay in scope (`36` non-negotiables 8–11). JS and XML are `Gx.3`, not a walk leftover. Owner-asked fixes are replayed on every newer `Gx.3`.
-- App store releases (`module.release` on faotools.com): `33-faotools-release` is **always-on** (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Filling the app `.po` does not count. Do not leave `/ru/` English unless the user explicitly skips translations.
-- LinkedIn company-page posts (one app feature per post, chosen by the owner): `37-linkedin-publications`. Text, visual, and one live short URL per app are prepared together; files live in `support/docs/linkedin/`. The owner publishes.
+- Translations: bans in `17-translation-gates`, glossary and loader steps in the skill `17-translations`. Icon HTML is `ai_rules` `18-xml-translate-html`.
+- Demo data: skill `34-demo-data`. KnowSystem articles: skill `35-knowsystem-demo`.
+- A major port of the `tools` apps is not done when the last module group is green. The rest is the skill `36-major-version-port`.
+- App releases: bans in `33-release-gates`, sequence in the skill `33-faotools-release`.
+- LinkedIn company-page posts: skill `37-linkedin-publications`. The owner publishes.

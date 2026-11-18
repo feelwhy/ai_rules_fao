@@ -10,7 +10,7 @@ _Flat hub repo map, serie resolution, and who owns which rules_
 
 ## Hub root
 
-`/home/feelwhy/Odoo` — one checkout per repo (flat). No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
+`/home/feelwhy/Odoo` — one shared checkout per repo, plus `_worktrees/<repo>-<serie>` for the other series. No live `OdooNN/` trees, no `tools-ports/`. Ignore `_archive/`.
 
 ## Workspace folders (typical faotools.code-workspace)
 
@@ -19,39 +19,30 @@ _Flat hub repo map, serie resolution, and who owns which rules_
 | `ai_rules` | Universal Cursor rules (generated) |
 | `ai_rules_fao` | faOtools-specific rules (this repo) |
 | `faotools_env` | Local Docker toolkit + master/worker deploy |
-| `tools` | Apps-store modules (editable); **git branch = serie** |
+| `tools` | Apps-store modules (editable). The serie is the branch of the tree you edit |
 | `support` | faotools.com / helpdesk DB custom addons |
-| `life` | life.odootools.com (not switched by `env-serie`) |
+| `life` | life.odootools.com (single version, not moved by `env-serie`) |
 | `system` | System modules |
 | `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
 | `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
 
 ## Active Odoo serie
 
-Serie is **not** in the path. It is the current git branch on bind-mounted repos:
+Serie is the branch of the tree a target mounts, not the shared checkout. `env-up` mounts the shared checkout when it is already on that branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch. There is no fallback to another serie.
 
 ```bash
-git -C /home/feelwhy/Odoo/tools rev-parse --abbrev-ref HEAD
-# or switch:
 cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 ```
 
-`env-serie.sh` / `env-up` switch tools, odoo, enterprise, support, others, system, odoo-apps-addons, OpenUpgrade, febado*, … — **skips** `life` and `faotools_env`. Missing branch → fallback `LATEST_SERIE` (19.0). **Never assume tools is 19.0.** For a “change version to \<serie\>” request use the explicit repo list in `01-hub-serie` (`env-serie.sh` moves `support` too and aborts on `febado`).
+That command prints each tree and moves nothing. **Never assume the shared `tools` checkout is 19.0.** “Change version” and “pull” are the skill `01-hub-serie`. Launch and test commands are `ai_rules` `30-command-vocabulary`.
 
-## Test / run (Docker only)
+Do not move single-version repos: `life`, `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
 
-| Intent | Command |
-|--------|---------|
-| community demo serie N | `faotools_env/local/env-up.sh demoN --test <module>` |
-| enterprise demo serie N | `… demoNe --test <module>` |
-| support / faotools.com | `… support` or `bash support/devops/run_tests.sh "<m>" 19 docker` |
-| life | `… life` |
-| shell / logs | `env-shell.sh <target>`; `docker compose -f local/run/<target>/compose.yml logs -f` |
-| switch hub serie | `faotools_env/local/env-serie.sh <serie>` |
+Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach the container. Pull is `--ff-only` on the tree already on that branch. Dirty or diverged: stop, do not stash.
 
 ## Manifest version policy (hub)
 
-- **tools**: never bump `__manifest__.py` `version` unless the user asks (see `11-manifest-version`).
+- **tools**: `11-manifest-version`.
 - **faotools_env** `env_master`: bump when shipping a live upgrade.
 - **febado**: follow febado in-repo rules (not this repo).
 - **odoo-apps-addons**: follow its in-repo rules.
@@ -61,67 +52,45 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations (glossary, TM, loader): `support/support_translations/` — hub rule `17-translations` is always-on. `xml_translate` HTML: always-on `ai_rules` `18-xml-translate-html`. New or replaced `module.pic` titles (`name` / `alt_name`) are TM + live loader in the **same** job as the shots; PNG files stay English.
-- Demo data for public apps: XML in the `tools` module, Python generators and script JSON (`demo_xmlids.json`, `demo_purge.json`, `asset_signoff.json`) in `system/odootools_demo` — `34-demo-data`. KnowSystem articles additionally follow their `editor_type` contract — `35-knowsystem-demo`.
-- Porting the `tools` apps to a new **major** Odoo serie: `36-major-version-port` (branch topology, per-group gates, durable ledger, publish loop). The serie-pair **transforms** live in `ai_rules` (`20-migrate-v17-to-v18`, `21-migrate-v18-to-v19`, `22-migrate-v19-to-v20`) with the mechanical checker at `ai_rules/tools/check_migrate_v20.py`. Program state: `migration/20-tools-port.state.yaml` (authoritative) plus `docs/20-tools-port-status.md`. The program is **not** done when the last module group is green: Docker image (`env-serie-image.sh` / `env-demo-20`), `env-demo-reload.sh` / `env-demo-build.sh`, `odootools_demo` loaders for the touched modules (same path as 19.0, improved on the port), `faotools_after_init` / after_clone / post-install, and later master infra stay in scope (`36` non-negotiables 8–11). JS and XML are `Gx.3`, not a walk leftover. Owner-asked fixes are replayed on every newer `Gx.3`.
-- App store releases (`module.release` on faotools.com): `33-faotools-release` is **always-on** (`tools` / `odoo-apps-addons` only). 19.0+ public `description` is TM-first **and loader-applied on the live DB in the same publish** (`17-translations`). Filling the app `.po` does not count. Do not leave `/ru/` English unless the user explicitly skips translations.
-- LinkedIn company-page posts (one app feature per post, chosen by the owner): `37-linkedin-publications`. Text, visual, and one live short URL per app are prepared together; files live in `support/docs/linkedin/`. The owner publishes.
+- Translations: bans in `17-translation-gates`, glossary and loader steps in the skill `17-translations`. Icon HTML is `ai_rules` `18-xml-translate-html`.
+- Demo data: skill `34-demo-data`. KnowSystem articles: skill `35-knowsystem-demo`.
+- A major port of the `tools` apps is not done when the last module group is green. The rest is the skill `36-major-version-port`.
+- App releases: bans in `33-release-gates`, sequence in the skill `33-faotools-release`.
+- LinkedIn company-page posts: skill `37-linkedin-publications`. The owner publishes.
 
 ## 01-hub-serie
 
-_Hub serie discipline — shared checkout branch, switch-branch and pull-changes commands_
+_Change the Odoo serie or pull hub repos (change version, switch branch, pull changes). Prints worktrees and does not check out the shared hub_
 
 # Hub serie discipline
 
-The flat hub uses **one working tree per repo**. Checking out another serie changes what every Cursor session and every bind-mounted Docker target sees.
+The bans are always-on in `00-repo-map`. This skill is the command.
+
+Each serie has its own working tree. The shared checkout is used when it is already on that branch. Otherwise the tree is `/home/feelwhy/Odoo/_worktrees/<repo>-<serie>`. Launching Odoo mounts that tree and does **not** check out the shared hub.
 
 ## Rules
 
-1. Before `env-serie.sh`, `git checkout`, or `env-up` that switches branches: `git status -sb` on affected repos; respect `ai_rules` never-discard-WIP.
-2. Do **not** assume `tools` / `odoo` are on 19.0 — read the branch or ask.
-3. Switch the hub **consistently** — move all serie repos together (see the change-version command below), never a random subset. `env-serie.sh <serie>` is the right tool only when you *want* its wider repo list (`support`, `OpenUpgrade`, `febado*`) touched too.
-4. `life`, `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**; do not “fix” them onto 17.0/18.0 (they may still carry ad-hoc feature branches the user created).
-5. After a serie switch, warn that running containers may still be on the previous image/DB until recreated with `env-up`.
-6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts for day-to-day work — serie = branch.
+1. Before a `git checkout` the user explicitly asked for: `git status -sb` on the affected repos; respect `ai_rules` never-discard-WIP. `env-up` and `env-serie.sh` do not check out anything.
+2. Do **not** assume the shared `tools` or `enterprise` checkout is on 19.0. Read the branch. The 19.0 tree may be a worktree.
+3. A required repo with no tree on the serie branch is an error. Name the repo and the branch and stop. Do not fall back to another serie, and do not mount the copy baked into the image.
+4. `life`, `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**. Do not put them on 17.0/18.0.
+5. Editing happens in the tree Docker will mount. A container that is already running keeps the code it started with until `env-up` recreates it.
+6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts. Do not add another worktree for a serie that already has one.
+7. These absences are intentional: `odoo-apps-addons` has no `16.0` (demo16 and demo16e do not mount it); `others` has no `20.0` (demo20 and demo20e do not mount it).
+8. `19_demo` and `20_demo` are separate branches for demo capture. They need their own worktree. Demo scripts stop when that tree is missing. They do not check out the shared hub.
 
 ## Command: “change version / switch branch to \<serie\>”
 
 “change version to 16.0”, “change branch to 16.0”, “switch branch to 18.0”, “switch to 19”,
-“let’s work on 17.0” are all the **same command** — version, serie and branch mean the same thing
-here. A bare major number means `\<major\>.0` (“switch to 19” → `19.0`).
+“let’s work on 17.0” are all the **same command**. A bare major number means `\<major\>.0`.
 
-With no repo named it means: put the **serie-switched repos** on that branch:
+Run `faotools_env/local/env-serie.sh <serie>`. It prints the tree for each repo that serie mounts. It does not move the shared checkout. If it exits 1, a required tree is missing: report the name and stop.
 
-`tools`, `system`, `odoo`, `enterprise`, `others`, `odoo-apps-addons`
+Work in those trees. Do not `git checkout` the shared hub onto that serie.
 
-- Branch name **is** the serie (`16.0`, `17.0`, …). Check out exactly those repos, falling back to
- `LATEST_SERIE` when the serie branch does not exist:
-
-```bash
-for r in tools system odoo enterprise others odoo-apps-addons; do
- p="/home/feelwhy/Odoo/$r"
- git -C "$p" checkout 16.0 2>/dev/null \
- || { git -C "$p" fetch -q origin 16.0 2>/dev/null; git -C "$p" checkout 16.0 2>/dev/null; } \
- || git -C "$p" checkout 19.0
-done
-```
-
-- Do **not** use `env-serie.sh <serie>` for this command: it also switches `support` (which has old
- serie branches, e.g. `15.0`, and must stay on its single version) and it **dies** on `febado`,
- whose only branch is a feature branch — leaving the hub half-switched.
-- **Missing branch → latest serie** (`LATEST_SERIE`, currently `19.0`). Never create the branch,
- never leave a repo detached. A remote-only serie branch is fine: plain `git checkout <serie>`
- creates the local tracking branch, so fetch only if that fails.
-- **Report the resulting branch per repo** and call out every fallback explicitly: e.g. `odoo` /
- `enterprise` have no `16.0`, so a “version 16.0” request leaves core on 19.0 — say so, because
- 16.0 addons against 19.0 core will not load.
-- **If the user names repos** (“change tools to 16.0”, “only system on 18.0”), switch **only**
- those and leave the rest of the hub alone.
-- Single-version repos (rule 4) are never included unless the user explicitly asks for them.
-- **Always pull after switching** (see next section) so the new branch is up to date, and report the
- per-repo result of both steps.
-- Rules 1 and 5 still apply: check `git status -sb` first and stop on foreign WIP; afterwards
- remind that containers keep the old image/DB until `env-up` recreates them.
+- **If the user names repos** (“change tools to 16.0”), report and use only those trees.
+- Single-version repos (rule 4) are never moved unless the user explicitly asks.
+- Do not pull during this command. Nightly `env-git-daily` (05:00) fast-forwards clean serie trees. Say if `env-serie.sh` reports a tree behind its last fetch.
 
 ## Command: “pull changes”
 
@@ -131,8 +100,8 @@ its upstream.
 - **No repo named → every hub checkout**, including the single-version ones (`support`, `life`,
  `ai_rules`, `ai_rules_fao`, `faotools_env`) and `odoo` / `enterprise`. Pulling only updates a
  read-only reference; it does not make it editable.
-- **Repo named** (“pull tools”) → only that repo. **Branch named** (“pull 18.0”, “pull tools 18.0”)
- → switch that repo/the serie repos to the branch first, then pull it.
+- **Repo named** (“pull tools”) → only that repo’s current checkout. **Branch named** (“pull 18.0”, “pull tools 18.0”)
+ → fast-forward the tree that is already on that branch (the shared checkout, or `_worktrees/<repo>-<branch>`). Do not check out the shared hub. If that tree does not exist, stop and say so.
 
 ```bash
 git -C "/home/feelwhy/Odoo/$r" pull --ff-only
@@ -150,9 +119,9 @@ git -C "/home/feelwhy/Odoo/$r" pull --ff-only
 - After pulling repos that Docker bind-mounts, remind that running containers keep the old code
  until restarted (`env-up`), and that a `-u <module>` upgrade may be needed for XML/asset changes.
 
-## Intentional shared checkout
+## Where to edit
 
-If the user is browsing or testing on a branch, keep **this chat’s work on that same shared checkout** unless they ask for a side worktree. Parking work only in a disconnected worktree while the shared tree stays elsewhere breaks live Docker bind-mounts and SCM visibility.
+Edit the tree `env-serie.sh` prints for that serie. The shared `/home/feelwhy/Odoo/tools` folder is only the serie it is checked out on. A 19.0 fix made in the 18.0 checkout does not reach a 19.0 container.
 
 ## 02-repo-boundaries
 
@@ -451,7 +420,8 @@ together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned
   its `test_*` clone. `./local/env-review.sh down <db>` removes a stack completely.
 - **Remove containers with their volume.** `env-down.sh --remove`,
   `env-review.sh down` or `docker rm -f -v`. Never `docker compose down` / `rm -v`
-  alone: they leave the ~1.2 GB baked-addons copy.
+  alone: a container started with `--no-bind`, or an older container, can still
+  leave the baked-addons volume behind. A normal launch does not create one.
 - **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. `env-sync.sh` runs it
   at the end. Never `docker system prune` / `volume prune --all`: they also delete Febado's
   stopped containers and named volumes.
@@ -461,8 +431,10 @@ together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned
 
 ## Serie + bind mounts
 
-- Custom addons bind from `/home/feelwhy/Odoo/<repo>`; tools serie = git branch.
-- `./local/env-serie.sh <serie>` before cross-serie work; `env-up` also ensures the target serie.
+- `env-up` mounts the shared checkout when it is already on the serie branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch and names the repo and the branch.
+- `./local/env-serie.sh <serie>` prints those paths and moves nothing.
+- The official image declares `VOLUME /mnt/extra-addons`. A normal launch bind-mounts `faotools_env/addons/runtime` over that path, so Docker does not copy the baked addon tree. `env_dbfilter_header` comes from that directory. `--no-bind` still gets the copy.
+- Clean serie trees are fast-forwarded by nightly `env-git-daily` (05:00). Launch does not fetch. The launch log says whether each tree matches that last fetch.
 - **Same target again** (already running, or last launched in this chat): only
   `./local/env-up.sh <target> --restart`. No serie switch, prepare, sync, or
   other edits — see `ai_rules` `30-command-vocabulary`.

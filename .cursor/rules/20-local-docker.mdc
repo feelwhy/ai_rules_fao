@@ -48,7 +48,8 @@ together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned
   its `test_*` clone. `./local/env-review.sh down <db>` removes a stack completely.
 - **Remove containers with their volume.** `env-down.sh --remove`,
   `env-review.sh down` or `docker rm -f -v`. Never `docker compose down` / `rm -v`
-  alone: they leave the ~1.2 GB baked-addons copy.
+  alone: a container started with `--no-bind`, or an older container, can still
+  leave the baked-addons volume behind. A normal launch does not create one.
 - **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. `env-sync.sh` runs it
   at the end. Never `docker system prune` / `volume prune --all`: they also delete Febado's
   stopped containers and named volumes.
@@ -58,8 +59,10 @@ together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned
 
 ## Serie + bind mounts
 
-- Custom addons bind from `/home/feelwhy/Odoo/<repo>`; tools serie = git branch.
-- `./local/env-serie.sh <serie>` before cross-serie work; `env-up` also ensures the target serie.
+- `env-up` mounts the shared checkout when it is already on the serie branch, otherwise `_worktrees/<repo>-<serie>`. It does not check out the hub. A missing required tree stops the launch and names the repo and the branch.
+- `./local/env-serie.sh <serie>` prints those paths and moves nothing.
+- The official image declares `VOLUME /mnt/extra-addons`. A normal launch bind-mounts `faotools_env/addons/runtime` over that path, so Docker does not copy the baked addon tree. `env_dbfilter_header` comes from that directory. `--no-bind` still gets the copy.
+- Clean serie trees are fast-forwarded by nightly `env-git-daily` (05:00). Launch does not fetch. The launch log says whether each tree matches that last fetch.
 - **Same target again** (already running, or last launched in this chat): only
   `./local/env-up.sh <target> --restart`. No serie switch, prepare, sync, or
   other edits — see `ai_rules` `30-command-vocabulary`.
