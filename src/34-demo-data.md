@@ -220,7 +220,7 @@ bar even though every record is correct.
 
 ## Translations
 
-Same change as the English demo (`ai_rules` / hub `17-translations`). Demo terms are `model` / `model_terms` in the module `.po`. The 8 phase-1 languages are gate-blocking; the extended 17 may trail. Noupdate copy does not re-apply on `-u` — fix means `env-demo-reload.sh` (delete xmlids, then re-init) or a template rebuild.
+Same change as the English demo (`17-translations`). Demo terms are `model` / `model_terms` in the module `.po`. The 8 phase-1 languages are gate-blocking; the extended 17 may trail. Noupdate copy does not re-apply on `-u` — fix means `env-demo-reload.sh` (delete xmlids, then re-init) or a template rebuild.
 
 KnowSystem article records stay English until the multilang decision in that family chunk. Install `knowsystem_multilang` on the template.
 

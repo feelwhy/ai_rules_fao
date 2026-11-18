@@ -1,9 +1,11 @@
 ---
-description: Prepare and publish a faOtools app release on faotools.com (module.release)
-alwaysApply: true
+description: Prepare or publish a faOtools app release on faotools.com (module.release), including changelog, exact_version, and phrases like выложи or опубликуй
+alwaysApply: false
 ---
 
 # faOtools app release
+
+The live-site bans are always-on in `33-release-gates`. This skill is the sequence. A gate that fails means the release is not done.
 
 Command: “prepare a release”, “make a release”, “publish a release”.
 Live writes go through MCP `user-faotools` (faotools.com). Inspect each tool schema first.
@@ -87,7 +89,7 @@ Report per release only after that scan: module, serie, old → new version, sta
 
 ## Public changelog translations (19.0+)
 
-Pull `ai_rules` `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
+Pull `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
 
 **Hard gate.** A 19.0+ publish that leaves any new changelog sentence in English on a shipped language page has failed the release. One translated line next to English lines is a failure. Do not report “published” until the live page scan has passed. The user must not have to open the site and ask again.
 

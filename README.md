@@ -15,6 +15,8 @@ Same as `ai_rules`:
 | `tools/sync_rules.py` | Generator (identical to `ai_rules`) |
 | `.cursor/rules/*.mdc` | **Generated** |
 | `docs/rules.md` | **Generated**. Not named `AGENTS.md`, because Cursor injects every file with that name |
+| `CLAUDE.md` | **Generated** always-on rules for Claude Code |
+| `.claude/skills/` | **Generated** procedures (`apply: agent`) |
 
 ## Sync workflow
 
