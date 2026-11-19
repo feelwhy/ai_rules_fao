@@ -155,14 +155,11 @@ Never store local database credentials, tokens, or connection strings in reposit
 
 ## Lifecycle: leave nothing behind
 
-WSL shares one VM between Cursor and every container, and its disk files never shrink on their own. Incident 2026-09-28: 22 Odoo containers booted together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned ~1.2 GB volumes; the two VHDX files had reached ~400 GB.
-
 - **Stop what you started.** When this chat is done with a target it launched, `./local/env-down.sh <target>`. Odoo containers are `restart: "no"`; nothing but Postgres, Mailpit and the registry proxy boots with Docker.
 - **No hand-made stacks or databases.** Anything outside the target table is created by a script or registered at once: `./local/env-review.sh keep <db> --hours N`. Unregistered, `env-gc.sh` removes it after 12h.
 - **The creator drops it.** A batch that creates databases drops them in the same batch. `env-up.sh --test` already drops its `test_*` clone. `./local/env-review.sh down <db>` removes a stack completely.
 - **Remove containers with their volume.** `env-down.sh --remove`, `env-review.sh down`, or `docker rm -f -v`. Never `docker compose down` / `rm -v` alone: a container started with `--no-bind`, or an older container, can still leave the baked-addons volume behind. A normal launch does not create one.
 - **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. Never `docker system prune` / `volume prune --all`: they also delete Febado's stopped containers and named volumes.
-- After a large cleanup, tell the user to run `local/windows/compact-wsl-disks.ps1` from an elevated PowerShell. It shuts WSL down, so an agent cannot run it.
 
 ## Serie + bind mounts
 
