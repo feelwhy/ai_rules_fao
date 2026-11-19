@@ -18,7 +18,6 @@ Always-on rules only. Procedures are skills in `.claude/skills/`.
 | `faotools_env` | Local Docker toolkit + master/worker deploy |
 | `tools` | Apps-store modules (editable). The serie is the branch of the tree you edit |
 | `support` | faotools.com / helpdesk DB custom addons |
-| `life` | life.odootools.com (single version, not moved by `env-serie`) |
 | `system` | System modules |
 | `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
 | `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
@@ -33,7 +32,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 
 That command prints each tree and moves nothing. **Never assume the shared `tools` checkout is 19.0.** “Change version” and “pull” are the skill `01-hub-serie`. Launch and test commands are `ai_rules` `30-command-vocabulary`.
 
-Do not move single-version repos: `life`, `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
+Do not move single-version repos: `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
 
 Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach the container. Pull is `--ff-only` on the tree already on that branch. Dirty or diverged: stop, do not stash.
 
@@ -57,9 +56,10 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 
 # Repository editing boundaries (faOtools hub)
 
-- By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `life/`, `system/`, `faotools_env/`, …).
+- By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `system/`, `faotools_env/`, …).
 - Which repos to **read / search** for a given task context: see `03-repo-priority`.
 - Treat `odoo/`, `enterprise/`, and usually `others/` as **read-only reference**. If a fix seems to require editing core, implement an override in the custom module, or ask for explicit permission.
+- `life/` is a separate project (life.odootools.com). Do not read, edit, or commit it from this project.
 - Do **not** change another workspace root unless the user explicitly names that repo/module or clearly requests editing outside the current target.
 - A general feature request (“change how X behaves”) does **not** grant permission to edit sibling repos — prefer inheritance, JS `patch`, view inheritance, or an override inside the owning module.
 - Preserve production / apps-store compatibility: model names, fields, XML IDs, config params, crons, mail templates, routes, and portal URLs stay stable unless the task changes them.
@@ -69,7 +69,7 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 “commit”, “commit A/B…”, “push” **without a named repo** covers **every non-read-only hub checkout**.
 Check them all and handle each one that has changes:
 
-`tools`, `system`, `support`, `life`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
+`tools`, `system`, `support`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
 
 - This is the one case where **all** repos are inspected regardless of task context — it overrides the
  narrow read scope of `03-repo-priority`.
@@ -95,14 +95,13 @@ unless the user names them.
 |--------------|-----------------------|
 | Public apps-store modules | `tools` > `system` |
 | faotools.com public site / support / `faotools_env` deploy | `support` > `faotools_env` > `system` > `tools` |
-| life.odootools.com | `life` > `system` > `tools` |
 | MCP module (`ai_mcp_server`) | `odoo-apps-addons` |
 | faOtools app release | owning repo (`tools` or `odoo-apps-addons`) |
 
 ## Rules
 
 - Stop as soon as the listed repos answer the question — do not keep widening the search.
-- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`, and even less `life`.
+- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`.
 - `odoo` and `enterprise` are **read-only reference in every context**: read them for core API / view truth, never edit (see `02-repo-boundaries`).
 - `others` is read-only reference too, and only relevant when a third-party addon is actually part of the task.
 - If the context is genuinely ambiguous, ask which product/repo is meant instead of grepping the whole hub.
@@ -175,7 +174,7 @@ cd /home/feelwhy/Odoo/faotools_env
 ```
 
 - Several targets (and Febado) can run at once — each Odoo has its own HTTP port
-  (`support` 18100, `life` 18110, `demo19` 18190, …); shared Mailpit is on **18025**.
+  (`support` 18100, `demo19` 18190, …); shared Mailpit is on **18025**.
   See `faotools_env/local/README.md`.
 - Keep images/DBs fresh: `./local/env-sync.sh` (or `./local/env-sync.sh --check`).
 - Never store local database credentials, tokens, or connection strings in repository files.

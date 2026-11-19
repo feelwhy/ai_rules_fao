@@ -21,7 +21,6 @@ _Flat hub repo map, serie resolution, and who owns which rules_
 | `faotools_env` | Local Docker toolkit + master/worker deploy |
 | `tools` | Apps-store modules (editable). The serie is the branch of the tree you edit |
 | `support` | faotools.com / helpdesk DB custom addons |
-| `life` | life.odootools.com (single version, not moved by `env-serie`) |
 | `system` | System modules |
 | `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
 | `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
@@ -36,7 +35,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 
 That command prints each tree and moves nothing. **Never assume the shared `tools` checkout is 19.0.** “Change version” and “pull” are the skill `01-hub-serie`. Launch and test commands are `ai_rules` `30-command-vocabulary`.
 
-Do not move single-version repos: `life`, `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
+Do not move single-version repos: `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
 
 Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach the container. Pull is `--ff-only` on the tree already on that branch. Dirty or diverged: stop, do not stash.
 
@@ -75,7 +74,7 @@ Each branch has its own working tree. The shared checkout is used when it is alr
 3. A required repo with no tree on the serie branch is an error. Name the repo and the branch and stop. Do not fall back to another serie, and do not mount the copy baked into the image. The error prints the command that adds the tree. Run it only with the user's OK:
    `git -C /home/feelwhy/Odoo/<repo> worktree add /home/feelwhy/Odoo/_worktrees/<repo>-<branch> <branch>`
    (undo: `git -C /home/feelwhy/Odoo/<repo> worktree remove /home/feelwhy/Odoo/_worktrees/<repo>-<branch>`).
-4. `life`, `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**. Do not put them on 17.0/18.0.
+4. `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**. Do not put them on 17.0/18.0.
 5. Editing happens in the tree Docker will mount. A container that is already running keeps the code it started with until `env-up` recreates it.
 6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts. Do not add another worktree for a branch that already has one.
 7. These absences are intentional: `odoo-apps-addons` has no `16.0` (demo16 and demo16e do not mount it); `others` has no `20.0` (demo20 and demo20e do not mount it).
@@ -99,8 +98,8 @@ Work in those trees. Do not `git checkout` the shared hub onto that serie.
 “pull changes”, “pull”, “update the repos” means: fast-forward each repo’s **current branch** from
 its upstream.
 
-- **No repo named → every hub checkout**, including the single-version ones (`support`, `life`,
- `ai_rules`, `ai_rules_fao`, `faotools_env`) and `odoo` / `enterprise`. Pulling only updates a
+- **No repo named → every hub checkout**, including the single-version ones (`support`, `ai_rules`,
+ `ai_rules_fao`, `faotools_env`) and `odoo` / `enterprise`. Pulling only updates a
  read-only reference; it does not make it editable.
 - **Repo named** (“pull tools”) → only that repo’s current checkout. **Branch named** (“pull 18.0”, “pull tools 18.0”)
  → fast-forward the tree that is already on that branch (the shared checkout, or `_worktrees/<repo>-<branch>`). Do not check out the shared hub. If that tree does not exist, stop and say so.
@@ -131,9 +130,10 @@ _Which hub repos are editable vs read-only reference_
 
 # Repository editing boundaries (faOtools hub)
 
-- By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `life/`, `system/`, `faotools_env/`, …).
+- By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `system/`, `faotools_env/`, …).
 - Which repos to **read / search** for a given task context: see `03-repo-priority`.
 - Treat `odoo/`, `enterprise/`, and usually `others/` as **read-only reference**. If a fix seems to require editing core, implement an override in the custom module, or ask for explicit permission.
+- `life/` is a separate project (life.odootools.com). Do not read, edit, or commit it from this project.
 - Do **not** change another workspace root unless the user explicitly names that repo/module or clearly requests editing outside the current target.
 - A general feature request (“change how X behaves”) does **not** grant permission to edit sibling repos — prefer inheritance, JS `patch`, view inheritance, or an override inside the owning module.
 - Preserve production / apps-store compatibility: model names, fields, XML IDs, config params, crons, mail templates, routes, and portal URLs stay stable unless the task changes them.
@@ -143,7 +143,7 @@ _Which hub repos are editable vs read-only reference_
 “commit”, “commit A/B…”, “push” **without a named repo** covers **every non-read-only hub checkout**.
 Check them all and handle each one that has changes:
 
-`tools`, `system`, `support`, `life`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
+`tools`, `system`, `support`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
 
 - This is the one case where **all** repos are inspected regardless of task context — it overrides the
  narrow read scope of `03-repo-priority`.
@@ -173,14 +173,13 @@ unless the user names them.
 |--------------|-----------------------|
 | Public apps-store modules | `tools` > `system` |
 | faotools.com public site / support / `faotools_env` deploy | `support` > `faotools_env` > `system` > `tools` |
-| life.odootools.com | `life` > `system` > `tools` |
 | MCP module (`ai_mcp_server`) | `odoo-apps-addons` |
 | faOtools app release | owning repo (`tools` or `odoo-apps-addons`) |
 
 ## Rules
 
 - Stop as soon as the listed repos answer the question — do not keep widening the search.
-- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`, and even less `life`.
+- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`.
 - `odoo` and `enterprise` are **read-only reference in every context**: read them for core API / view truth, never edit (see `02-repo-boundaries`).
 - `others` is read-only reference too, and only relevant when a third-party addon is actually part of the task.
 - If the context is genuinely ambiguous, ask which product/repo is meant instead of grepping the whole hub.
@@ -325,7 +324,7 @@ Source of truth is **`support/support_translations/`** (glossary, do-not-transla
 | Website QWeb code templates | `support/*/i18n/` plus loader YAML for website-builder (COW) views |
 | Cursor rules | this skill, `support/.cursor/rules/translations.mdc` |
 
-Do not add a parallel glossary in `tools/` or `life/`.
+Do not add a parallel glossary in `tools/`.
 
 ## Loader vs `.po`
 
@@ -382,7 +381,7 @@ Run the checklist in **Closing an "empty msgstr" backlog** below. These are the 
 - After a `system/odootools_demo` (or any module) batch, re-parse every `i18n/*.po` file for that
  module with `polib` directly — do not trust "MISSING: 0" from a one-off apply script as proof the
  module has zero empty `msgstr` left; it only proves that batch's own msgids landed.
-- Finish with one full-hub re-scan (`tools`, `support`, `system`, `odoo-apps-addons`, `life`)
+- Finish with one full-hub re-scan (`tools`, `support`, `system`, `odoo-apps-addons`)
  against the complete `SHIPPED_LANGS` list before reporting the backlog closed.
 
 ## Out of scope until asked
@@ -493,8 +492,8 @@ redone after someone points out the narrower scope was wrong.
  missed, can still be empty). Re-parse every touched module's `.po` files with `polib` and
  recount true empties before calling a module done.
 7. **Finish with one full-repo re-scan across every repo that ships `.po` files** (`tools`,
- `support`, `system`, `odoo-apps-addons`, `life`) against the complete language list, cross-
- referenced against `do-not-translate.yaml` and the mail-template exemption, before reporting
+ `support`, `system`, `odoo-apps-addons`) against the complete language list, cross-referenced
+ against `do-not-translate.yaml` and the mail-template exemption, before reporting
  "all languages done." A per-module "looks complete" is not the same claim.
 
 ## apps.odoo.com
@@ -538,7 +537,7 @@ cd /home/feelwhy/Odoo/faotools_env
 ```
 
 - Several targets (and Febado) can run at once — each Odoo has its own HTTP port
-  (`support` 18100, `life` 18110, `demo19` 18190, …); shared Mailpit is on **18025**.
+  (`support` 18100, `demo19` 18190, …); shared Mailpit is on **18025**.
   See `faotools_env/local/README.md`.
 - Keep images/DBs fresh: `./local/env-sync.sh` (or `./local/env-sync.sh --check`).
 - Never store local database credentials, tokens, or connection strings in repository files.

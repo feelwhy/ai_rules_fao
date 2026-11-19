@@ -14,14 +14,13 @@ unless the user names them.
 |--------------|-----------------------|
 | Public apps-store modules | `tools` > `system` |
 | faotools.com public site / support / `faotools_env` deploy | `support` > `faotools_env` > `system` > `tools` |
-| life.odootools.com | `life` > `system` > `tools` |
 | MCP module (`ai_mcp_server`) | `odoo-apps-addons` |
 | faOtools app release | owning repo (`tools` or `odoo-apps-addons`) |
 
 ## Rules
 
 - Stop as soon as the listed repos answer the question — do not keep widening the search.
-- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`, and even less `life`.
+- **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`.
 - `odoo` and `enterprise` are **read-only reference in every context**: read them for core API / view truth, never edit (see `02-repo-boundaries`).
 - `others` is read-only reference too, and only relevant when a third-party addon is actually part of the task.
 - If the context is genuinely ambiguous, ask which product/repo is meant instead of grepping the whole hub.

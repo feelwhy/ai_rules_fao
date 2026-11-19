@@ -21,7 +21,7 @@ Source of truth is **`support/support_translations/`** (glossary, do-not-transla
 | Website QWeb code templates | `support/*/i18n/` plus loader YAML for website-builder (COW) views |
 | Cursor rules | this skill, `support/.cursor/rules/translations.mdc` |
 
-Do not add a parallel glossary in `tools/` or `life/`.
+Do not add a parallel glossary in `tools/`.
 
 ## Loader vs `.po`
 
@@ -78,7 +78,7 @@ Run the checklist in **Closing an "empty msgstr" backlog** below. These are the 
 - After a `system/odootools_demo` (or any module) batch, re-parse every `i18n/*.po` file for that
  module with `polib` directly — do not trust "MISSING: 0" from a one-off apply script as proof the
  module has zero empty `msgstr` left; it only proves that batch's own msgids landed.
-- Finish with one full-hub re-scan (`tools`, `support`, `system`, `odoo-apps-addons`, `life`)
+- Finish with one full-hub re-scan (`tools`, `support`, `system`, `odoo-apps-addons`)
  against the complete `SHIPPED_LANGS` list before reporting the backlog closed.
 
 ## Out of scope until asked
@@ -189,8 +189,8 @@ redone after someone points out the narrower scope was wrong.
  missed, can still be empty). Re-parse every touched module's `.po` files with `polib` and
  recount true empties before calling a module done.
 7. **Finish with one full-repo re-scan across every repo that ships `.po` files** (`tools`,
- `support`, `system`, `odoo-apps-addons`, `life`) against the complete language list, cross-
- referenced against `do-not-translate.yaml` and the mail-template exemption, before reporting
+ `support`, `system`, `odoo-apps-addons`) against the complete language list, cross-referenced
+ against `do-not-translate.yaml` and the mail-template exemption, before reporting
  "all languages done." A per-module "looks complete" is not the same claim.
 
 ## apps.odoo.com

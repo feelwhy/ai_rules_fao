@@ -6,9 +6,10 @@ apply: always
 
 # Repository editing boundaries (faOtools hub)
 
-- By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `life/`, `system/`, `faotools_env/`, …).
+- By default, ONLY create/modify/delete files under the **task’s target repo** (`tools/`, `support/`, `system/`, `faotools_env/`, …).
 - Which repos to **read / search** for a given task context: see `03-repo-priority`.
 - Treat `odoo/`, `enterprise/`, and usually `others/` as **read-only reference**. If a fix seems to require editing core, implement an override in the custom module, or ask for explicit permission.
+- `life/` is a separate project (life.odootools.com). Do not read, edit, or commit it from this project.
 - Do **not** change another workspace root unless the user explicitly names that repo/module or clearly requests editing outside the current target.
 - A general feature request (“change how X behaves”) does **not** grant permission to edit sibling repos — prefer inheritance, JS `patch`, view inheritance, or an override inside the owning module.
 - Preserve production / apps-store compatibility: model names, fields, XML IDs, config params, crons, mail templates, routes, and portal URLs stay stable unless the task changes them.
@@ -18,7 +19,7 @@ apply: always
 “commit”, “commit A/B…”, “push” **without a named repo** covers **every non-read-only hub checkout**.
 Check them all and handle each one that has changes:
 
-`tools`, `system`, `support`, `life`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
+`tools`, `system`, `support`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
 
 - This is the one case where **all** repos are inspected regardless of task context — it overrides the
  narrow read scope of `03-repo-priority`.

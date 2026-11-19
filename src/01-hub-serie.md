@@ -17,7 +17,7 @@ Each branch has its own working tree. The shared checkout is used when it is alr
 3. A required repo with no tree on the serie branch is an error. Name the repo and the branch and stop. Do not fall back to another serie, and do not mount the copy baked into the image. The error prints the command that adds the tree. Run it only with the user's OK:
    `git -C /home/feelwhy/Odoo/<repo> worktree add /home/feelwhy/Odoo/_worktrees/<repo>-<branch> <branch>`
    (undo: `git -C /home/feelwhy/Odoo/<repo> worktree remove /home/feelwhy/Odoo/_worktrees/<repo>-<branch>`).
-4. `life`, `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**. Do not put them on 17.0/18.0.
+4. `support`, `ai_rules`, `ai_rules_fao` and `faotools_env` ship in a **single version**. Do not put them on 17.0/18.0.
 5. Editing happens in the tree Docker will mount. A container that is already running keeps the code it started with until `env-up` recreates it.
 6. Do not create parallel `tools-ports/` or `OdooNN/` checkouts. Do not add another worktree for a branch that already has one.
 7. These absences are intentional: `odoo-apps-addons` has no `16.0` (demo16 and demo16e do not mount it); `others` has no `20.0` (demo20 and demo20e do not mount it).
@@ -41,8 +41,8 @@ Work in those trees. Do not `git checkout` the shared hub onto that serie.
 “pull changes”, “pull”, “update the repos” means: fast-forward each repo’s **current branch** from
 its upstream.
 
-- **No repo named → every hub checkout**, including the single-version ones (`support`, `life`,
- `ai_rules`, `ai_rules_fao`, `faotools_env`) and `odoo` / `enterprise`. Pulling only updates a
+- **No repo named → every hub checkout**, including the single-version ones (`support`, `ai_rules`,
+ `ai_rules_fao`, `faotools_env`) and `odoo` / `enterprise`. Pulling only updates a
  read-only reference; it does not make it editable.
 - **Repo named** (“pull tools”) → only that repo’s current checkout. **Branch named** (“pull 18.0”, “pull tools 18.0”)
  → fast-forward the tree that is already on that branch (the shared checkout, or `_worktrees/<repo>-<branch>`). Do not check out the shared hub. If that tree does not exist, stop and say so.

@@ -24,7 +24,7 @@ cd /home/feelwhy/Odoo/faotools_env
 ```
 
 - Several targets (and Febado) can run at once — each Odoo has its own HTTP port
-  (`support` 18100, `life` 18110, `demo19` 18190, …); shared Mailpit is on **18025**.
+  (`support` 18100, `demo19` 18190, …); shared Mailpit is on **18025**.
   See `faotools_env/local/README.md`.
 - Keep images/DBs fresh: `./local/env-sync.sh` (or `./local/env-sync.sh --check`).
 - Never store local database credentials, tokens, or connection strings in repository files.

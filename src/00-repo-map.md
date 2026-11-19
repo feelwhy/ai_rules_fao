@@ -19,7 +19,6 @@ apply: always
 | `faotools_env` | Local Docker toolkit + master/worker deploy |
 | `tools` | Apps-store modules (editable). The serie is the branch of the tree you edit |
 | `support` | faotools.com / helpdesk DB custom addons |
-| `life` | life.odootools.com (single version, not moved by `env-serie`) |
 | `system` | System modules |
 | `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
 | `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
@@ -34,7 +33,7 @@ cd /home/feelwhy/Odoo/faotools_env && ./local/env-serie.sh 18.0
 
 That command prints each tree and moves nothing. **Never assume the shared `tools` checkout is 19.0.** “Change version” and “pull” are the skill `01-hub-serie`. Launch and test commands are `ai_rules` `30-command-vocabulary`.
 
-Do not move single-version repos: `life`, `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
+Do not move single-version repos: `support`, `ai_rules`, `ai_rules_fao`, `faotools_env`. `odoo-apps-addons` has no `16.0`. `others` has no `20.0`. A missing tree is an error. Do not mount the copy baked into the image.
 
 Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach the container. Pull is `--ff-only` on the tree already on that branch. Dirty or diverged: stop, do not stash.
 
