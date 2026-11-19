@@ -145,18 +145,15 @@ Check them all and handle each one that has changes:
 
 `tools`, `system`, `support`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
 
-- This is the one case where **all** repos are inspected regardless of task context — it overrides the
- narrow read scope of `03-repo-priority`.
-- **Never commit or push** `odoo`, `enterprise`, `others`. If they show changes, report them and ask —
- do not commit, do not revert (`ai_rules` never-discard-WIP).
-- `git status -sb` per repo first; commit only paths belonging to this task. Foreign or unknown WIP →
- stop and ask before committing anything anywhere.
-- One command may produce several commits (one per repo). **Report per repo**: repo, branch, short
- SHA, and pushed-or-not — plus the repos that had nothing to commit.
-- Mode semantics (A / A1 / B / B1 / B2, tests, review) come from `ai_rules` `16-commit-workflow` and
- apply to **each** repo in scope.
-- If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit
- scope — it follows its own in-repo push / MR rules.
+This is the one case where **all** repos are inspected regardless of task context — it overrides the narrow read scope of `03-repo-priority`.
+
+**Never commit or push** `odoo`, `enterprise`, `others`. If they show changes, report them and ask — do not commit, do not revert (`ai_rules` `03-never-discard-wip`).
+
+If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit scope — it follows its own in-repo push / MR rules.
+
+Report each repo: branch, short SHA, pushed or not, and the repos with nothing to commit.
+
+How to commit, test, and report is `ai_rules` `16-commit-workflow`.
 
 ## 03-repo-priority
 
@@ -167,7 +164,7 @@ _Which hub repos to read and search first for each task context_
 The hub holds many checkouts, but a task almost always lives in one of them. Resolve the
 context first (from the chat, the mentioned module/URL, or the MCP server in use), then read
 and search the repos **in the listed order**. Repos that are not listed are **out of scope**
-unless the user names them.
+unless the user names them. `odoo` and `enterprise` are the exception: read them for core API and view truth.
 
 | Task context | Analyze in this order |
 |--------------|-----------------------|
@@ -180,10 +177,9 @@ unless the user names them.
 
 - Stop as soon as the listed repos answer the question — do not keep widening the search.
 - **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`.
-- `odoo` and `enterprise` are **read-only reference in every context**: read them for core API / view truth, never edit (see `02-repo-boundaries`).
-- `others` is read-only reference too, and only relevant when a third-party addon is actually part of the task.
+- Search `others` only when a third-party addon is part of the task.
 - If the context is genuinely ambiguous, ask which product/repo is meant instead of grepping the whole hub.
-- This rule is about **where to look**; permission to write still follows `02-repo-boundaries`.
+- Where to write, and which repos are read-only, is `02-repo-boundaries`.
 
 ## 10-apps-store-packaging
 
@@ -215,15 +211,12 @@ _Never change tools module manifest version unless the user explicitly requests 
 
 # Manifest Version
 
-- **Never** modify the `version` field in any `__manifest__.py` under `tools/`.
-- When editing manifests (dependencies, assets, data, metadata), leave `version` exactly as it is.
-- Bump `version` only when the user explicitly asks for a version increase or release bump.
+- **Never** modify the `version` field in any `__manifest__.py` under `tools/` unless the user explicitly asks. Editing dependencies, assets, data, or metadata is not that ask.
 - **Port exception (19 → 20 only):** during the saas-19.4 stand-in (`Gx.3`), drop the
   serie prefix (`19.0.1.3.33` → `1.3.33`) so `check_version` does not set
   `installable=False` on `saas~19.4`. At `Fx` / phase 8, on real 20.0, write
   `20.0.` + that same tail. Do not invent a fourth number. See `ai_rules`
   `22-migrate-v19-to-v20` **Manifest version**.
-- If a task would normally imply a version change, do not bump automatically — ask the user first.
 - “Make / publish a release” bumps `module.description.exact_version` on faotools.com (`33-faotools-release`). Do not bump the local `__manifest__.py` unless the user also asks for that.
 
 ## 12-boolean-settings
@@ -250,7 +243,7 @@ if enabled:
   - `get_param(key) == "False"` / `!= "False"`
   - `if param is None: return True` (or similar tri-state fallback for a boolean)
   - `default=True` on a `fields.Boolean(config_parameter=...)`
-- This is the reference implementation for the pattern: `[knowsystem/models/knowsystem_article.py](knowsystem/models/knowsystem_article.py)` (`action_check_option`, ~L791-802).
+- This is the reference implementation for the pattern: `knowsystem` `action_check_option` in `knowsystem/models/knowsystem_article.py`.
 - Apply this convention consistently to every module in this workspace, not just the one currently being edited.
 
 ## 13-search-views
@@ -513,14 +506,13 @@ Only Odoo `res.lang` codes. Serbian is Cyrillic (`sr@Cyrl`). Chinese is Simplifi
 
 Country locales seed from the shipped **root** (`pt_PT` → `pt_BR`, `de_DE` → `de_CH`, `fr_FR` → `fr_BE` / `fr_CA` / `fr_CH`, `nl_NL` → `nl_BE`, `es_ES` → `es_419` / `es_CL`; `en_GB` from `en_US`), then every string is analyzed for that country. Do not copy the root TM. Do not treat variants as hreflang/switcher only.
 
-## 20-local-docker
+## 20-local-commands
 
-_faotools_env local Docker: env-up, env-serie, env-shell, ports, Mailpit_
+_faOtools local Docker commands, ports, and Mailpit. Read when launching, shelling, or syncing a local target_
 
-# Local Database Access
+# Local Docker commands
 
-- Local Odoo runs **only in Docker** via `faotools_env/local/` — never a host Python virtualenv or host `odoo-bin`.
-- Launch a target (restores + neutralizes on first run):
+The bans are always-on in `20-local-docker`. This skill is the commands. `env-up` prints the URL, the database name, and Mailpit. Repeat those printed values.
 
 ```bash
 cd /home/feelwhy/Odoo/faotools_env
@@ -529,58 +521,45 @@ cd /home/feelwhy/Odoo/faotools_env
 ./local/env-up.sh support         # faotools.com (neutralized) → http://localhost:18100
 ```
 
-- Prefer Odoo ORM via the container shell:
+A first launch restores and neutralizes. Prefer the container shell:
 
 ```bash
 ./local/env-shell.sh demo19       # odoo shell
 ./local/env-shell.sh demo19 psql  # SQL against the local Postgres (host port 15432)
 ```
 
-- Several targets (and Febado) can run at once — each Odoo has its own HTTP port
-  (`support` 18100, `demo19` 18190, …); shared Mailpit is on **18025**.
-  See `faotools_env/local/README.md`.
-- Keep images/DBs fresh: `./local/env-sync.sh` (or `./local/env-sync.sh --check`).
-- Never store local database credentials, tokens, or connection strings in repository files.
-- Details: `faotools_env/local/README.md`.
+Several targets (and Febado) can run at once. Each Odoo has its own HTTP port (`support` 18100, `demo19` 18190, …). Shared Mailpit is on **18025**.
+
+Keep images and databases fresh with `./local/env-sync.sh` (or `./local/env-sync.sh --check`). The full port matrix and sync behavior are in `faotools_env/local/README.md`.
+
+## 20-local-docker
+
+_Local Odoo stays in Docker, and a chat must not leave databases or volumes behind_
+
+# Local Database Access
+
+Local Odoo runs **only** through `faotools_env/local/env-up.sh` and `env-shell.sh`. Never a host Python virtualenv or host `odoo-bin`. Commands, ports, and Mailpit are the skill `20-local-commands`.
+
+Never store local database credentials, tokens, or connection strings in repository files.
 
 ## Lifecycle: leave nothing behind
 
-WSL shares one VM (and 18 GB) between Cursor and every container, and its disk
-files never shrink on their own. Incident 2026-09-28: 22 Odoo containers booted
-together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned
-~1.2 GB volumes; the two VHDX files had reached ~400 GB.
+WSL shares one VM between Cursor and every container, and its disk files never shrink on their own. Incident 2026-09-28: 22 Odoo containers booted together with Docker Desktop, 167 databases (152 agent leftovers), 62 orphaned ~1.2 GB volumes; the two VHDX files had reached ~400 GB.
 
-- **Stop what you started.** When this chat is done with a target it launched,
-  `./local/env-down.sh <target>`. Odoo containers are `restart: "no"`; nothing but
-  Postgres, Mailpit and the registry proxy boots with Docker.
-- **No hand-made stacks or databases.** Anything outside the target table (review
-  DB, install-matrix DB, probe) is created by a script or registered at once:
-  `./local/env-review.sh keep <db> --hours N`. Unregistered, it is removed by
-  `env-gc.sh` after 12h.
-- **The creator drops it.** A batch that creates databases (install matrix,
-  coverage, builds) drops them in the same batch; `env-up.sh --test` already drops
-  its `test_*` clone. `./local/env-review.sh down <db>` removes a stack completely.
-- **Remove containers with their volume.** `env-down.sh --remove`,
-  `env-review.sh down` or `docker rm -f -v`. Never `docker compose down` / `rm -v`
-  alone: a container started with `--no-bind`, or an older container, can still
-  leave the baked-addons volume behind. A normal launch does not create one.
-- **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. `env-sync.sh` runs it
-  at the end. Never `docker system prune` / `volume prune --all`: they also delete Febado's
-  stopped containers and named volumes.
-- After a large cleanup, tell the user to run `local/windows/compact-wsl-disks.ps1`
-  from an elevated PowerShell (it shuts WSL down, so an agent cannot run it).
-
+- **Stop what you started.** When this chat is done with a target it launched, `./local/env-down.sh <target>`. Odoo containers are `restart: "no"`; nothing but Postgres, Mailpit and the registry proxy boots with Docker.
+- **No hand-made stacks or databases.** Anything outside the target table is created by a script or registered at once: `./local/env-review.sh keep <db> --hours N`. Unregistered, `env-gc.sh` removes it after 12h.
+- **The creator drops it.** A batch that creates databases drops them in the same batch. `env-up.sh --test` already drops its `test_*` clone. `./local/env-review.sh down <db>` removes a stack completely.
+- **Remove containers with their volume.** `env-down.sh --remove`, `env-review.sh down`, or `docker rm -f -v`. Never `docker compose down` / `rm -v` alone: a container started with `--no-bind`, or an older container, can still leave the baked-addons volume behind. A normal launch does not create one.
+- **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. Never `docker system prune` / `volume prune --all`: they also delete Febado's stopped containers and named volumes.
+- After a large cleanup, tell the user to run `local/windows/compact-wsl-disks.ps1` from an elevated PowerShell. It shuts WSL down, so an agent cannot run it.
 
 ## Serie + bind mounts
 
-- `env-up` mounts the shared checkout when it is already on the serie branch, otherwise the worktree that has the branch checked out (usually `_worktrees/<repo>-<branch>`; a detached one does not count). It does not check out the hub. A missing required tree stops the launch, names the repo and the branch, and prints the `git worktree add` command (`01-hub-serie` rule 3).
-- `./local/env-serie.sh <serie>` prints those paths and moves nothing.
-- The official image declares `VOLUME /mnt/extra-addons`. A normal launch bind-mounts `faotools_env/addons/runtime` over that path, so Docker does not copy the baked addon tree. `env_dbfilter_header` comes from that directory. `--no-bind` still gets the copy.
-- Clean serie trees are fast-forwarded by nightly `env-git-daily` (05:00). Launch does not fetch. The launch log says whether each tree matches that last fetch.
-- **Same target again** (already running, or last launched in this chat): only
-  `./local/env-up.sh <target> --restart`. No serie switch, prepare, sync, or
-  other edits — see `ai_rules` `30-command-vocabulary`.
-- See `faotools_env/local/README.md` for full port matrix and sync behavior.
+`env-up` mounts the shared checkout when it is already on the serie branch, otherwise the worktree that has the branch checked out (usually `_worktrees/<repo>-<branch>`; a detached one does not count). It does not check out the hub. A missing required tree stops the launch. There is no fallback to another serie. `./local/env-serie.sh <serie>` prints those paths and moves nothing.
+
+A normal launch bind-mounts `faotools_env/addons/runtime` over the image's `/mnt/extra-addons`, so Docker does not copy the baked addon tree. `--no-bind` still gets the copy. Launch does not fetch. Nightly `env-git-daily` (05:00) fast-forwards clean serie trees.
+
+The same target again: only `./local/env-up.sh <target> --restart`. The rest of that case is `ai_rules` `30-command-vocabulary`.
 
 ## 21-faotools-mcp
 
@@ -602,8 +581,8 @@ _Rewrite/adapt faOtools apps-store module descriptions before publishment_
 
 # Prepublishment module descriptions (faOtools MCP)
 
-Canonical extended rule (same logic): `/home/feelwhy/Odoo/Odoo19/support/.cursor/rules/module-description-mcp-adaptation.mdc`.
-Screenshots: `prepublishment-screenshots.mdc`. Packaging metadata: `apps-store-packaging.mdc`.
+Canonical extended rule (same logic): `support/.cursor/rules/module-description-mcp-adaptation.mdc`.
+Screenshots: `31-prepublishment-screenshots`. Packaging metadata: `10-apps-store-packaging`.
 
 All edits go through the `user-faotools` MCP. Inspect each tool schema before calling; writes use `odoo_records_write` then `odoo_operations_confirm`.
 

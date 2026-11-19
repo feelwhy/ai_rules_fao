@@ -5,8 +5,8 @@ alwaysApply: false
 
 # Prepublishment module descriptions (faOtools MCP)
 
-Canonical extended rule (same logic): `/home/feelwhy/Odoo/Odoo19/support/.cursor/rules/module-description-mcp-adaptation.mdc`.
-Screenshots: `prepublishment-screenshots.mdc`. Packaging metadata: `apps-store-packaging.mdc`.
+Canonical extended rule (same logic): `support/.cursor/rules/module-description-mcp-adaptation.mdc`.
+Screenshots: `31-prepublishment-screenshots`. Packaging metadata: `10-apps-store-packaging`.
 
 All edits go through the `user-faotools` MCP. Inspect each tool schema before calling; writes use `odoo_records_write` then `odoo_operations_confirm`.
 

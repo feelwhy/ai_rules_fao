@@ -21,15 +21,12 @@ Check them all and handle each one that has changes:
 
 `tools`, `system`, `support`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
 
-- This is the one case where **all** repos are inspected regardless of task context — it overrides the
- narrow read scope of `03-repo-priority`.
-- **Never commit or push** `odoo`, `enterprise`, `others`. If they show changes, report them and ask —
- do not commit, do not revert (`ai_rules` never-discard-WIP).
-- `git status -sb` per repo first; commit only paths belonging to this task. Foreign or unknown WIP →
- stop and ask before committing anything anywhere.
-- One command may produce several commits (one per repo). **Report per repo**: repo, branch, short
- SHA, and pushed-or-not — plus the repos that had nothing to commit.
-- Mode semantics (A / A1 / B / B1 / B2, tests, review) come from `ai_rules` `16-commit-workflow` and
- apply to **each** repo in scope.
-- If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit
- scope — it follows its own in-repo push / MR rules.
+This is the one case where **all** repos are inspected regardless of task context — it overrides the narrow read scope of `03-repo-priority`.
+
+**Never commit or push** `odoo`, `enterprise`, `others`. If they show changes, report them and ask — do not commit, do not revert (`ai_rules` `03-never-discard-wip`).
+
+If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit scope — it follows its own in-repo push / MR rules.
+
+Report each repo: branch, short SHA, pushed or not, and the repos with nothing to commit.
+
+How to commit, test, and report is `ai_rules` `16-commit-workflow`.

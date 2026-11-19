@@ -24,5 +24,5 @@ if enabled:
   - `get_param(key) == "False"` / `!= "False"`
   - `if param is None: return True` (or similar tri-state fallback for a boolean)
   - `default=True` on a `fields.Boolean(config_parameter=...)`
-- This is the reference implementation for the pattern: `[knowsystem/models/knowsystem_article.py](knowsystem/models/knowsystem_article.py)` (`action_check_option`, ~L791-802).
+- This is the reference implementation for the pattern: `knowsystem` `action_check_option` in `knowsystem/models/knowsystem_article.py`.
 - Apply this convention consistently to every module in this workspace, not just the one currently being edited.

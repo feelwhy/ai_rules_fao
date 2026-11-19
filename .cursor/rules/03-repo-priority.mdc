@@ -8,7 +8,7 @@ alwaysApply: true
 The hub holds many checkouts, but a task almost always lives in one of them. Resolve the
 context first (from the chat, the mentioned module/URL, or the MCP server in use), then read
 and search the repos **in the listed order**. Repos that are not listed are **out of scope**
-unless the user names them.
+unless the user names them. `odoo` and `enterprise` are the exception: read them for core API and view truth.
 
 | Task context | Analyze in this order |
 |--------------|-----------------------|
@@ -21,7 +21,6 @@ unless the user names them.
 
 - Stop as soon as the listed repos answer the question — do not keep widening the search.
 - **Never** pull unrelated repos into the analysis: a `tools` task does not need `support`.
-- `odoo` and `enterprise` are **read-only reference in every context**: read them for core API / view truth, never edit (see `02-repo-boundaries`).
-- `others` is read-only reference too, and only relevant when a third-party addon is actually part of the task.
+- Search `others` only when a third-party addon is part of the task.
 - If the context is genuinely ambiguous, ask which product/repo is meant instead of grepping the whole hub.
-- This rule is about **where to look**; permission to write still follows `02-repo-boundaries`.
+- Where to write, and which repos are read-only, is `02-repo-boundaries`.
