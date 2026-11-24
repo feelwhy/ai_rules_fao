@@ -9,8 +9,9 @@ Company page: `https://www.linkedin.com/company/42422225` (the URL stored on
 the faotools.com website record).
 
 The goal is attention to one app feature. One post, one feature. A post is
-done when the owner has the text, the visual, the live short URL, and the first
-comment. The agent drafts and prepares. The owner publishes.
+done when the owner has the text, the visual, the live short URL, the first
+comment, and the live `linkedin.post` on faotools.com. The agent drafts and
+prepares. The owner publishes.
 
 ## Post types
 
@@ -207,7 +208,7 @@ Inspector.
 
 ## Administration: one record per post
 
-Descriptor → **Posts** (`linkedin.post`) on the support database is the only
+Descriptor → **Posts** (`linkedin.post`) on faotools.com is the only
 list of posts. Do not keep a second log.
 
 | Field | Content |
@@ -224,9 +225,11 @@ Preparing a new post creates the record. Adapting a post writes the same
 record. Match an existing one by `name` and `template_id` before creating
 another.
 
-Write it on the **local** support database (`env-shell.sh support`). The live
-faotools.com record is written only when the owner confirms the master update.
-Never create it through the live MCP while the post is still a draft.
+Write it on live faotools.com through MCP `user-faotools`. Set `name`,
+`template_id`, `description`, `first_comment`, and the PDF on `presentation`.
+Leave `state` as draft. Read the record back. The text matches.
+`presentation` is not empty, and its size matches the file. Put the record
+URL in the report.
 
 Build files stay in `support/docs/linkedin/` (the PDF script, crops, owner
 shots, the claim check). They are the workshop. The record is the post.
@@ -241,9 +244,10 @@ shots, the claim check). They are the workshop. The record is the post.
 5. Build the PDF (placeholders only where the owner chose to go without the
    shot).
 6. Reuse or create the app's short URL, and prove the redirect.
-7. Create or update the `linkedin.post` on the local support database: name,
-   template, description, first comment, and the PDF on `presentation`. Leave
-   `state` as draft until the owner has published it on LinkedIn.
+7. Create or update the `linkedin.post` on live faotools.com through MCP
+   `user-faotools`: name, template, description, first comment, and the PDF
+   on `presentation`. Leave `state` as draft. Read the record back. Put its
+   URL in the report.
 8. The owner posts, adds the first comment, reposts, and answers comments.
    Then set the record to Published (the date fills itself).
 
