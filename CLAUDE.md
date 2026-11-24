@@ -179,6 +179,15 @@ The same target again: only `./local/env-up.sh <target> --restart`. The rest of 
 - If code and live behavior disagree, consider whether the module has not been upgraded, a view was customized in the database, or cached/generated content is stale.
 - App releases (`module.release`): follow `33-faotools-release`. Do not invent a parallel publish path.
 
+## Files: upload them yourself
+
+The agent uploads every file itself. Never hand a PDF or image to the owner to attach (`linkedin.post` 6 and 7, 2026-11).
+
+- Under ~40 KB: `odoo_attachments_upload_inline`.
+- Larger: `odoo_attachments_upload_prepare` (pass `sha256`), then `curl -X PUT -H "X-MCP-Upload-Ticket: <upload_ticket>" -H "Content-Type: <mime>" --data-binary @<file> <upload_url_base>` (expect `204`), then `odoo_attachments_upload_commit`.
+- A binary field (`attachment=True`, e.g. `linkedin.post.presentation`): pass `res_model` / `res_id` to prepare, then write the committed `ir.attachment` with `res_field` = the field name and `name` = the field name. Read back: exactly one attachment with that `res_field`, and its `file_size` equals the file.
+- This works because `ai_mcp_server.upload_presigned_enabled` is `True` on faotools.com and master.odootools.com (set 2026-11-24). If prepare returns `requires_bearer_token: true`, the setting was turned off: say so and ask the owner to tick Settings → MCP Server → Allow Pre-signed Uploads. Do not fall back to the upload page.
+
 # Release gates
 
 These bans apply even when the user did not say “publish a release”. The sequence, HTML samples, notes, YAML, and the MCP payload recipe are the skill `33-faotools-release`. Read that skill before any `module.release` write.
