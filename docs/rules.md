@@ -23,7 +23,7 @@ _Flat hub repo map, serie resolution, and who owns which rules_
 | `support` | faotools.com / helpdesk DB custom addons |
 | `system` | System modules |
 | `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
-| `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
+| `odoo-apps-addons` | Independent apps-addons. Read-only: its developer changes it (`02-repo-boundaries`) |
 
 ## Active Odoo serie
 
@@ -44,7 +44,7 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 - **tools**: `11-manifest-version`.
 - **faotools_env** `env_master`: bump when shipping a live upgrade.
 - **febado**: follow febado in-repo rules (not this repo).
-- **odoo-apps-addons**: follow its in-repo rules.
+- **odoo-apps-addons**: read-only for us (`02-repo-boundaries`).
 
 ## Who owns rules
 
@@ -140,16 +140,26 @@ _Which hub repos are editable vs read-only reference_
 - A general feature request (“change how X behaves”) does **not** grant permission to edit sibling repos — prefer inheritance, JS `patch`, view inheritance, or an override inside the owning module.
 - Preserve production / apps-store compatibility: model names, fields, XML IDs, config params, crons, mail templates, routes, and portal URLs stay stable unless the task changes them.
 
+## odoo-apps-addons is read-only (hard ban)
+
+We do not change `odoo-apps-addons`. Its developer does. Incident 2026-11-21: a chat pushed `cbaf767` (expired MCP session) straight to `19.0` without a PR and copied it onto master and faotools.com by hand. It never reached `17.0`, `18.0`, or `20.0`, and the developer did not know it existed.
+
+- Do not edit, commit, push, revert, cherry-pick, branch, or open a PR in it. Any serie, any worktree, any file, `.po` included.
+- Do not copy its files onto master, the worker, or a container by hand (`rsync`, `docker cp`, editing a volume).
+- Reading is allowed: diagnose, cite `path:line`, run its tests in local Docker.
+- A fix that seems to need it: write the task for the developer (symptom, how to reproduce, proposed change, series) and hand it to the owner. Stop there.
+- This outranks any other rule that lists `odoo-apps-addons` as editable or in a commit scope. A `module.release` on faotools.com is a live record, not a repo edit, and stays under `33-release-gates`.
+
 ## Commit / push scope (no repo named)
 
 “commit”, “commit A/B…”, “push” **without a named repo** covers **every non-read-only hub checkout**.
 Check them all and handle each one that has changes:
 
-`tools`, `system`, `support`, `faotools_env`, `odoo-apps-addons`, `ai_rules`, `ai_rules_fao`
+`tools`, `system`, `support`, `faotools_env`, `ai_rules`, `ai_rules_fao`
 
 This is the one case where **all** repos are inspected regardless of task context — it overrides the narrow read scope of `03-repo-priority`.
 
-**Never commit or push** `odoo`, `enterprise`, `others`. If they show changes, report them and ask — do not commit, do not revert (`ai_rules` `03-never-discard-wip`).
+**Never commit or push** `odoo`, `enterprise`, `others`, `odoo-apps-addons`. If they show changes, report them and ask — do not commit, do not revert (`ai_rules` `03-never-discard-wip`).
 
 If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit scope — it follows its own in-repo push / MR rules.
 

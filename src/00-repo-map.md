@@ -21,7 +21,7 @@ apply: always
 | `support` | faotools.com / helpdesk DB custom addons |
 | `system` | System modules |
 | `odoo` / `enterprise` / `others` | Read-only reference unless explicitly asked |
-| `odoo-apps-addons` | Independent apps-addons (own in-repo rules) |
+| `odoo-apps-addons` | Independent apps-addons. Read-only: its developer changes it (`02-repo-boundaries`) |
 
 ## Active Odoo serie
 
@@ -42,7 +42,7 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 - **tools**: `11-manifest-version`.
 - **faotools_env** `env_master`: bump when shipping a live upgrade.
 - **febado**: follow febado in-repo rules (not this repo).
-- **odoo-apps-addons**: follow its in-repo rules.
+- **odoo-apps-addons**: read-only for us (`02-repo-boundaries`).
 
 ## Who owns rules
 
