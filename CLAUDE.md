@@ -48,10 +48,12 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations: bans in `17-translation-gates`, glossary and loader steps in the skill `17-translations`. Icon HTML is `ai_rules` `18-xml-translate-html`.
-- Demo data: skill `34-demo-data`. KnowSystem articles: skill `35-knowsystem-demo`.
+- Translations: bans in `17-translation-gates`, glossary and TM in the skill `17-translations`, live apply in article 2139 via that skill. Icon HTML is `ai_rules` `18-xml-translate-html`.
+- Demo data: skill `34-demo-data`. KnowSystem demo articles: skill `35-knowsystem-demo`.
+- faotools.com FAQ (add or edit an FAQ article): article 2141, then the YAML part in `support` `.cursor/rules/knowsystem-faq.mdc`.
 - A major port of the `tools` apps is not done when the last module group is green. The rest is the skill `36-major-version-port`.
-- App releases: bans in `33-release-gates`, sequence in the skill `33-faotools-release`.
+- App releases: bans in `33-release-gates`, sequence in KnowSystem article 2137 via the skill `33-faotools-release`.
+- Prepublishment: article 2138 via the skill `30-prepublishment-descriptions`.
 - LinkedIn company-page posts: skill `37-linkedin-publications`. The owner publishes.
 
 # Repository editing boundaries (faOtools hub)
@@ -141,7 +143,7 @@ if enabled:
 A translation file in git is not a translation on the site. The glossary, paths, YAML keys, pic steps, and scripts are the skill `17-translations`. Read it when the task changes copy, `.po`, or `module.description`.
 
 - Done means the live page or the live field no longer shows the English sentence. A loader return code and a report of “MISSING: 0” are not that proof.
-- Screenshot titles are a separate apply. Translating the guideline body leaves `/ru/` captions English (Google Drive, 2026-09-01, `Open the Google Auth Platform`). `module.pic.name` and `alt_name` are translated. The PNG stays English. Prove the live `ru_RU` value differs from `en_US`.
+- Screenshot titles need their own `pics` entries in the apply payload. Translating the guideline body leaves `/ru/` captions English (Google Drive, 2026-09-01, `Open the Google Auth Platform`). `module.pic.name` and `alt_name` are translated. The PNG stays English. Prove that both live fields equal the TM translation in each shipped language. "Differs from `en_US`" is not that proof: an old title's translation survives a rename.
 - Changing English in a template leaves the new term empty on an existing database (Appointments `Any` / `Select`, 2026-09-09). The empty-term fill is part of the same change.
 - YAML written in this checkout is not applied by the prepublication hook. That hook reads the copy already on the Functional container. The live apply is still required.
 - Store HTML, GitHub manifests, and support mail templates stay `en_US`. KnowSystem article records and `/docs` stay English.
@@ -171,30 +173,27 @@ The same target again: only `./local/env-up.sh <target> --restart`. The rest of 
 
 # Live faOtools MCP
 
-- The real live support database may be reachable through the enabled faOtools MCP server (`user-faotools`).
+- The real live support database may be reachable through the MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). If it returns needs auth or Unauthorized, connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Do not ask the owner to log in.
 - Use it when a task needs production truth that cannot be reliably inferred from code, such as current `ir.ui.view` contents, live website metadata, config parameters, cron state, or app/module records.
 - Prefer read-only MCP checks unless the user explicitly asks to update live data.
 - Before calling any MCP tool, inspect that tool's descriptor/schema and use the documented parameters.
 - Treat live data as production data: do not expose secrets, tokens, customer-private details, or raw sensitive payloads in chat.
 - If code and live behavior disagree, consider whether the module has not been upgraded, a view was customized in the database, or cached/generated content is stale.
-- App releases (`module.release`): follow `33-faotools-release`. Do not invent a parallel publish path.
+- App releases (`module.release`): follow the skill `33-faotools-release`, which reads article 2137. Do not invent a parallel publish path.
 
 ## Files: upload them yourself
 
-The agent uploads every file itself. Never hand a PDF or image to the owner to attach (`linkedin.post` 6 and 7, 2026-11).
-
-- Under ~40 KB: `odoo_attachments_upload_inline`.
-- Larger: `odoo_attachments_upload_prepare` (pass `sha256`), then `curl -X PUT -H "X-MCP-Upload-Ticket: <upload_ticket>" -H "Content-Type: <mime>" --data-binary @<file> <upload_url_base>` (expect `204`), then `odoo_attachments_upload_commit`.
-- A binary field (`attachment=True`, e.g. `linkedin.post.presentation`): pass `res_model` / `res_id` to prepare, then write the committed `ir.attachment` with `res_field` = the field name and `name` = the field name. Read back: exactly one attachment with that `res_field`, and its `file_size` equals the file.
-- This works because `ai_mcp_server.upload_presigned_enabled` is `True` on faotools.com and master.odootools.com (set 2026-11-24). If prepare returns `requires_bearer_token: true`, the setting was turned off: say so and ask the owner to tick Settings → MCP Server → Allow Pre-signed Uploads. Do not fall back to the upload page.
+The agent uploads every file itself. Never hand a PDF or image to the owner to attach (`linkedin.post` 6 and 7, 2026-11). The steps (inline, pre-signed PUT, binary fields, `requires_bearer_token`) are KnowSystem article 2140 in section `AI` on faotools.com. Read it through MCP before the first upload. Stop unless it is active and in section `AI` (id 157). Do not fall back to the upload page.
 
 # Release gates
 
-These bans apply even when the user did not say “publish a release”. The sequence, HTML samples, notes, YAML, and the MCP payload recipe are the skill `33-faotools-release`. Read that skill before any `module.release` write.
+These bans apply even when the user did not say “publish a release”. The sequence, HTML samples, notes, YAML, and the translation step are KnowSystem article 2137 (`AI`), reached through the skill `33-faotools-release`. Read that article before any `module.release` write.
 
-- Scope is `tools` and `odoo-apps-addons` only. Refuse `support`, `life`, `system`, `faotools_env`. Do not write a row with `prepublish=True`. Do not bump `__manifest__.py` (`11-manifest-version`).
+- Scope is apps in `tools` and `odoo-apps-addons` only. Refuse a release of an app from `support`, `life`, `system`, or `faotools_env`. Write a prepublication (`prepublish=True`) only when the release changes the description. Then edit only that prepublication and stop for the owner before apply. Do not write a prepublication when the description does not change. Do not bump `__manifest__.py` (`11-manifest-version`).
 - A new serie: the changelog is published while the page is still hidden, then the page is made public. A public page with an empty changelog is a failed release.
-- Bump only the last number of `exact_version`. Across a major serie, keep the same tail. Do not invent an extra number.
+- No serie named: release on every public serie whose branch has the change. Do not ask which serie. Each major serie bumps its own `exact_version` tail.
+- Bump only the last number of `exact_version`. Only the migration release to a new major serie copies the tail of the previous serie. Do not invent an extra number.
 - Do not call Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`) through MCP. That call commits per module and aborts the MCP transaction.
-- “Published” is allowed only after the live page for every shipped language has no new English sentence. A filled `.po` is not that (Appointments `1.3.33`, 2026-09-10, `/ru/` stayed English). A loader return code is not that. An MCP or encoding error means rewrite the payload and apply again (2026-09-28). Stop only when the user explicitly says to skip translations.
+- Do not call `action_get_commits` through MCP either. It also commits, even when GitHub fails. Run it in `odoo shell` (article 2137).
+- “Published” is allowed only after the live page for every shipped language has no new English sentence. A filled `.po` is not that (Appointments `1.3.33`, 2026-09-10, `/ru/` stayed English). A loader return code is not that. An encoding error in the shell payload means rewrite the payload and apply again (2026-09-28). Stop only when the user explicitly says to skip translations.
 - A changelog icon has a space inside the tag, `<i class="fa ..."> </i>`. An empty `<i></i>` becomes `<i/>` and swallows the page (2026-08-23). The full rule is `18-xml-translate-html`.

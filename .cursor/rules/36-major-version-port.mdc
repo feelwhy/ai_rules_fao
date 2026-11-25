@@ -265,15 +265,19 @@ not rebuilt from it, is not done. Modules the demo program keeps uninstalled
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
 
+Live procedures: `Px.3` is KnowSystem article 2137 (skill `33-faotools-release`), `Px.4` is article
+2138 (skill `30-prepublishment-descriptions`), `Px.7` is article 2139 (skill `17-translations`,
+**Live apply**). Read the article before that stage. The gates below still apply.
+
 | Stage | Gate |
 |---|---|
 | `Px.1` publication readiness | re-read the live draft; reconcile it row by row against the `Fx.6` / `Fx.7` intent, including the page copy that describes changed behavior; screenshot QA passes |
 | `Px.2` code publication | merge the group to the published branch, push, verify the remote tree and module list, freeze the group branch |
-| `Px.3` release publication | publish the migration release (`state=3_published`) on the draft **while it is still hidden**, run `action_get_commits`, link only the relevant commits, no Quick GitHub Update |
+| `Px.3` release publication | publish the migration release (`state=3_published`) on the draft **while it is still hidden**, run `action_get_commits` in `odoo shell` (never through MCP), link only the relevant commits, no Quick GitHub Update |
 | `Px.4` description publication | `action_apply_prepublishment` on the standalone draft — it promotes that record in place and **that write is what makes the page public**; verify no current-serie record changed. Leave `force_no_git` **False**. Do not set it back on |
 | `Px.5` full GitHub update | the **full** update, server-side inside Odoo (`odoo shell` on the container or the UI button), never through MCP, never the quick variant. Before the button: `force_no_git` is False and `github_to_update` is True on every record in the group |
 | `Px.6` GitHub output gate | fast-forward the local published branch, inspect the generated manifest / `index.html` / images commit, run the packaging and static checks |
-| `Px.7` live translations | TM-first apply of description, features, `pics` and `releases` payloads through the loader, for **every active language** on faotools.com. Every field whose English changed in `Fx.6` must carry the new translation in each language; none may still show the copied 19.0 wording. Prove `ru_RU` ≠ `en_US` per page, caption and release, and that the HTML is closed |
+| `Px.7` live translations | TM-first apply of description, features, `pics` and `releases` payloads through the loader, for **every active language** on faotools.com. Every field whose English changed in `Fx.6` must carry the new translation in each language; none may still show the copied 19.0 wording. Prove the live values equal the TM translations per page, caption (`name` and `alt_name`) and release, and that the HTML is closed |
 | `Px.8` master sync | merge the published branch into `_final`, run the candidate full matrix, and stop; promote / redeploy master only on the next confirmation, then verify containers and public demo URLs |
 | `Px.9` handoff | hand over the faotools.com page links and the exact store-ready branch and version; the owner performs the Odoo store publication |
 

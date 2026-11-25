@@ -19,7 +19,7 @@ description: Apps-store packaging, metadata, and installability expectations for
 - Keep `static/description/index.html` and manifest `images` in sync.
 - Do not remove screenshots, icons, or marketing HTML during code-only tasks.
 - Generated/minified listing assets are packaging artifacts; edit source files when available.
-- For faOtools prepublishment copy (MCP `module.description` / features / perfect-for), follow `prepublishment-descriptions.mdc`.
+- For faOtools prepublishment copy (MCP `module.description` / features / perfect-for), follow the skill `30-prepublishment-descriptions`.
 
 # Licensing
 - Preserve proprietary licensing text and `LICENSE` files.

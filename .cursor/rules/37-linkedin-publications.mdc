@@ -5,7 +5,13 @@ alwaysApply: false
 
 # LinkedIn company-page publications
 
-The procedure is KnowSystem article 2136, "LinkedIn posts: how we prepare them":
+The procedure is KnowSystem article 2136 in section `AI` on faotools.com. The title is for people. Read the article before any `linkedin.post` write, short URL, or upload. Git history of this file is not the procedure. This id lookup belongs only to this pointer.
+
 https://faotools.com/odoo/knowsystem/2136
 
-Read that article and follow it. Do not keep a second copy of the procedure in this file.
+1. MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). Inspect the tool schema first (`21-faotools-mcp`).
+2. Read `knowsystem.article` 2136.
+3. Stop unless that record is active and its section is `AI` (id 157).
+4. Read `description` and follow it.
+
+If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. The result is a draft `linkedin.post`. The owner publishes. The agent never logs into LinkedIn.

@@ -6,7 +6,7 @@ apply: agent
 
 # faOtools translations
 
-The live-site bans are always-on in `17-translation-gates`. This skill is the glossary and how the apply is done. A gate that fails means the translation is not done.
+The live-site bans are always-on in `17-translation-gates`. This skill is the glossary, TM YAML, `.po`, and checks. The live apply on faotools.com is KnowSystem article 2139 (**Live apply** below). A gate that fails means the translation is not done.
 
 Pull this skill for any task that adds or changes user-facing strings, `.po` / `.pot` files, website/QWeb copy, `module.description` content, `module.release.description` (public changelog), or languages.
 
@@ -44,11 +44,24 @@ Regression: `modules_website` `test_en_us_store_leak` (includes the now-translat
 - Editing a tools module that has `i18n/` → update `.po` (or regenerate from TM) in the same task.
 - Editing a faotools.com page or 19.0 description → update TM YAML, then loader. That includes every **new or renamed** `module.pic.name` / `alt_name` (see **Screenshot titles** below). Guideline body alone is not enough.
 - Publishing a **19.0+** `module.release` follows `33-release-gates` and the skill `33-faotools-release`. This skill does not repeat that sequence. Internal `notes` and `description_html` stay English. A publish of 18.0-only is not a translation target.
-- `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs MCP `_apply_description`.
+- `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs the live apply (**Live apply** below).
 - After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
 - Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language. `check_view_term_restyle.py` fails a QWeb restyle that left only the old tagged `.pot` msgid.
 - Existing DBs do not pick up a new view msgid on `-u` (`overwrite=False`). `_fill_empty_view_translations` in `support_translations`, `odootools_demo`, and every tools / `odoo-apps-addons` module that owns QWeb `<template>` views writes the `.po` onto empty `arch_db` terms. Do not skip that fill after a template restyle.
 - HTML in `xml_translate` fields (`module.feature.body`, `module.release.description`, …) must follow always-on `ai_rules` `18-xml-translate-html`. Never empty `<i></i>` / `<i/>`.
+
+## Live apply
+
+Applying TM to the faotools.com database is KnowSystem article 2139 in section `AI` on faotools.com. The title is for people. Read the article before any live apply. Git history of this file is not the procedure. This id lookup belongs only to this pointer.
+
+https://faotools.com/odoo/knowsystem/2139
+
+1. MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). Inspect the tool schema first (`21-faotools-mcp`).
+2. Read `knowsystem.article` 2139.
+3. Stop unless that record is active and its section is `AI` (id 157).
+4. Read `description` and follow it.
+
+If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. MCP only reads the article; it cannot run the apply. The bans in `17-translation-gates` and `18-xml-translate-html` still apply.
 
 ## Screenshot titles (`module.pic`) — hard gate
 
@@ -58,9 +71,9 @@ PNG files stay English. **`module.pic.name` and `alt_name` are translated.** Rep
 
 1. Rewrite TM `confs[].pics` / `features[].pics` / top-level `pics` to the **new** English `name` and `alt_name` (new fingerprint). Do not leave the old titles under the old `sequence`.
 2. Translate both fields for every shipped language.
-3. MCP `_apply_description` **must include `pics`**. Omitting them leaves titles English. Do not apply the previous pic YAML onto the new shots.
+3. The live apply payload **must include `pics`**. Omitting them leaves titles English. Do not apply the previous pic YAML onto the new shots.
 4. Loader `_match_child` matches English source/fingerprint first, then sequence. Old source + new title = no match. Sequence fallback can hit the wrong pic; `_apply_field_payload` then skips `plain` fields on a stale fingerprint (`return 0`) — silent English leftover.
-5. Body/guideline translated is **not** done. Prove `/ru/` (and each shipped lang) caption ≠ English: live `module.pic.name` `ru_RU` ≠ `en_US`.
+5. Body/guideline translated is **not** done. Prove that live `module.pic.name` **and** `alt_name` equal the TM translation in each shipped language. Feature blocks show `alt_name`. "Differs from English" passes on an old title's translation.
 
 ## Closing a hub-wide empty-msgstr backlog
 

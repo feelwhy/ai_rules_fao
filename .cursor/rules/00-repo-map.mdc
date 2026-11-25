@@ -48,8 +48,10 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations: bans in `17-translation-gates`, glossary and loader steps in the skill `17-translations`. Icon HTML is `ai_rules` `18-xml-translate-html`.
-- Demo data: skill `34-demo-data`. KnowSystem articles: skill `35-knowsystem-demo`.
+- Translations: bans in `17-translation-gates`, glossary and TM in the skill `17-translations`, live apply in article 2139 via that skill. Icon HTML is `ai_rules` `18-xml-translate-html`.
+- Demo data: skill `34-demo-data`. KnowSystem demo articles: skill `35-knowsystem-demo`.
+- faotools.com FAQ (add or edit an FAQ article): article 2141, then the YAML part in `support` `.cursor/rules/knowsystem-faq.mdc`.
 - A major port of the `tools` apps is not done when the last module group is green. The rest is the skill `36-major-version-port`.
-- App releases: bans in `33-release-gates`, sequence in the skill `33-faotools-release`.
+- App releases: bans in `33-release-gates`, sequence in KnowSystem article 2137 via the skill `33-faotools-release`.
+- Prepublishment: article 2138 via the skill `30-prepublishment-descriptions`.
 - LinkedIn company-page posts: skill `37-linkedin-publications`. The owner publishes.

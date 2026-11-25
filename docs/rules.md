@@ -51,10 +51,12 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
 - Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
-- Translations: bans in `17-translation-gates`, glossary and loader steps in the skill `17-translations`. Icon HTML is `ai_rules` `18-xml-translate-html`.
-- Demo data: skill `34-demo-data`. KnowSystem articles: skill `35-knowsystem-demo`.
+- Translations: bans in `17-translation-gates`, glossary and TM in the skill `17-translations`, live apply in article 2139 via that skill. Icon HTML is `ai_rules` `18-xml-translate-html`.
+- Demo data: skill `34-demo-data`. KnowSystem demo articles: skill `35-knowsystem-demo`.
+- faotools.com FAQ (add or edit an FAQ article): article 2141, then the YAML part in `support` `.cursor/rules/knowsystem-faq.mdc`.
 - A major port of the `tools` apps is not done when the last module group is green. The rest is the skill `36-major-version-port`.
-- App releases: bans in `33-release-gates`, sequence in the skill `33-faotools-release`.
+- App releases: bans in `33-release-gates`, sequence in KnowSystem article 2137 via the skill `33-faotools-release`.
+- Prepublishment: article 2138 via the skill `30-prepublishment-descriptions`.
 - LinkedIn company-page posts: skill `37-linkedin-publications`. The owner publishes.
 
 ## 01-hub-serie
@@ -199,7 +201,7 @@ _Apps-store packaging, metadata, and installability expectations for tools modul
 - Keep `static/description/index.html` and manifest `images` in sync.
 - Do not remove screenshots, icons, or marketing HTML during code-only tasks.
 - Generated/minified listing assets are packaging artifacts; edit source files when available.
-- For faOtools prepublishment copy (MCP `module.description` / features / perfect-for), follow `prepublishment-descriptions.mdc`.
+- For faOtools prepublishment copy (MCP `module.description` / features / perfect-for), follow the skill `30-prepublishment-descriptions`.
 
 # Licensing
 - Preserve proprietary licensing text and `LICENSE` files.
@@ -290,7 +292,7 @@ _A translation is not done until it is on the live page_
 A translation file in git is not a translation on the site. The glossary, paths, YAML keys, pic steps, and scripts are the skill `17-translations`. Read it when the task changes copy, `.po`, or `module.description`.
 
 - Done means the live page or the live field no longer shows the English sentence. A loader return code and a report of “MISSING: 0” are not that proof.
-- Screenshot titles are a separate apply. Translating the guideline body leaves `/ru/` captions English (Google Drive, 2026-09-01, `Open the Google Auth Platform`). `module.pic.name` and `alt_name` are translated. The PNG stays English. Prove the live `ru_RU` value differs from `en_US`.
+- Screenshot titles need their own `pics` entries in the apply payload. Translating the guideline body leaves `/ru/` captions English (Google Drive, 2026-09-01, `Open the Google Auth Platform`). `module.pic.name` and `alt_name` are translated. The PNG stays English. Prove that both live fields equal the TM translation in each shipped language. "Differs from `en_US`" is not that proof: an old title's translation survives a rename.
 - Changing English in a template leaves the new term empty on an existing database (Appointments `Any` / `Select`, 2026-09-09). The empty-term fill is part of the same change.
 - YAML written in this checkout is not applied by the prepublication hook. That hook reads the copy already on the Functional container. The live apply is still required.
 - Store HTML, GitHub manifests, and support mail templates stay `en_US`. KnowSystem article records and `/docs` stay English.
@@ -302,7 +304,7 @@ _faOtools glossary and how to apply translations (TM, .po, loader, pic titles). 
 
 # faOtools translations
 
-The live-site bans are always-on in `17-translation-gates`. This skill is the glossary and how the apply is done. A gate that fails means the translation is not done.
+The live-site bans are always-on in `17-translation-gates`. This skill is the glossary, TM YAML, `.po`, and checks. The live apply on faotools.com is KnowSystem article 2139 (**Live apply** below). A gate that fails means the translation is not done.
 
 Pull this skill for any task that adds or changes user-facing strings, `.po` / `.pot` files, website/QWeb copy, `module.description` content, `module.release.description` (public changelog), or languages.
 
@@ -340,11 +342,24 @@ Regression: `modules_website` `test_en_us_store_leak` (includes the now-translat
 - Editing a tools module that has `i18n/` → update `.po` (or regenerate from TM) in the same task.
 - Editing a faotools.com page or 19.0 description → update TM YAML, then loader. That includes every **new or renamed** `module.pic.name` / `alt_name` (see **Screenshot titles** below). Guideline body alone is not enough.
 - Publishing a **19.0+** `module.release` follows `33-release-gates` and the skill `33-faotools-release`. This skill does not repeat that sequence. Internal `notes` and `description_html` stay English. A publish of 18.0-only is not a translation target.
-- `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs MCP `_apply_description`.
+- `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs the live apply (**Live apply** below).
 - After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
 - Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language. `check_view_term_restyle.py` fails a QWeb restyle that left only the old tagged `.pot` msgid.
 - Existing DBs do not pick up a new view msgid on `-u` (`overwrite=False`). `_fill_empty_view_translations` in `support_translations`, `odootools_demo`, and every tools / `odoo-apps-addons` module that owns QWeb `<template>` views writes the `.po` onto empty `arch_db` terms. Do not skip that fill after a template restyle.
 - HTML in `xml_translate` fields (`module.feature.body`, `module.release.description`, …) must follow always-on `ai_rules` `18-xml-translate-html`. Never empty `<i></i>` / `<i/>`.
+
+## Live apply
+
+Applying TM to the faotools.com database is KnowSystem article 2139 in section `AI` on faotools.com. The title is for people. Read the article before any live apply. Git history of this file is not the procedure. This id lookup belongs only to this pointer.
+
+https://faotools.com/odoo/knowsystem/2139
+
+1. MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). Inspect the tool schema first (`21-faotools-mcp`).
+2. Read `knowsystem.article` 2139.
+3. Stop unless that record is active and its section is `AI` (id 157).
+4. Read `description` and follow it.
+
+If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. MCP only reads the article; it cannot run the apply. The bans in `17-translation-gates` and `18-xml-translate-html` still apply.
 
 ## Screenshot titles (`module.pic`) — hard gate
 
@@ -354,9 +369,9 @@ PNG files stay English. **`module.pic.name` and `alt_name` are translated.** Rep
 
 1. Rewrite TM `confs[].pics` / `features[].pics` / top-level `pics` to the **new** English `name` and `alt_name` (new fingerprint). Do not leave the old titles under the old `sequence`.
 2. Translate both fields for every shipped language.
-3. MCP `_apply_description` **must include `pics`**. Omitting them leaves titles English. Do not apply the previous pic YAML onto the new shots.
+3. The live apply payload **must include `pics`**. Omitting them leaves titles English. Do not apply the previous pic YAML onto the new shots.
 4. Loader `_match_child` matches English source/fingerprint first, then sequence. Old source + new title = no match. Sequence fallback can hit the wrong pic; `_apply_field_payload` then skips `plain` fields on a stale fingerprint (`return 0`) — silent English leftover.
-5. Body/guideline translated is **not** done. Prove `/ru/` (and each shipped lang) caption ≠ English: live `module.pic.name` `ru_RU` ≠ `en_US`.
+5. Body/guideline translated is **not** done. Prove that live `module.pic.name` **and** `alt_name` equal the TM translation in each shipped language. Feature blocks show `alt_name`. "Differs from English" passes on an old title's translation.
 
 ## Closing a hub-wide empty-msgstr backlog
 
@@ -564,142 +579,42 @@ _Live faOtools MCP usage for production truth on faotools.com_
 
 # Live faOtools MCP
 
-- The real live support database may be reachable through the enabled faOtools MCP server (`user-faotools`).
+- The real live support database may be reachable through the MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). If it returns needs auth or Unauthorized, connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Do not ask the owner to log in.
 - Use it when a task needs production truth that cannot be reliably inferred from code, such as current `ir.ui.view` contents, live website metadata, config parameters, cron state, or app/module records.
 - Prefer read-only MCP checks unless the user explicitly asks to update live data.
 - Before calling any MCP tool, inspect that tool's descriptor/schema and use the documented parameters.
 - Treat live data as production data: do not expose secrets, tokens, customer-private details, or raw sensitive payloads in chat.
 - If code and live behavior disagree, consider whether the module has not been upgraded, a view was customized in the database, or cached/generated content is stale.
-- App releases (`module.release`): follow `33-faotools-release`. Do not invent a parallel publish path.
+- App releases (`module.release`): follow the skill `33-faotools-release`, which reads article 2137. Do not invent a parallel publish path.
 
 ## Files: upload them yourself
 
-The agent uploads every file itself. Never hand a PDF or image to the owner to attach (`linkedin.post` 6 and 7, 2026-11).
-
-- Under ~40 KB: `odoo_attachments_upload_inline`.
-- Larger: `odoo_attachments_upload_prepare` (pass `sha256`), then `curl -X PUT -H "X-MCP-Upload-Ticket: <upload_ticket>" -H "Content-Type: <mime>" --data-binary @<file> <upload_url_base>` (expect `204`), then `odoo_attachments_upload_commit`.
-- A binary field (`attachment=True`, e.g. `linkedin.post.presentation`): pass `res_model` / `res_id` to prepare, then write the committed `ir.attachment` with `res_field` = the field name and `name` = the field name. Read back: exactly one attachment with that `res_field`, and its `file_size` equals the file.
-- This works because `ai_mcp_server.upload_presigned_enabled` is `True` on faotools.com and master.odootools.com (set 2026-11-24). If prepare returns `requires_bearer_token: true`, the setting was turned off: say so and ask the owner to tick Settings → MCP Server → Allow Pre-signed Uploads. Do not fall back to the upload page.
+The agent uploads every file itself. Never hand a PDF or image to the owner to attach (`linkedin.post` 6 and 7, 2026-11). The steps (inline, pre-signed PUT, binary fields, `requires_bearer_token`) are KnowSystem article 2140 in section `AI` on faotools.com. Read it through MCP before the first upload. Stop unless it is active and in section `AI` (id 157). Do not fall back to the upload page.
 
 ## 30-prepublishment-descriptions
 
 _Rewrite/adapt faOtools apps-store module descriptions before publishment_
 
-# Prepublishment module descriptions (faOtools MCP)
+# faOtools app page changes
 
-Canonical extended rule (same logic): `support/.cursor/rules/module-description-mcp-adaptation.mdc`.
-Screenshots: `31-prepublishment-screenshots`. Packaging metadata: `10-apps-store-packaging`.
+Trigger: переписать / адаптировать описание приложения, features, guidelines, alerts, screenshots, prepublication.
 
-All edits go through the `user-faotools` MCP. Inspect each tool schema before calling; writes use `odoo_records_write` then `odoo_operations_confirm`.
+The procedure is KnowSystem article 2138 in section `AI` on faotools.com. The title is for people. Read the article before any write to `module.description` or its children. Git history of this file is not the procedure. This id lookup belongs only to this pointer.
 
-## Golden rule: edit the prepublishment, never the published description
+https://faotools.com/odoo/knowsystem/2138
 
-- Work ONLY on `module.description` records with `prepublish = True`.
-- The live record is referenced by `pre_publish_origin_id`. NEVER write to it.
-- If no prepublishment exists, run `action_make_prepublish` on the origin.
-- Child records (`module.feature`, `module.pic`, `module.extra.note`, `optional.app`, `module.conf`) must belong to the prepublishment (`description_id` -> prepublish record).
+1. MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). Inspect the tool schema first (`21-faotools-mcp`).
+2. Read `knowsystem.article` 2138.
+3. Stop unless that record is active and its section is `AI` (id 157).
+4. Read `description` and follow it.
 
-### Exception: a NEW major serie has no origin to prepublish from
-
-The rules above describe a same-serie prepublishment, where the live record already exists. A major
-port (`36-major-version-port`) creates the new serie's page instead, so it works differently:
-
-- Create a **standalone prepublication**: a copy of the published current-serie description with the
-  major `version` switched, **no `pre_publish_origin_id`**, `prepublish=True` **+
-  `force_no_git=True`**, `documentation_url` cleared, and current-serie videos not carried over.
-- Applying it **promotes that same record in place** (`action_apply_prepublishment` clears the draft
-  flags and re-renders) rather than copying into an origin. Release links on that record stay valid,
-  so the draft `module.release` may live on it from the start.
-- Because there is no origin pointer, writing the current serie's description is structurally
-  impossible — which is the point. Never create one pointing at it.
-- **`not_supported=True` is banned** on any record intended for publication: the GitHub writer
-  switches to the archive branch, which **deletes** `icon.png` / `main.png` / `main_nopromo.png` and
-  rewrites the manifest author to "Archived". `prepublish=True` already hides the draft from public
-  listings, and `force_no_git=True` is the actual GitHub guard.
-- Snapshot record ids, child counts and attachment checksums **before** applying. The apply unlinks
-  children and reparents, so a mid-flight failure has no clean revert — treat it as an incident, not
-  a retry.
-
-## What you may change vs must not
-
-Editable (rephrase freely; keep facts truthful):
-- `module.feature.name`, `subheader`, `body` for every feature.
-- `module.description.summary` and `module.description.perfect_for`.
-- `module.description.summary_key_words` — **extend only**; never remove existing keywords.
-
-Hard do-not-touch:
-- `module.description.short_summary` — leave exactly as-is.
-- Prepublishments are **English-only**. Do not author translations on the draft; the `support_translations` loader re-applies them after publish.
-- The **first** feature in `feature_ids` (overview block) has no title — never add `name`/`subheader`; only improve its `body`.
-- Never invent capabilities.
-
-## Goals
-
-- Sell the outcome: which customer pain each capability removes.
-- Modern, professional copy; AI/SEO-friendly keywords (extend, do not replace).
-- Research first: module source in `tools/` (correct branch from `version` + `tech_name`), release notes, and docs before rewriting.
-
-## Section structure and logical grouping
-
-Order features so the page reads top-to-bottom like a product story:
-
-1. **Overview (first feature, no title)** — 6-card key-benefits grid mapping the whole app at a glance. Use multiples of 3 for `col-lg-4` rows.
-2. **Native / suite-owned capabilities** — group related features (composer, sending safety, message actions, metadata) into named sections with plain-text `name` + `subheader`.
-3. **Bundled dependency apps (suite modules only)** — one dedicated section per dependency, titled with the **published product name** (e.g. "Lost Messages Routing", "Private Thread", "Odoo Email From"). Explain what the dependency delivers and how the suite extends or integrates it. Do **not** merge several dependencies into one section or dump a dependency list block.
-4. **Administration / configuration** — unified settings, allowed models, presets, manager workflows.
-5. **Bridge modules** (e.g. `email_suite_accounting`) — one focused section on the integration surface, not a repeat of the parent suite.
-
-Standalone modules skip step 3. Optional extensions must match real rows in `optional_app_ids`.
-
-## Styling: cloud_base / 1043 pattern
-
-Style reference: `module.description` **1031** (`cloud_base`) and **1043** on faOtools.
-
-- Bootstrap grid + FontAwesome only. No `<style>`, `<script>`, JS handlers, or custom CSS beyond approved inline card styles.
-- Brand green `#017e84`, card border `#e7f0ee`, radius `16px`, padding `20px`, white background, shadow `0 6px 24px rgba(0,0,0,0.06)`.
-- **Overview cards:** `row justify-content-center mx-0`, cols `col-lg-4 col-md-6 col-sm-12 mt8 mb16 d-flex`, inner `h-100 w-100` + green `<h4 style="color:#017e84;font-weight:700;">` with inline FA icon.
-- **Detail sections:** `row mx-0`, cols `col-lg-6 col-md-6 col-sm-12 mt8 mb16 d-flex`, same card shell, bullet lists with `<ul class="list-unstyled" style="padding-left:0;list-style:none;">` and `<i class="fa fa-check-square-o" style="color:#017e84;"> </i>`.
-- **Perfect For:** `row text-left mx-0`, `col-lg-4 col-md-6 col-sm-12 mt8 mb16 d-flex`, green `<h3 style="color:#017e84;font-weight:700;"><i class="fa ..."> </i> ...</h3>`.
-- Feature `name` / `subheader`: plain text (or existing optional-extension icon markup). Do not wrap in green spans.
-- Use `<b>` for visible bold in odoo.com content — not `<strong>` (store CSS ignores it).
-- Top-level `.row` in authored HTML must include `mx-0` to prevent mobile horizontal scroll.
-- Card grids: fill rows (multiples of column count) or add `justify-content-center`; equal height via `d-flex` + `h-100 w-100`; balance copy volume across sibling cards honestly.
-- Valid XML: close every tag; escape `&`, `<`, `>`; no named entities like `&mdash;` (422 errors). Hyperlink long URLs with short anchor text; use `text-break` when the literal URL must show.
-
-### Character set: ASCII-safe English source (apps.odoo.com)
-
-apps.odoo.com reads shipped `index.html` as latin-1, so non-ASCII source glyphs corrupt
-(e.g. `—` becomes `â`). faotools.com UTF-8 is fine. Keep English source ASCII-safe.
-
-**Scope: English source only** in `module.description` / `module.feature` / `module.pic` /
-`module.conf` / `module.extra.note` / `optional.app` fields that feed the odoo.com index.
-**Translations are exempt** (assumed faotools.com-only UTF-8); do not transliterate them.
-
-Allowed: printable ASCII `U+0020`-`U+007E`, newline/tab, XML entities
-`&amp;` `&lt;` `&gt;` `&quot;` `&apos;`, and numeric refs `&#NNN;` when a glyph is
-semantically required (e.g. `&#246;`). No named entities (`&mdash;`, `&nbsp;`, …).
-
-Write this, not that: ` - ` not `—`/`–`; `'` not `’`; `"` not `“`/`”`; `...` not `…`;
-`&gt;` (menus) / `-&gt;` (state flows) not `→`; `-` not `−`; `x` not `×`; `!=` not `≠`;
-plain space not NBSP; delete zero-width spaces; no Cyrillic keyboard-typo lookalikes.
-
-## Screenshots (summary)
-
-- Body copy is primary; screenshots are secondary evidence.
-- Default one inline screenshot per feature (`module.pic.features = True`); demote or detach (`feature_id = False`) weak shots — never delete pics or attachments.
-- Reuse existing `module.pic` from dependency modules when describing bundled apps; capture new shots only for genuinely new UI (see `prepublishment-screenshots.mdc`).
-
-## Source and verification
-
-- Module source: this `tools/` repo; branch from prepublishment `version` (e.g. `19.0` -> `19_suite` / matching branch).
-- After edits: run `action_prepare_description` or preview `/apppublish/<version>/<id>/`.
-- Verify mobile width (no horizontal overflow ~360px), screenshot inline selection, caption markup, and that summary + sections match actual code behavior.
+If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. The bans in `33-release-gates` (edit only a prepublication, and stop for the owner before apply), `18-xml-translate-html`, and `17-translation-gates` still apply; they are enough to refuse a write.
 
 ## 31-prepublishment-screenshots
 
 _Screenshot conventions for faOtools module store pages_
 
-Companion rule for copy/HTML structure: `prepublishment-descriptions.mdc`.
+Copy, HTML structure, and the prepublication itself: the skill `30-prepublishment-descriptions` (KnowSystem article 2138).
 
 # Screenshot Source: Real UI, Never Generated Images
 
@@ -708,7 +623,7 @@ Companion rule for copy/HTML structure: `prepublishment-descriptions.mdc`.
 
 # Hard gate: demo environment BEFORE any capture
 
-**Do not run Selenium or hand off PNGs until the demo environment passes the checks below.**
+**Do not run Selenium or upload PNGs until the demo environment passes the checks below.**
 
 Order is mandatory:
 
@@ -729,7 +644,7 @@ If demo seeding or asset warmup is incomplete, **stop and fix seed/scripts first
 3. Start Odoo from that same image/DB (`setup_screenshot_stack.sh up` or equivalent), picking a free host port (check with `ss -tlnp`).
 4. Complete the **demo gate** above (enable toggles → seed → verify icons → walk shot plan).
 5. Drive headless `google-chrome` via Selenium (`pip install selenium` in a local venv, e.g. `/tmp/screenshot-venv`) to log in and open each view/action, then `driver.save_screenshot(...)`.
-6. Run **QA reject checks** on every PNG before handoff (see below).
+6. Run **QA reject checks** on every PNG before upload (see below).
 7. Reference scripts: `support/devops/setup_screenshot_stack.sh`, `support/devops/seed_screenshot_env.py`, `support/devops/capture_suite_screenshots.py`, `support/devops/apply_screenshot_legends.py`.
 
 # Demo data requirements (rich consultant demo, not smoke test)
@@ -874,7 +789,7 @@ For dependency modules sold separately (`mail_manual_routing`, `internal_thread`
 
 Compare adjacent published descriptions (e.g. 18.0 vs 19.0): match or exceed screenshot count, feature angles, and caption intent. Do not drop a published angle without reason.
 
-# QA checklist (every PNG before handoff)
+# QA checklist (every PNG before upload)
 
 Reject and fix if any check fails:
 
@@ -894,30 +809,17 @@ Screenshot **files** stay English. **`module.pic.name` and `alt_name` are transl
 
 Replacing or adding shots is **not** done when the PNG is on the page. Same job:
 
-1. Rewrite TM `confs[].pics` / `features[].pics` to the **new** English `name` and `alt_name` (drop the old titles).
+1. Rewrite TM `confs[].pics` / `features[].pics` / top-level `pics` to the **new** English `name` and `alt_name` (drop the old titles). A guideline shot is only reachable under `confs[].pics`.
 2. Translate both fields for every shipped language (`17-translations`).
-3. MCP `_apply_description` **must include `pics`**. Omitting them, or applying the old pic YAML, leaves `/<lang>/` captions in English.
-4. `action_apply_prepublishment` only re-applies YAML already on the Functional container — new local TM still needs `_apply_description`.
-5. Prove it: `/ru/` caption ≠ English (`module.pic.name` `ru_RU` ≠ `en_US`).
+3. The live apply (KnowSystem article 2139, skill `17-translations` **Live apply**) **must include `pics`**. Omitting them, or applying the old pic YAML, leaves `/<lang>/` captions in English. MCP cannot run that apply.
+4. `action_apply_prepublishment` only re-applies YAML already on the Functional container — new local TM still needs the live apply.
+5. Prove it: live `module.pic.name` **and** `alt_name` equal the TM translation in each shipped language. "Differs from English" passes on an old title's translation.
 
 Incident 2026-09-01: Google Drive guideline body was translated; titles such as `Open the Google Auth Platform` stayed English because TM still had the old console titles and the loader apply omitted `pics`.
 
-# Handoff for manual faOtools upload (default)
+# Upload
 
-After capture, crop/legend, and **QA pass**, move only final PNGs to:
-
-```
-~/Downloads/prepublishment-screenshots/
-  <module_technical_name>/
-    *.png
-  upload_manifest.json   # description_id, sequence, feature_id, alt_name
-```
-
-Agent steps: capture → QA → manifest → move finals → tell user the Downloads path. Manual faOtools upload is the default; MCP upload only when explicitly requested and bearer/PUT works.
-
-# Upload via MCP (optional)
-
-When the user explicitly asks for automated upload **and** MCP bearer/PUT is available, upload QA-passed PNGs via faOtools MCP (`odoo_attachments_upload_prepare` → PUT → `odoo_attachments_upload_commit`), then create `module.pic` with `description_id`, `attachment_id`, `alt_name`, `sequence`, `feature_id`.
+The agent uploads the QA-passed PNGs itself (`21-faotools-mcp`). Never hand them to the owner to attach. Upload steps are KnowSystem article 2140, read through MCP as in `21-faotools-mcp`. Then create `module.pic` on the prepublication with `attachment_id`, `name`, `alt_name`, `sequence`, and `description_id` + `feature_id` for a feature shot or `conf_id` for a guideline shot (KnowSystem article 2138).
 
 ## 32-video-cover-design
 
@@ -1125,119 +1027,18 @@ _Prepare or publish a faOtools app release on faotools.com (module.release), inc
 
 # faOtools app release
 
-The live-site bans are always-on in `33-release-gates`. This skill is the sequence. A gate that fails means the release is not done.
+Trigger: prepare / make / publish a release, выложи, опубликуй.
 
-Command: “prepare a release”, “make a release”, “publish a release”.
-Live writes go through MCP `user-faotools` (faotools.com). Inspect each tool schema first.
-Mutations: `odoo_records_write` / `odoo_records_create` / `odoo_actions_run`, then `odoo_operations_confirm`.
+The procedure is KnowSystem article 2137 in section `AI` on faotools.com. The title is for people. Read the article before any `module.release` write. Git history of this file is not the procedure. This id lookup belongs only to this pointer.
 
-**Scope: `tools` and `odoo-apps-addons` only.** Resolve `tech_name` in those repos. Refuse `support`, `life`, `system`, `faotools_env`. Do not bump local `__manifest__.py` (`11-manifest-version`). Do not run Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`) as part of a release.
+https://faotools.com/odoo/knowsystem/2137
 
-The user’s “make a release” is the live-write gate. Ask only when the module/serie is ambiguous, the next `exact_version` already has a `module.release`, or the target is a prepublishment.
+1. MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). Inspect the tool schema first (`21-faotools-mcp`).
+2. Read `knowsystem.article` 2137.
+3. Stop unless that record is active and its section is `AI` (id 157).
+4. Read `description` and follow it.
 
-**A new-major-serie release is different.** During a major port (`36-major-version-port`) the target is a **standalone prepublication** with no `pre_publish_origin_id` (see `30-prepublishment-descriptions`). Specifics:
-
-- The draft `module.release` lives on that same record and stays valid when the record is promoted in place. **Publish the release while the draft is still hidden, then apply the prepublication** (`36-major-version-port` `Px.3` before `Px.4`). On a standalone draft the apply only clears `prepublish` / `not_supported` / `force_no_git` and re-renders (`module_description.py:859-866`) — it destroys nothing, and it is the write that makes the page public. Publishing the release first is therefore what guarantees the page is never public with an empty changelog.
-- It is a **migration** release: `migration=True`, and the first line is the flag entry — `<li class="mt8"><i class="fa fa-flag-checkered text-success mr8"> </i> The app is published to version 20.</li>` — naming the **new** serie, followed only by lines for substantial changes a customer would notice (`fa-plus` for a feature, `fa-refresh` for a fix). An icon change or "works as before" is not a line; a port with no such change ships the flag line alone (`36-major-version-port`).
-- Preserve the `exact_version` tail across the major bump; do not invent an extra increment. (`cloud_base` 18.0 ended at `1.4.44` and its 19.0 migration release was also `1.4.44`.)
-- The GitHub update runs **server-side inside Odoo** with the stored `github_connector.github_access_token` — `odoo shell` on the container or the UI button — never through MCP, because `_update_in_git` calls `cr.commit()` per module and aborts an MCP savepoint. Use the **full** update, never the quick variant, and do not build a parallel plain-git export path: the pushed manifest, `index.html` and image layout must stay byte-comparable with previous releases. Assert `not_supported` and `force_no_git` are both False first, or the archive branch deletes the store images.
-
-**Translations are part of the release.** On 19.0+ the job includes step 8 (TM YAML + live loader apply) in the same turn as publish. Do not report published, do not stop at GitHub / demo rebuild, and do not treat “do not redeploy Functional” as a skip. The **only** skip is the user **explicitly** saying to skip translations / do not translate (quote that command; do not mark step 8 done).
-
-**App `.po` fill is not this step.** Completing `tools/<module>/i18n/*.po` does not translate public `module.release.description`. A 19.0+ row that is `3_published` while `/it/` or `/ru/` still shows the English changelog has failed. Incident 2026-09-10: Appointments `1.3.33` shipped English because the publish chat treated the `.po` backlog as “translations done” and never wrote TM / `_apply_description`.
-
-## Resolve targets
-
-1. Module (`tech_name`) + Odoo serie(s) (`module.description.version`, e.g. `19.0`). Several series → one release each.
-2. Search published descriptions only:
-
-```
-[("tech_name", "=", "<tech_name>"), ("version", "=", "<serie>"), ("prepublish", "=", False)]
-```
-
-Never write the prepublishment (`prepublish=True`).
-3. Read that `module.description` (`exact_version`, `name`, `release_ids`) and the last few `module.release` rows for the same app (icons, note headings, tone).
-
-`module.description.exact_version` is the tail without the serie (`1.3.53`). Display name is `{version}.{exact_version}` (`19.0.1.3.53`). Bump **only the last number**: `19.0.1.3.53` → `19.0.1.3.54` (`exact_version` `1.3.54`).
-
-## Public `description` (changelog)
-
-Short, factual, no hype (“significantly”, “seamlessly”, “powerful”). Customer-safe: no exploit steps. Match existing HTML:
-
-```html
-<ul style="list-style-type: none;">
-    <li class="mt8"><i class="fa fa-refresh text-info mr8"> </i> The issue of X has been fixed.</li>
-    <li class="mt8"><i class="fa fa-plus text-success mr8"> </i> The feature to Y has been added.</li>
-</ul>
-```
-
-- `fa fa-refresh text-info` — bug or fix
-- `fa fa-plus text-success` — new feature or optimization
-
-One `<li>` per change. Read recent `module.release` rows if unsure.
-
-**Never leave a FontAwesome `<i>` empty.** Write `<i class="fa ..."> </i>` (space inside the pair). Empty `<i></i>` is serialized by Odoo `xml_translate` to `<i/>`. HTML5 treats that as an unclosed start tag, so the changelog renders as a broken `+` / leftover `+` and the rest of the list is swallowed. Same for any other non-void icon/wrapper (`<span>`, `<b>`, `<em>`): never `></tag>` with no text, never self-close. Incident 2026-08-23: 94 translation releases shipped `<i class="fa fa-plus text-success mr8"></i>` and the public notes broke.
-
-## Internal `notes` (mandatory)
-
-**Every new release must have Before / After notes.** A one-line summary is not enough. Include what broke or how it worked, what it does now, and every critical detail (security/ACL, API, upgrade/install, tests, serie-specific differences, commit SHA / PR). Read the code and the live `module.description` / last releases before writing — do not invent.
-
-```
-Before release
------------------------
-<actual previous behavior, including the hole or limitation>
-
-After release
---------------------
-<what changed, checks added, tests, SHA / PR>
-```
-
-Public `description` stays short; put the important detail here. Do not put tokens or customer-private data in notes.
-
-## Sequence (each `module.description`)
-
-1. Write `exact_version` to the bumped tail. Stop if a `module.release` already exists for that `module_id` + `exact_version`.
-2. Create `module.release`: `module_id`, `exact_version` (new tail), `release_date` today, `description`, `notes`. Skip `1_to_check` / `2_checked` (those spawn check activities).
-3. Publish: write `state=3_published`.
-4. Get GitHub Commits: `odoo_actions_run` on **`module.description`** (`ids` = that description), `method_name=action_get_commits` (UI label “Get GitHub Commits”; the release action maps to `module_id.action_get_commits()`).
-5. Auto-link commits: search `github.commit` for that `module_id`, `ingore_commit=False`, preferably `in_release=False`. Pick rows that belong to this change (message, SHA, date after the previous release). Write `commit_ids` on the new `module.release`. If none match, say so — do not attach unrelated history.
-6. Do **not** run Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`). MCP wraps the call in a savepoint; that method’s `cr.commit()` then aborts the cursor (`InFailedSqlTransaction`). The operator runs it from the UI if needed.
-7. `odoo_record_url` for every new `module.release` and paste the links in the reply.
-8. **TM-first translate** the public changelog when the description serie is **19.0+** (see below). Start it in the **same turn** as publish. Do not end the turn after step 7. Do not ask “translate it?” / “proceed with step 8?”. Chunk-gate does not split this step off. The release is **not done** until the live page scan below is green for every shipped language. The **only** skip is the user **explicitly** saying to skip translations (quote that command; do not mark step 8 done).
-
-Report per release only after that scan: module, serie, old → new version, state, commit count, URL, and the page-scan result (every shipped language, or the list that is still English). A reply that says published / готово / all ok before the scan is a failed release.
-
-## Public changelog translations (19.0+)
-
-Pull `17-translations`. Public `module.release.description` only (`xml_translate`). **`notes` and `description_html` stay English.**
-
-**Hard gate.** A 19.0+ publish that leaves any new changelog sentence in English on a shipped language page has failed the release. One translated line next to English lines is a failure. Do not report “published” until the live page scan has passed. The user must not have to open the site and ask again.
-
-These do **not** skip or postpone this block (they are not an explicit “skip translations”):
-
-- “do not redeploy / rebuild Functional” (faotools.com). Changelog apply is a loader write on the live DB, not a project rebuild.
-- Demo / master project rebuilds, GitHub update, or “YAML is in git”.
-- “the YAML is not on the container disk yet.”
-- An MCP parse error, a `\u` escape the bridge ate, a payload that is “too big”, or a diacritic the call rejected. Change the text so the call succeeds, then apply. Do not stop and do not tell the user that encoding blocked the release.
-
-After the English row is `3_published`:
-
-1. Update TM first: `support/support_translations/tm/website/<tech_name>_<serie>.yaml` → `releases` entry keyed by `module_version` + `exact_version`. Every new English sentence, every code in `support_translations.const.SHIPPED_LANGS` (read the list; do not type a subset). `python3 support/support_translations/scripts/check_release_tm.py` must not report a gap for this release. Reuse `scripts/fill_release_tm.py` PACKS when the sentence already exists. Keep real Unicode in the YAML.
-2. Translate glossary-first (do-not-translate terms stay as-is: Odoo, Bearer, MB).
-3. **Apply now on faotools.com** via MCP `odoo_actions_run` on `support.translations`, method `_apply_description`, args = `[payload, lang_codes, path]`, then `odoo_operations_confirm`. A preview is not an apply. `payload` is the YAML `match` plus the new `releases` entry. Sentence-only `source` strings (no HTML, no icon): the loader wraps the icon. Do **not** wait for a Functional image rebuild. Never `odoo_records_write` translations that are not in the YAML.
-4. If this 19.0 page also lists older-serie rows (`migration_release_ids`), those public descriptions must be in the same TM list and applied. Do not leave them English.
-5. **Live page scan, every shipped language, before any “done” reply.** Read each `res.lang` `url_code` for `SHIPPED_LANGS`. GET `https://faotools.com/<url_code>/apps/<slug>`. Cut from `>{version}.{exact_version}</h5>` to the next version heading. The block fails when it still contains any full English sentence from this release. Re-apply that language and scan again. `en_GB` may still show the English sentence when the wording has no British spelling difference — say so; it is the only allowed match. A loader result `[1, N, []]` and a `ru_RU` field read are not this scan.
-
-### MCP payload that actually applies (incident 2026-09-28, `ai_mcp_server` 1.1.0)
-
-The bridge rejects the call **before Odoo** when the arguments are not one JSON object. That is not a reason to leave the page in English.
-
-- Build the arguments with `json.dumps(..., separators=(",", ":"), ensure_ascii=False)` and `json.loads` them before sending. Do not pretty-print. The default `ensure_ascii=True` writes `\uXXXX`, and the bridge eats that backslash. A hand-wrapped payload with an extra `]` / `}` before the language list dies as `Extra data` / `Failed to parse arguments`.
-- Send that compact text as raw UTF-8. It works for Cyrillic, Arabic, and CJK.
-- If a language still will not parse, rewrite **that** translation so the call succeeds (ASCII fold of Latin diacritics is allowed on the live write; the YAML keeps the real letters). Confirm, then re-scan the page. Do not drop letters (`ı` / `ş` / `ł` must not vanish).
-- Apply in language batches when one payload is too large. Every code in `SHIPPED_LANGS` still has to land.
-
-Skip this block only when the target `module.description.version` is 18.0 or older (no new TM for an 18.0-only publish), or when the user **explicitly** commanded a skip. Store HTML (`resulted_description`) stays `en_US`.
+If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. The bans in `33-release-gates`, `18-xml-translate-html`, and `11-manifest-version` still apply; they are enough to refuse a write.
 
 ## 33-release-gates
 
@@ -1245,13 +1046,15 @@ _Live faotools.com release bans that stay in every chat_
 
 # Release gates
 
-These bans apply even when the user did not say “publish a release”. The sequence, HTML samples, notes, YAML, and the MCP payload recipe are the skill `33-faotools-release`. Read that skill before any `module.release` write.
+These bans apply even when the user did not say “publish a release”. The sequence, HTML samples, notes, YAML, and the translation step are KnowSystem article 2137 (`AI`), reached through the skill `33-faotools-release`. Read that article before any `module.release` write.
 
-- Scope is `tools` and `odoo-apps-addons` only. Refuse `support`, `life`, `system`, `faotools_env`. Do not write a row with `prepublish=True`. Do not bump `__manifest__.py` (`11-manifest-version`).
+- Scope is apps in `tools` and `odoo-apps-addons` only. Refuse a release of an app from `support`, `life`, `system`, or `faotools_env`. Write a prepublication (`prepublish=True`) only when the release changes the description. Then edit only that prepublication and stop for the owner before apply. Do not write a prepublication when the description does not change. Do not bump `__manifest__.py` (`11-manifest-version`).
 - A new serie: the changelog is published while the page is still hidden, then the page is made public. A public page with an empty changelog is a failed release.
-- Bump only the last number of `exact_version`. Across a major serie, keep the same tail. Do not invent an extra number.
+- No serie named: release on every public serie whose branch has the change. Do not ask which serie. Each major serie bumps its own `exact_version` tail.
+- Bump only the last number of `exact_version`. Only the migration release to a new major serie copies the tail of the previous serie. Do not invent an extra number.
 - Do not call Quick GitHub Update (`action_update_in_github_quick` / `action_update_in_github`) through MCP. That call commits per module and aborts the MCP transaction.
-- “Published” is allowed only after the live page for every shipped language has no new English sentence. A filled `.po` is not that (Appointments `1.3.33`, 2026-09-10, `/ru/` stayed English). A loader return code is not that. An MCP or encoding error means rewrite the payload and apply again (2026-09-28). Stop only when the user explicitly says to skip translations.
+- Do not call `action_get_commits` through MCP either. It also commits, even when GitHub fails. Run it in `odoo shell` (article 2137).
+- “Published” is allowed only after the live page for every shipped language has no new English sentence. A filled `.po` is not that (Appointments `1.3.33`, 2026-09-10, `/ru/` stayed English). A loader return code is not that. An encoding error in the shell payload means rewrite the payload and apply again (2026-09-28). Stop only when the user explicitly says to skip translations.
 - A changelog icon has a space inside the tag, `<i class="fa ..."> </i>`. An empty `<i></i>` becomes `<i/>` and swallows the page (2026-08-23). The full rule is `18-xml-translate-html`.
 
 ## 34-demo-data
@@ -1978,15 +1781,19 @@ not rebuilt from it, is not done. Modules the demo program keeps uninstalled
 `Px` publishes one group. The ledger records these stage ids, so they are enumerated here — a
 resuming session must be able to map `Px.6` to concrete actions without reading a chat transcript.
 
+Live procedures: `Px.3` is KnowSystem article 2137 (skill `33-faotools-release`), `Px.4` is article
+2138 (skill `30-prepublishment-descriptions`), `Px.7` is article 2139 (skill `17-translations`,
+**Live apply**). Read the article before that stage. The gates below still apply.
+
 | Stage | Gate |
 |---|---|
 | `Px.1` publication readiness | re-read the live draft; reconcile it row by row against the `Fx.6` / `Fx.7` intent, including the page copy that describes changed behavior; screenshot QA passes |
 | `Px.2` code publication | merge the group to the published branch, push, verify the remote tree and module list, freeze the group branch |
-| `Px.3` release publication | publish the migration release (`state=3_published`) on the draft **while it is still hidden**, run `action_get_commits`, link only the relevant commits, no Quick GitHub Update |
+| `Px.3` release publication | publish the migration release (`state=3_published`) on the draft **while it is still hidden**, run `action_get_commits` in `odoo shell` (never through MCP), link only the relevant commits, no Quick GitHub Update |
 | `Px.4` description publication | `action_apply_prepublishment` on the standalone draft — it promotes that record in place and **that write is what makes the page public**; verify no current-serie record changed. Leave `force_no_git` **False**. Do not set it back on |
 | `Px.5` full GitHub update | the **full** update, server-side inside Odoo (`odoo shell` on the container or the UI button), never through MCP, never the quick variant. Before the button: `force_no_git` is False and `github_to_update` is True on every record in the group |
 | `Px.6` GitHub output gate | fast-forward the local published branch, inspect the generated manifest / `index.html` / images commit, run the packaging and static checks |
-| `Px.7` live translations | TM-first apply of description, features, `pics` and `releases` payloads through the loader, for **every active language** on faotools.com. Every field whose English changed in `Fx.6` must carry the new translation in each language; none may still show the copied 19.0 wording. Prove `ru_RU` ≠ `en_US` per page, caption and release, and that the HTML is closed |
+| `Px.7` live translations | TM-first apply of description, features, `pics` and `releases` payloads through the loader, for **every active language** on faotools.com. Every field whose English changed in `Fx.6` must carry the new translation in each language; none may still show the copied 19.0 wording. Prove the live values equal the TM translations per page, caption (`name` and `alt_name`) and release, and that the HTML is closed |
 | `Px.8` master sync | merge the published branch into `_final`, run the candidate full matrix, and stop; promote / redeploy master only on the next confirmation, then verify containers and public demo URLs |
 | `Px.9` handoff | hand over the faotools.com page links and the exact store-ready branch and version; the owner performs the Odoo store publication |
 
@@ -2382,7 +2189,13 @@ _LinkedIn company-page posts that draw attention to one faOtools app feature_
 
 # LinkedIn company-page publications
 
-The procedure is KnowSystem article 2136, "LinkedIn posts: how we prepare them":
+The procedure is KnowSystem article 2136 in section `AI` on faotools.com. The title is for people. Read the article before any `linkedin.post` write, short URL, or upload. Git history of this file is not the procedure. This id lookup belongs only to this pointer.
+
 https://faotools.com/odoo/knowsystem/2136
 
-Read that article and follow it. Do not keep a second copy of the procedure in this file.
+1. MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). Inspect the tool schema first (`21-faotools-mcp`).
+2. Read `knowsystem.article` 2136.
+3. Stop unless that record is active and its section is `AI` (id 157).
+4. Read `description` and follow it.
+
+If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. The result is a draft `linkedin.post`. The owner publishes. The agent never logs into LinkedIn.
