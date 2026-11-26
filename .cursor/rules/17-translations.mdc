@@ -16,7 +16,7 @@ Source of truth is **`support/support_translations/`** (glossary, do-not-transla
 | Surface | Repo / path |
 |---------|-------------|
 | Glossary, do-not-translate, TM, loader, validators | `support/support_translations/` |
-| App UI `.pot` / `.po` | `tools/<module>/i18n/` and `odoo-apps-addons/ai_mcp_server/i18n/` |
+| App UI `.pot` / `.po` | `tools/<module>/i18n/`; `odoo-apps-addons/ai_mcp_server/i18n/` is read-only (a gap goes to its developer, `02-repo-boundaries`) |
 | Website QWeb code templates | `support/*/i18n/` plus loader YAML for website-builder (COW) views |
 | Cursor rules | this skill, `support/.cursor/rules/translations.mdc` |
 
@@ -46,7 +46,7 @@ Regression: `modules_website` `test_en_us_store_leak` (includes the now-translat
 - `action_apply_prepublishment` re-applies translations in code; do not skip the hook. That hook reads YAML **already on the Functional container**, not this checkout — new local TM still needs the live apply (**Live apply** below).
 - After `git pull` / serie switch of `odoo` / `enterprise`, run the glossary-vs-core drift check before adding new translations.
 - Permanent gate: `support/support_translations/scripts/check_translation_coverage.py` (wired into `devops/run_tests.sh` on Odoo 19). `--live` crawls en vs each language. `check_view_term_restyle.py` fails a QWeb restyle that left only the old tagged `.pot` msgid.
-- Existing DBs do not pick up a new view msgid on `-u` (`overwrite=False`). `_fill_empty_view_translations` in `support_translations`, `odootools_demo`, and every tools / `odoo-apps-addons` module that owns QWeb `<template>` views writes the `.po` onto empty `arch_db` terms. Do not skip that fill after a template restyle.
+- Existing DBs do not pick up a new view msgid on `-u` (`overwrite=False`). `_fill_empty_view_translations` in `support_translations`, `odootools_demo`, and every tools module that owns QWeb `<template>` views writes the `.po` onto empty `arch_db` terms. Do not skip that fill after a template restyle.
 - HTML in `xml_translate` fields (`module.feature.body`, `module.release.description`, …) must follow always-on `ai_rules` `18-xml-translate-html`. Never empty `<i></i>` / `<i/>`.
 
 ## Live apply
@@ -90,7 +90,7 @@ Run the checklist in **Closing an "empty msgstr" backlog** below. These are the 
 - After a `system/odootools_demo` (or any module) batch, re-parse every `i18n/*.po` file for that
  module with `polib` directly — do not trust "MISSING: 0" from a one-off apply script as proof the
  module has zero empty `msgstr` left; it only proves that batch's own msgids landed.
-- Finish with one full-hub re-scan (`tools`, `support`, `system`, `odoo-apps-addons`)
+- Finish with one full-hub re-scan (`tools`, `support`, `system`, `odoo-apps-addons`; a gap in `odoo-apps-addons` becomes a task for its developer, not a fill)
  against the complete `SHIPPED_LANGS` list before reporting the backlog closed.
 
 ## Out of scope until asked
@@ -118,7 +118,7 @@ If the task touches a module that already has `i18n/` or TM chunks:
 - A new 19.0+ public changelog follows **Bind future work** above (`33-release-gates`, skill `33-faotools-release`).
 - Website/ticket FAQ copy lives in `tm/website/faqs/` (overlay). KnowSystem article records stay English. Do not enable KnowSystem Multi Languages. Store `/docs` / `/knowsystem` stay English.
 - Version ports (19.0 -> 20.0, including intermediate migration branches) **carry translations**; `copy()` keeps them, then refresh fingerprints.
-- **QWeb / demo restyle is a translation change.** If you change English in a `<template>`, `string=`, `title=`, or Layer 1 demo XML, the `.pot` msgid must be the **new** `xml_translate` key — not the old `<strong>…</strong>` / icon wrapper. `_update_translations(overwrite=False)` leaves the new term empty on an existing DB (incident 2026-09-09: Appointments `Any` / `Select` / more details). Same job: glossary or TM, regenerate `.po`, and the empty-term fill (`ir.module.module` hooks in `support_translations`, `odootools_demo`, every tools / `odoo-apps-addons` module that owns QWeb `<template>` views). `check_view_term_restyle.py` fails when XML is bare and the pot still only has the old tagged msgid. Demo values must stay in the module `.pot` (`demo_lint`).
+- **QWeb / demo restyle is a translation change.** If you change English in a `<template>`, `string=`, `title=`, or Layer 1 demo XML, the `.pot` msgid must be the **new** `xml_translate` key — not the old `<strong>…</strong>` / icon wrapper. `_update_translations(overwrite=False)` leaves the new term empty on an existing DB (incident 2026-09-09: Appointments `Any` / `Select` / more details). Same job: glossary or TM, regenerate `.po`, and the empty-term fill (`ir.module.module` hooks in `support_translations`, `odootools_demo`, every tools module that owns QWeb `<template>` views). `check_view_term_restyle.py` fails when XML is bare and the pot still only has the old tagged msgid. Demo values must stay in the module `.pot` (`demo_lint`).
 
 ## Do not translate
 
@@ -203,7 +203,8 @@ redone after someone points out the narrower scope was wrong.
 7. **Finish with one full-repo re-scan across every repo that ships `.po` files** (`tools`,
  `support`, `system`, `odoo-apps-addons`) against the complete language list, cross-referenced
  against `do-not-translate.yaml` and the mail-template exemption, before reporting
- "all languages done." A per-module "looks complete" is not the same claim.
+ "all languages done." A per-module "looks complete" is not the same claim. A gap in
+ `odoo-apps-addons` becomes a task for its developer, not a fill (`02-repo-boundaries`).
 
 ## apps.odoo.com
 

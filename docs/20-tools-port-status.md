@@ -250,7 +250,8 @@ the dead-hook check requires a `super()` call and both overrides have none.
 
 Outside every group: `odoo-apps-addons/ai_mcp_server` reads `msg.tracking_value_ids` in
 `services/tool_service.py:1256` and `services/catalog_service.py:245`, which raises on 20.0. The
-group list covers `tools` only, so nothing schedules it yet.
+group list covers `tools` only. Its developer fixed it in `97f7200` (ledger `uncovered`, status
+`fixed`). That repo is not ours to change (`02-repo-boundaries`).
 
 ## Running the checker
 
