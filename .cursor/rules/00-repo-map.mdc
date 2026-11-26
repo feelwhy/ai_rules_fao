@@ -54,4 +54,5 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 - A major port of the `tools` apps is not done when the last module group is green. The rest is the skill `36-major-version-port`.
 - App releases: bans in `33-release-gates`, sequence in KnowSystem article 2137 via the skill `33-faotools-release`.
 - Prepublishment: article 2138 via the skill `30-prepublishment-descriptions`.
+- App documentation on `/docs`: article 2142 via the skill `38-module-docs`, which also holds the module-to-section table. App videos: article 2143 via the skill `39-module-videos`.
 - LinkedIn company-page posts: skill `37-linkedin-publications`. The owner publishes.

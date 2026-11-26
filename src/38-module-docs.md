@@ -1,0 +1,98 @@
+---
+id: 38-module-docs
+description: Prepare or update the public documentation of a faOtools app or app family on faotools.com /docs, including phrases like документация, docs, подготовь документацию, обнови документацию
+apply: agent
+---
+
+# faOtools app documentation
+
+Trigger: документация, docs, подготовь документацию, обнови документацию, for an app or an app family.
+
+The procedure is KnowSystem article 2142 in section `AI` on faotools.com. The title is for people. Read the article before any write on faotools.com. Git history of this file is not the procedure. This id lookup belongs only to this pointer.
+
+https://faotools.com/odoo/knowsystem/2142
+
+1. MCP server for faotools.com. The namespace name depends on the host (`user-faotools`, `faotools`). Inspect the tool schema first (`21-faotools-mcp`).
+2. Read `knowsystem.article` 2142.
+3. Stop unless that record is active and its section is `AI` (id 157). The article is not published on the website. It is internal on purpose, so that is not a reason to stop.
+4. Read `description` and follow it.
+
+If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. The bans in `18-xml-translate-html` and `33-release-gates` still apply; they are enough to refuse a write.
+
+## Module-to-section table
+
+The article reads this table. Built from the 20.0 `tools` tree and live faotools.com ids on 2026-11-26.
+
+- A family is a main module and the modules whose 20.0 `module.description` has it in `extension_toapp_id`. The family has one documentation: the section of the main module.
+- The number after a module is its 20.0 `module.description` id.
+- `new` means the section or KnowSystem subsection does not exist yet. `?` means the human picks the `/docs` category when that app's docs start.
+- An extension subsection marked `new under <id>` goes inside the main module's subsection. Cloud Storage keeps its family section 94 Clouds, with one subsection per connector.
+- Live `documentation_url` values are not kept here. The article reads them on every run.
+- If an app is not in the table, stop and ask the human.
+
+| Main module | Extensions → KnowSystem subsection | Docs section | `/docs` category | KnowSystem subsection |
+|---|---|---|---|---|
+| `mail_activity_notification` 1343 | — | new | ? | new |
+| `activities_todo` 1310 | — | new | ? | new |
+| `odoo_menu_management` 1284 | — | 34 Advanced Menu Management | 3 Extra utilities | 65 Extra utilities > 150 Advanced Menu Management |
+| `variant_price_system` 1338 | — | new | ? | new |
+| `cloud_base` 1267 | `amazon_s3_odoo` 1273 → new under 94 Clouds; `box_odoo` 1269 → new under 94 Clouds; `cloud_base_documents` 1270 → new under 94 Clouds; `dropbox` 1275 → 94 Clouds > 99 DropBox; `google_drive_odoo` 1272 → 94 Clouds > 96 Google Drive; `nas_odoo` 1274 → new under 94 Clouds; `onedrive` 1271 → 94 Clouds > 97 OneDrive / SharePoint; `owncloud_odoo` 1268 → 94 Clouds > 98 OwnCloud / NextCloud | 18 Cloud Storage Solutions | 5 Management apps | 94 Clouds > 95 Cloud Storage Solutions |
+| `opportunity_custom_fields` 1256 | `opportunity_custom_fields_website` 1258 → new, inside the main module's new subsection | new | ? | new |
+| `partner_color_codes` 1311 | — | 2 Contacts color coding | 3 Extra utilities | 65 Extra utilities > 48 Contacts color coding |
+| `partner_duplicates` 1301 | — | 12 Contacts Duplicates Real Time Search | 7 Sales apps | 86 Sales Apps > 82 Contacts Duplicates Real Time Search |
+| `crm_checklist` 1306 | — | 14 CRM Check List and Approval Process | 7 Sales apps | 86 Sales Apps > 85 CRM Check List and Approval Process |
+| `notification_crm` 1344 | — | new | ? | new |
+| `crm_duplicates` 1300 | — | 13 CRM Duplicates Real Time Search | 7 Sales apps | 86 Sales Apps > 83 CRM Duplicates Real Time Search |
+| `partner_custom_fields` 1257 | — | new | ? | new |
+| `product_custom_fields` 1259 | `product_custom_fields_website_sale` 1260 → new, inside the main module's new subsection | new | ? | new |
+| `project_custom_fields` 1261 | — | new | ? | new |
+| `task_custom_fields` 1262 | — | new | ? | new |
+| `custom_fields` 1255 | — | new | ? | new |
+| `customer_scoring` 1312 | — | new | ? | new |
+| `complementary_employee_data` 1250 | — | 7 Partners contact full details | 3 Extra utilities | 65 Extra utilities > 69 Partners contacts full details |
+| `itlibertas_timesheet` 1285 | `itlibertas_timesheet_gantt` 1283 → new under 148 Flexible Timetables and Shifts | 33 Flexible Timetables and Shifts | 5 Management apps | 73 Management Apps > 148 Flexible Timetables and Shifts |
+| `header_clock` 1313 | — | new | ? | new |
+| `joint_calendar` 1276 | `joint_calendar_gantt` 1277 → new under 105 Joint Calendar | 23 Joint Calendar | 3 Extra utilities | 65 Extra utilities > 105 Joint Calendar |
+| `knowsystem` 1316 | `knowsystem_custom_fields` 1320 → new under 79 Knowsystem; `knowsystem_website_custom_fields` 1321 → new under 79 Knowsystem; `knowsystem_eshop` 1319 → new under 79 Knowsystem; `knowsystem_multilang` 1322 → new under 79 Knowsystem; `knowsystem_website` 1318 → new under 79 Knowsystem; `documentation_builder` 1317 → new under 79 Knowsystem | 10 KnowSystem: Knowledge Base System | 5 Management apps | 73 Management Apps > 79 Knowsystem |
+| `kpi_scorecard` 1279 | — | 16 KPI Balanced Scorecard | 5 Management apps | 73 Management Apps > 88 KPI |
+| `mail_manual_routing` 1289 | — | 17 Lost Messages Routing | 4 Messaging apps | 66 Messaging apps > 90 Lost Messages Routing |
+| `low_sales_report` 1280 | — | new | ? | new |
+| `product_add_suppliers` 1339 | — | new | ? | new |
+| `message_citing` 1290 | — | new | ? | new |
+| `message_edit` 1286 | — | 5 Message/note editing | 4 Messaging apps | 66 Messaging apps > 67 Message note editing |
+| `odoo_email_from` 1291 | `odoo_email_from_accounting` 1292 → new, inside the main module's new subsection | new | ? | new |
+| `email_suite` 1295 | `email_suite_accounting` 1296 → new, inside the main module's new subsection | new | ? | new |
+| `odoo_typo_reporter` 1304 | — | new | ? | new |
+| `complementary_lead_data` 1252 | — | 7 Partners contact full details | 3 Extra utilities | 65 Extra utilities > 69 Partners contacts full details |
+| `res_partner_completeness` 1314 | — | new | ? | new |
+| `complementary_contact_data` 1254 | — | 7 Partners contact full details | 3 Extra utilities | 65 Extra utilities > 69 Partners contacts full details |
+| `odoo_password_manager` 1263 | `odoo_password_manager_custom_fields` 1264 → new under 72 Password manager | 9 Password manager | 5 Management apps | 73 Management Apps > 72 Password manager |
+| `internal_thread` 1287 | `internal_thread_accounting` 1288 → new under 68 Private thread | 6 Private thread | 4 Messaging apps | 66 Messaging apps > 68 Private thread |
+| `product_dynamic_code` 1299 | — | new | ? | new |
+| `product_management` 1332 | `product_management_accounting` 1333 → new under 103 Product Management Interface; `product_management_website_sale` 1334 → new under 103 Product Management Interface; `product_management_purchase` 1335 → new under 103 Product Management Interface; `product_management_stock` 1336 → new under 103 Product Management Interface | 27 Product Management Interface | 7 Sales apps | 86 Sales Apps > 103 Product Management Interface |
+| `purchase_order_checklist` 1308 | — | new | ? | new |
+| `recurrent_activities` 1309 | — | new | ? | new |
+| `total_notify` 1278 | — | 32 Periodic Reporting and Reminders | 3 Extra utilities | 65 Extra utilities > 147 Periodic Reporting and Reminders |
+| `sale_order_checklist` 1307 | — | 15 Sale Order Approval Check Lists | 7 Sales apps | 86 Sales Apps > 87 Sale Order Approval Check Lists |
+| `sales_forecast_by_periods` 1281 | — | 35 Sales Trends and Forecast | 7 Sales apps | 86 Sales Apps > 151 Sales Trends and Forecast |
+| `security_user_roles` 1265 | — | 31 Security User Roles | 3 Extra utilities | 65 Extra utilities > 144 Security User Roles |
+| `mail_composer_on_send_message` 1342 | — | new | ? | new |
+| `smart_warnings` 1253 | — | 3 Smart Alerts | 3 Extra utilities | 65 Extra utilities > 57 Smart alerts |
+| `sticky_notes` 1251 | — | 4 Sticky notes | 3 Extra utilities | 65 Extra utilities > 63 Sticky notes |
+| `stock_qty_forecast` 1282 | — | 38 Stock Demand Trends and Forecast | 9 Inventory apps | 100 Inventory apps > 152 Stock Demand Trends and Forecast |
+| `stock_limitation` 1298 | — | 25 Stock Access Rules | 9 Inventory apps | 100 Inventory apps > 101 Stocks Access Rules |
+| `product_stock_balance` 1297 | — | 26 Stocks by Locations | 9 Inventory apps | 100 Inventory apps > 102 Stocks by Locations |
+| `task_numbers` 1266 | — | new | ? | new |
+| `task_checklist` 1305 | — | 37 Task Check List and Approval Process | 3 Extra utilities | 86 Sales Apps > 154 Task Check List and Approval Process |
+| `notification_project` 1345 | — | new | ? | new |
+| `business_appointment` 1323 | `business_appointment_custom_fields` 1324 → new under 142 Universal Appointments; `business_appointment_custom_fields_website` 1325 → new under 142 Universal Appointments; `business_appointment_gantt` 1326 → new under 142 Universal Appointments; `business_appointment_hr` 1327 → new under 142 Universal Appointments; `business_appointment_website` 1330 → new under 142 Universal Appointments; `business_appointment_sale` 1328 → new under 142 Universal Appointments; `business_appointment_time_tracking` 1329 → new under 142 Universal Appointments; `business_appointment_website_sale` 1331 → new under 142 Universal Appointments | 30 Universal Appointments and Time Reservations | 5 Management apps | 73 Management Apps > 142 Universal Appointments |
+| `website_url_translations` 1302 | — | 28 URL Transliterations for Website Pages | 3 Extra utilities | 65 Extra utilities > 111 URL Transliterations for Website Pages |
+| `vendor_product_management` 1337 | — | new | ? | new |
+| `vendor_portal_management` 1340 | — | new | ? | new |
+| `vendor_scoring` 1315 | — | new | ? | new |
+| `short_urls` 1303 | — | 29 Website URL Shortener | 3 Extra utilities | 65 Extra utilities > 114 Website URL Shortener |
+
+Not in the table:
+
+- Sections 19 Google Drive, 20 OneDrive / SharePoint, 21 OwnCloud / NextCloud, and 22 Dropbox are archived, in the archived category 8. They are sources for the connector articles only.
+- Sections 8 No auto subscription, 24 Limited Access to Products, and 36 Messages: Schedule Send Option belong to apps that are not in the 20.0 tree.
