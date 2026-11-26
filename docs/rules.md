@@ -149,6 +149,7 @@ We do not change `odoo-apps-addons`. Its developer does. Incident 2026-11-21: a 
 - Do not copy its files onto master, the worker, or a container by hand (`rsync`, `docker cp`, editing a volume).
 - Reading is allowed: diagnose, cite `path:line`, run its tests in local Docker.
 - A fix that seems to need it: write the task for the developer (symptom, how to reproduce, proposed change, series) and hand it to the owner. Stop there.
+- The developer does not bump a module `version`. We do, through the release (`33-faotools-release`). New stored fields with no version bump are normal: not a developer mistake and not a task for them. A live update runs `-u` for every module whose files changed, not by version (`faotools_env` `redeploy-verify-live.mdc`).
 - This outranks any other rule that lists `odoo-apps-addons` as editable or in a commit scope. A `module.release` on faotools.com is a live record, not a repo edit, and stays under `33-release-gates`.
 
 ## Commit / push scope (no repo named)
