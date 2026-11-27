@@ -17,6 +17,8 @@ https://faotools.com/odoo/knowsystem/2142
 3. Stop unless that record is active and its section is `AI` (id 157). The article is not published on the website. It is internal on purpose, so that is not a reason to stop.
 4. Read `description` and follow it.
 
+With Paseo, each article is a cycle of roles (article 2142, 4.0): `Редактор статей` writes the brief, `Автор статей` and `Создатель скриншотов` make the text and the screenshots, and `Редактор статей` reviews. An orchestrator starts each article with `Редактор статей`.
+
 If the host MCP tool returns needs auth or Unauthorized, do not stop and do not ask the owner to log in. Connect using faotools_env `.cursor/rules/redeploy-verify-live.mdc` (MCP session) and call MCP directly. Stop only when that path also fails to make a working call, or the read does not return one active record in section `AI`. Do not reconstruct the steps. The bans in `18-xml-translate-html` and `33-release-gates` still apply; they are enough to refuse a write.
 
 ## Module-to-section table
