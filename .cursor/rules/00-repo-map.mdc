@@ -40,14 +40,13 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 
 - **tools**: `11-manifest-version`.
 - **faotools_env** `env_master`: bump when shipping a live upgrade.
-- **febado**: follow febado in-repo rules (not this repo).
 - **odoo-apps-addons**: read-only for us (`02-repo-boundaries`).
 
 ## Who owns rules
 
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
-- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
+- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules
 - Translations: bans in `17-translation-gates`, glossary and TM in the skill `17-translations`, live apply in article 2139 via that skill. Icon HTML is `ai_rules` `18-xml-translate-html`.
 - Demo data: skill `34-demo-data`. KnowSystem demo articles: skill `35-knowsystem-demo`.
 - faotools.com FAQ (add or edit an FAQ article): article 2141, then the YAML part in `support` `.cursor/rules/knowsystem-faq.mdc`.

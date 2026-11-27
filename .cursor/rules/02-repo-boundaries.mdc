@@ -35,7 +35,7 @@ This is the one case where **all** repos are inspected regardless of task contex
 
 **Never commit or push** `odoo`, `enterprise`, `others`, `odoo-apps-addons`. If they show changes, report them and ask — do not commit, do not revert (`ai_rules` `03-never-discard-wip`).
 
-If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit scope — it follows its own in-repo push / MR rules.
+If the user names a repo (“commit tools”), only that repo.
 
 Report each repo: branch, short SHA, pushed or not, and the repos with nothing to commit.
 

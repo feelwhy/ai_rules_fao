@@ -15,7 +15,7 @@ Never store local database credentials, tokens, or connection strings in reposit
 - **No hand-made stacks or databases.** Anything outside the target table is created by a script or registered at once: `./local/env-review.sh keep <db> --hours N`. Unregistered, `env-gc.sh` removes it after 12h.
 - **The creator drops it.** A batch that creates databases drops them in the same batch. `env-up.sh --test` already drops its `test_*` clone. `./local/env-review.sh down <db>` removes a stack completely.
 - **Remove containers with their volume.** `env-down.sh --remove`, `env-review.sh down`, or `docker rm -f -v`. Never `docker compose down` / `rm -v` alone: a container started with `--no-bind`, or an older container, can still leave the baked-addons volume behind. A normal launch does not create one.
-- **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. Never `docker system prune` / `volume prune --all`: they also delete Febado's stopped containers and named volumes.
+- **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. Never `docker system prune` / `volume prune --all`: they also delete the stopped containers and named volumes of other stacks.
 
 ## Serie + bind mounts
 

@@ -40,14 +40,13 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 
 - **tools**: `11-manifest-version`.
 - **faotools_env** `env_master`: bump when shipping a live upgrade.
-- **febado**: follow febado in-repo rules (not this repo).
 - **odoo-apps-addons**: read-only for us (`02-repo-boundaries`).
 
 ## Who owns rules
 
 - Universal coding / process → `ai_rules`
 - Hub map, boundaries, packaging, local Docker, MCP, prepublishment, app releases → `ai_rules_fao`
-- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules; febado committed `.mdc`
+- Stays in-repo: support SEO/MCP description/index/support-database/v19-migration/translations; tools email-suite / jstree; faotools_env deploy rules
 - Translations: bans in `17-translation-gates`, glossary and TM in the skill `17-translations`, live apply in article 2139 via that skill. Icon HTML is `ai_rules` `18-xml-translate-html`.
 - Demo data: skill `34-demo-data`. KnowSystem demo articles: skill `35-knowsystem-demo`.
 - faotools.com FAQ (add or edit an FAQ article): article 2141, then the YAML part in `support` `.cursor/rules/knowsystem-faq.mdc`.
@@ -89,7 +88,7 @@ This is the one case where **all** repos are inspected regardless of task contex
 
 **Never commit or push** `odoo`, `enterprise`, `others`, `odoo-apps-addons`. If they show changes, report them and ask — do not commit, do not revert (`ai_rules` `03-never-discard-wip`).
 
-If the user names a repo (“commit tools”), only that repo. `febado` is never part of the hub commit scope — it follows its own in-repo push / MR rules.
+If the user names a repo (“commit tools”), only that repo.
 
 Report each repo: branch, short SHA, pushed or not, and the repos with nothing to commit.
 
@@ -173,7 +172,7 @@ Never store local database credentials, tokens, or connection strings in reposit
 - **No hand-made stacks or databases.** Anything outside the target table is created by a script or registered at once: `./local/env-review.sh keep <db> --hours N`. Unregistered, `env-gc.sh` removes it after 12h.
 - **The creator drops it.** A batch that creates databases drops them in the same batch. `env-up.sh --test` already drops its `test_*` clone. `./local/env-review.sh down <db>` removes a stack completely.
 - **Remove containers with their volume.** `env-down.sh --remove`, `env-review.sh down`, or `docker rm -f -v`. Never `docker compose down` / `rm -v` alone: a container started with `--no-bind`, or an older container, can still leave the baked-addons volume behind. A normal launch does not create one.
-- **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. Never `docker system prune` / `volume prune --all`: they also delete Febado's stopped containers and named volumes.
+- **Cleanup = `./local/env-gc.sh`** (dry run) then `--apply`. Never `docker system prune` / `volume prune --all`: they also delete the stopped containers and named volumes of other stacks.
 
 ## Serie + bind mounts
 

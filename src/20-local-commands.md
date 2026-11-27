@@ -22,6 +22,6 @@ A first launch restores and neutralizes. Prefer the container shell:
 ./local/env-shell.sh demo19 psql  # SQL against the local Postgres (host port 15432)
 ```
 
-Several targets (and Febado) can run at once. Each Odoo has its own HTTP port (`support` 18100, `demo19` 18190, …). Shared Mailpit is on **18025**.
+Several targets can run at once. Each Odoo has its own HTTP port (`support` 18100, `demo19` 18190, …). Shared Mailpit is on **18025**.
 
 Keep images and databases fresh with `./local/env-sync.sh` (or `./local/env-sync.sh --check`). The full port matrix and sync behavior are in `faotools_env/local/README.md`.
