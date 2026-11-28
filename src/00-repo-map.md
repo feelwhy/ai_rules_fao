@@ -56,3 +56,7 @@ Edit the tree `env-serie.sh` prints. A fix in another checkout does not reach th
 - Prepublishment: article 2138 via the skill `30-prepublishment-descriptions`.
 - App documentation on `/docs`: article 2142 via the skill `38-module-docs`, which also holds the module-to-section table. App videos: article 2143 via the skill `39-module-videos`.
 - LinkedIn company-page posts: skill `37-linkedin-publications`. The owner publishes.
+
+## Cloud Storage sync fields
+
+Do not write sync fields by hand on any database, stand or live. That covers `ir.attachment` `cloud_key`, `sync_client_id`, `sync_cloud_folder_id`, and `url` / `owncloud_path` of a synced file; `clouds.folder` `cloud_key`; `clouds.snapshot` `snapshot`, `back_snapshot`, and `reverse_state`; and `clouds.queue` rows. Change the client only on the rule or folder, as in the UI, then run the normal folder update and sync. An exception needs the owner's explicit approval for one named recovery.
